@@ -11,4 +11,10 @@ public class Country {
     private Continent continent;
 
     private Optional<RestrictionTrait> restriction;
+
+    public String getCountryName(){ return countryName; }
+
+    public Continent getContinent(){ return continent; }
+
+    public Optional<RestrictionTrait> getRestriction(){ return restriction; }
 }

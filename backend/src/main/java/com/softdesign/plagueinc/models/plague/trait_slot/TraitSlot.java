@@ -22,11 +22,26 @@ public class TraitSlot {
         this.card = Optional.of(card);
     }
 
+    public boolean hasCard(){
+        return this.card.isPresent();
+    }
+
+    public boolean hasAbility(){
+        return this.ability.isPresent();
+    }
+
     public TraitCard getCard(){
         if(this.card.isEmpty()){
             throw new IllegalStateException("Cannot get card from an empty slot");
         }
         return this.card.get();
+    }
+
+    public Ability getAbility(){
+        if(this.ability.isEmpty()){
+            throw new IllegalStateException("No ability to get!");
+        }
+        return this.ability.get();
     }
 
     public void activate(){
