@@ -4,6 +4,6 @@ import com.softdesign.plagueinc.models.plague.Plague;
 
 public interface Event {
 
-    public void resolveEffect(Plague player){}
+    public void resolveEffect(Plague player);
 
 }
