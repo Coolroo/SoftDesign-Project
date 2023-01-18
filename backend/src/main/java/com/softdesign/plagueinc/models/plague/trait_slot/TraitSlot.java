@@ -2,10 +2,17 @@ package com.softdesign.plagueinc.models.plague.trait_slot;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.softdesign.plagueinc.models.plague.Ability;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TraitSlot {
+
+    Logger logger = LoggerFactory.getLogger(TraitSlot.class);
 
     private Optional<TraitCard> card;
 
@@ -13,6 +20,7 @@ public class TraitSlot {
 
     public TraitSlot(Optional<Ability> ability){
         this.ability = ability;
+        this.card = Optional.empty();
     }
 
     public void setCard(TraitCard card){
@@ -32,14 +40,16 @@ public class TraitSlot {
 
     public TraitCard getCard(){
         if(this.card.isEmpty()){
-            throw new IllegalStateException("Cannot get card from an empty slot");
+            logger.warn("Cannot get card from an empty slot");
+            return null;
         }
         return this.card.get();
     }
 
     public Ability getAbility(){
         if(this.ability.isEmpty()){
-            throw new IllegalStateException("No ability to get!");
+            logger.warn("No ability to get!");
+            return null;
         }
         return this.ability.get();
     }

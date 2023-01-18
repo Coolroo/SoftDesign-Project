@@ -1,6 +1,7 @@
 package com.softdesign.plagueinc.models.plague;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
@@ -19,7 +21,6 @@ import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
-
 
 public class Plague {
 
@@ -54,6 +55,7 @@ public class Plague {
         this.hand = new ArrayList<>();
         this.eventCards = new ArrayList<>();
         this.traitSlots = new ArrayList<>();
+        this.killedCountries = new HashSet<>();
         //TODO: Implement disease abilities
         for(int i = 0; i<5; i++){
             this.traitSlots.add(new TraitSlot(Optional.empty()));
@@ -207,7 +209,7 @@ public class Plague {
     }
 
 
-    public Map<Continent, List<Country>> getKilledCountriesByContinent(){
+    public Map<Continent, List<Country>> filterKilledCountriesByContinent(){
         return Stream.of(Continent.values())
                      .collect(Collectors.toMap(Function.identity(), 
                               continent -> killedCountries.stream().filter(country -> country.getContinent() == continent).toList()));
