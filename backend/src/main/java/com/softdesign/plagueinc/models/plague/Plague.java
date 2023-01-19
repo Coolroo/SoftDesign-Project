@@ -17,7 +17,6 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
-import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 
@@ -97,24 +96,6 @@ public class Plague {
         }
         eventCards.add(event);
     }
-
-    public void useEventCard(int eventCardIndex){
-        if(eventCardIndex < 0 || eventCardIndex >= eventCards.size()){
-            throw new IllegalArgumentException("Cannot play event card which has an index which is out of bounds (eventCardIndex=" + eventCardIndex + ", eventCard Size=" + eventCards.size() + ")");
-        }
-        Event event = eventCards.get(eventCardIndex);
-        
-        try{
-            event.resolveEffect(this);
-            eventCards.remove(eventCardIndex);
-        }
-        //TODO: Implement error checking
-        catch(Exception e){
-
-        }
-        
-
-    }
     
     public void addDnaPoints(int points){
         if(points < 0){
@@ -142,65 +123,6 @@ public class Plague {
             throw new IllegalArgumentException("Cannot add plague tokens which would cause the plague to have a greater number of tokens than their initial amount (numTokens=" + numTokens + ", plagueTokens=" + plagueTokens + ")");
         }
         plagueTokens += numTokens;
-    }
-
-    public void activateTraitSlot(int slot){
-        if(slot >= traitSlots.size()){
-            throw new IndexOutOfBoundsException("Index is greater than the number of slots that exist");
-        }
-        TraitSlot traitSlot = traitSlots.get(slot);
-        try{
-            TraitCard card = traitSlot.getCard();
-            List<Trait> traits = card.traits();
-
-            traits.forEach(thisTrait -> this.traits.remove(thisTrait.getTrait()));
-            logger.info("(Plague {}) Discarding card {} from slot {}", playerId, card.name(), slot);
-        }
-        catch(IllegalStateException e){
-            try{
-                logger.info("(Plague {}) Activating ability {}", playerId, traitSlot.getAbility().getName());
-            }
-            catch(IllegalStateException e2){
-                logger.warn("(Plague {}) Tried activating slot {} which has no contents", playerId, slot);
-                return;
-            }
-        }
-        finally{
-            traitSlot.activate();
-        }
-        
-    }
-
-    public void evolveTrait(int cardIndex, int traitSlotIndex){
-        evolveTrait(cardIndex, traitSlotIndex, 0);
-    }
-
-    public void evolveTrait(int cardIndex, int traitSlotIndex, int dnaDiscount){
-        if(cardIndex >= hand.size() || cardIndex < 0){
-            throw new IllegalArgumentException("Cannot evolve a card that is out of bounds (provided index=" + cardIndex + ", size of hand=" + hand.size() + ")");
-        }
-        evolveTrait(hand.get(cardIndex), traitSlotIndex, dnaDiscount);
-    }
-
-    public void evolveTrait(TraitCard card, int traitSlotIndex, int dnaDiscount){
-        if(traitSlotIndex >= traitSlots.size()){
-            throw new IllegalArgumentException("Cannot evolve a card into a slot with invalid index (provided index=" + traitSlotIndex + ", size of hand=" + traitSlots.size() + ")");
-        }
-        
-        if(dnaPoints < card.cost() - dnaDiscount){
-            throw new IllegalStateException("Plague " + playerId + " does not have enough DNA to evolve " + card.name() + " (DNA=" + dnaPoints + ", required DNA =" + (card.cost() - dnaDiscount));
-        }
-
-        TraitSlot traitSlot = traitSlots.get(traitSlotIndex);
-
-        if(traitSlot.hasCard()){
-            throw new IllegalStateException("Cannot evolve a card into a slot that already has a card");
-        }
-
-        traitSlot.setCard(card);
-        hand.remove(card);
-        card.traits().forEach(trait -> traits.add(trait.getTrait()));
-        dnaPoints -= card.cost() - dnaDiscount;        
     }
 
     public void killCountry(Country country){

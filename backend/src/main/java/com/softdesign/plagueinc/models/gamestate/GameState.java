@@ -2,11 +2,10 @@ package com.softdesign.plagueinc.models.gamestate;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -46,12 +45,13 @@ public class GameState {
 
     private Set<Event> eventDiscard;
 
-    private static final int MAX_PLAYERS = 4;
+    public static final int MAX_PLAYERS = 4;
 
     public GameState(){
         this.plagues = new ArrayList<>();
         this.playState = PlayState.INITIALIZATION;
-        this.board = Stream.of(Continent.values()).collect(Collectors.toMap(Function.identity(), continent -> new ArrayList<>()));
+        this.board = new HashMap<>();
+        Stream.of(Continent.values()).forEach(continent -> this.board.put(continent, new ArrayList<>()));
     }
 
 

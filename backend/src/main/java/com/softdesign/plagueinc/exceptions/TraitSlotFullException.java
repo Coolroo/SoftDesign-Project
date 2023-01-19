@@ -1,4 +1,4 @@
-package com.softdesign.plagueinc.models.plague.trait_slot;
+package com.softdesign.plagueinc.exceptions;
 
 public class TraitSlotFullException extends IllegalArgumentException {
     public TraitSlotFullException(String message){

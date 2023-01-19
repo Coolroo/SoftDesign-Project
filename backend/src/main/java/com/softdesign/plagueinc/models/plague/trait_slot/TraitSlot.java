@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.softdesign.plagueinc.exceptions.TraitSlotFullException;
 import com.softdesign.plagueinc.models.plague.Ability;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 
