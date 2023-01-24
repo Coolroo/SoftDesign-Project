@@ -4,7 +4,7 @@ import com.softdesign.plagueinc.models.traits.TraitType;
 
 public class AirborneTrait extends TravelTrait {
 
-    protected AirborneTrait() {
+    public AirborneTrait() {
         super(TraitType.AIRBORNE);
         //TODO Auto-generated constructor stub
     }
