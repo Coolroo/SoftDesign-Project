@@ -45,13 +45,26 @@ public class GameState {
 
     private Set<Event> eventDiscard;
 
+    private Map<Plague, Boolean> votesToStart;
+
+    private boolean readyToProceed;
+
     public static final int MAX_PLAYERS = 4;
+
+    public static final Map<Continent, Integer> maxCountries = Map.of(Continent.NORTH_AMERICA, 3, 
+                                                                      Continent.SOUTH_AMERICA, 4, 
+                                                                      Continent.EUROPE, 5, 
+                                                                      Continent.ASIA, 5, 
+                                                                      Continent.AFRICA, 5, 
+                                                                      Continent.OCEANIA, 3);
 
     public GameState(){
         this.plagues = new ArrayList<>();
         this.playState = PlayState.INITIALIZATION;
         this.board = new HashMap<>();
         Stream.of(Continent.values()).forEach(continent -> this.board.put(continent, new ArrayList<>()));
+        this.votesToStart = new HashMap<>();
+        this.readyToProceed = false;
     }
 
 
@@ -133,6 +146,18 @@ public class GameState {
 
     public void setEventDiscard(Set<Event> eventDiscard) {
         this.eventDiscard = eventDiscard;
+    }
+
+    public boolean getReadyToProceed(){
+        return readyToProceed;
+    }
+
+    public void setReadyToProceed(boolean readyToProceed){
+        this.readyToProceed = readyToProceed;
+    }
+
+    public Map<Plague, Boolean> getVotesToStart(){
+        return votesToStart;
     }
 
 }
