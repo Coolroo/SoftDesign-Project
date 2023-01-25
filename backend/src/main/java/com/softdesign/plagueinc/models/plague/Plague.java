@@ -136,5 +136,9 @@ public class Plague {
                               continent -> killedCountries.stream().filter(country -> country.getContinent() == continent).toList()));
     }
 
+    public boolean hasTrait(TraitType trait){
+        return traits.contains(trait);
+    }
+
 
 }
