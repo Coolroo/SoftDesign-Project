@@ -21,6 +21,7 @@ import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
+import com.softdesign.plagueinc.util.CountryReference;
 
 public class GameStateManager {
 
@@ -33,8 +34,6 @@ public class GameStateManager {
     private CountryManager countryManager;
 
     private GameState gameState;
-
-    
 
     public GameStateManager(){
         this.gameState = new GameState();
@@ -73,6 +72,17 @@ public class GameStateManager {
         if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
             logger.info("All players have voted to start the game, initializing game");
             //TODO: Implement initialization
+            List<Country> defaultCountries = CountryReference.getDefaultCountryDeck();
+            Collections.shuffle(defaultCountries);
+            gameState.getPlagues().forEach(thisPlague -> {
+                //Give player default points
+                thisPlague.addDnaPoints(thisPlague.getPlayerId());
+                Country startingCountry = defaultCountries.remove(0);
+                placeCountry(startingCountry);
+                countryManager.infectCountry(startingCountry, plague);
+                drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
+            });
+            gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
         }
 
     }
@@ -80,6 +90,8 @@ public class GameStateManager {
     public void proceedState(){
         //TODO: Implement this method
     }
+
+    //DNA PHASE
 
     public void scoreDNAPoints(){
         if(gameState.getReadyToProceed()){
@@ -91,32 +103,7 @@ public class GameStateManager {
         gameState.setReadyToProceed(true);
     }
 
-    public List<TraitCard> drawTraitCards(int numCards){
-        List<TraitCard> drawnCards = new ArrayList<>();
-        for(int i = 0; i<numCards; i++){
-            drawnCards.add(drawTraitCard());
-        }
-        return drawnCards;
-    }
-
-    public TraitCard drawTraitCard(){
-        if(gameState.getTraitDeck().size() == 0){
-            refillTraitDeck();
-        }
-
-        return gameState.getTraitDeck().pop();
-    }
-
-    public void refillTraitDeck(){
-        if(gameState.getTraitDeck().size() > 0){
-            logger.warn("Attempted to refill the deck when there were cards present in it");
-            throw new IllegalAccessError();
-        }
-        List<TraitCard> discard = gameState.getTraitDiscard().stream().toList();
-        Collections.shuffle(discard);
-        gameState.setTraitDeck(new ArrayDeque<>(discard));
-        gameState.setTraitDiscard(new HashSet<>());
-    }
+    //COUNTRY PHASE
 
     public void drawCountry(){
         //TODO: Implement this method
@@ -158,6 +145,8 @@ public class GameStateManager {
         gameState.setReadyToProceed(true);
     }
 
+    //EVOLVE PHASE
+
     public void evolveTrait(int traitSlot, int traitIndex){
         try{
             plagueManager.evolveTrait(gameState.getCurrTurn(), traitIndex, traitSlot);
@@ -173,17 +162,54 @@ public class GameStateManager {
         gameState.setReadyToProceed(true);
     }
 
+    //INFECT PHASE
+
     public void infectCountry(Country country){
         //TODO: Implement this method
     }
+
+    //DEATH PHASE
 
     public void killCountry(Country country){
         //TODO: Implement this method
     }
 
+    //EVENT CARDS
+
     public void playEventCard(Event eventCard){
         //TODO: Implement this method
     }
+
+    //TRAIT CARDS
+
+    public List<TraitCard> drawTraitCards(int numCards){
+        List<TraitCard> drawnCards = new ArrayList<>();
+        for(int i = 0; i<numCards; i++){
+            drawnCards.add(drawTraitCard());
+        }
+        return drawnCards;
+    }
+
+    public TraitCard drawTraitCard(){
+        if(gameState.getTraitDeck().size() == 0){
+            refillTraitDeck();
+        }
+
+        return gameState.getTraitDeck().pop();
+    }
+
+    public void refillTraitDeck(){
+        if(gameState.getTraitDeck().size() > 0){
+            logger.warn("Attempted to refill the deck when there were cards present in it");
+            throw new IllegalAccessError();
+        }
+        List<TraitCard> discard = gameState.getTraitDiscard().stream().toList();
+        Collections.shuffle(discard);
+        gameState.setTraitDeck(new ArrayDeque<>(discard));
+        gameState.setTraitDiscard(new HashSet<>());
+    }
+
+    //UTIL
 
 /**
  * The private function canInfectCountry checks if the country has a travel restriction, and if they do, it makes sure that the player has this restriction.

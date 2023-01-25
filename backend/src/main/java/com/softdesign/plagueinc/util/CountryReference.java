@@ -13,6 +13,17 @@ import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 
 public class CountryReference {
+
+    public static List<Country> getStartingCountries(){ 
+        //TODO: Implement a list of the starting countries
+        return List.of(); 
+    }
+
+    public static List<Country> getDefaultCountryDeck(){
+        //TODO: Implement a list of the country deck
+        return List.of();
+    }
+
     public static Country germany(){
         return new Country("germany", 
         Continent.EUROPE, 

@@ -10,6 +10,11 @@ import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 
 public class TraitReference {
 
+    public static List<TraitCard> getDefaultTraitDeck(){
+        //TODO: Implement default trait deck
+        return List.of();
+    }
+
     public static TraitCard paranoia(){
         return new TraitCard("paranoia", 12, List.of(new InfectivityTrait(), new InfectivityTrait()));
     }
