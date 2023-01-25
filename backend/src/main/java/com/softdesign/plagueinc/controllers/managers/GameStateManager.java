@@ -36,6 +36,8 @@ public class GameStateManager {
 
     private Optional<CompletableFuture<CountryChoice>> countryChoice;
 
+    private Optional<CompletableFuture<Country>> infectChoice;
+
     public GameStateManager(){
         this.gameState = new GameState();
     }
@@ -236,8 +238,42 @@ public class GameStateManager {
 
     //INFECT PHASE
 
+    private void initInfectFuture(int citiesToInfect){
+        if(infectChoice.isPresent()){
+            infectChoice.get().cancel(true);
+        }
+        infectChoice = Optional.of(new CompletableFuture<>());
+        infectChoice.get().whenComplete((country, ex) -> {
+            if(ex != null){
+                logger.warn("Error with infection choice future EX: {}", ex.getMessage());
+            }
+            else{
+                try{
+                    infectCountry(country);
+                    if(citiesToInfect > 1){
+                        initInfectFuture(citiesToInfect - 1);
+                    }
+                    else{
+                        gameState.setReadyToProceed(true);
+                    }
+                }
+                catch(Exception e){
+                    initInfectFuture(citiesToInfect);
+                }
+                
+            }
+        });
+    }
+
     public void infectCountry(Country country){
-        //TODO: Implement this method
+        if(!canInfectCountry(country, gameState.getCurrTurn())){
+            logger.warn("(Plague {}) attempted to infect {}, but is unable to", gameState.getCurrTurn().getPlayerId(), country.getCountryName());
+            throw new IllegalStateException();
+        }
+
+        countryManager.infectCountry(country, gameState.getCurrTurn());
+        
+
     }
 
     //DEATH PHASE
