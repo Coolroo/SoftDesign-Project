@@ -1,6 +1,5 @@
 package com.softdesign.plagueinc.controllers.managers;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -161,6 +160,8 @@ public class GameStateManager {
                 gameState.clearActionLog();
                 gameState.setPlayState(PlayState.START_OF_TURN);
                 readyToProceedState = true;
+                break;
+            default:
                 break;
         }
         gameState.setReadyToProceed(readyToProceedState);
