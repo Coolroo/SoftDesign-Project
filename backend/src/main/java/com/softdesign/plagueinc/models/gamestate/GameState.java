@@ -223,8 +223,12 @@ public class GameState {
         eventDiscard = new HashSet<>();
     }
 
-    private void initCountryDeck(){
-        List<Country> defaultCountryDeck = CountryReference.getDefaultCountryDeck();
+    public void initCountryDeck(List<Country> remainingCountries){
+        if(countryDeck != null){
+            logger.error("attempted to init the country deck, after its already been initialized");
+        }
+        List<Country> defaultCountryDeck = new ArrayList<>(CountryReference.getDefaultCountryDeck());
+        defaultCountryDeck.addAll(remainingCountries);
         defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
         Collections.shuffle(defaultCountryDeck);
 
