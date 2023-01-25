@@ -6,7 +6,7 @@ import com.softdesign.plagueinc.models.events.Event;
 
 public class EventReference {
 
-    public List<Event> getDefaultEventDeck(){
+    public static List<Event> getDefaultEventDeck(){
         //TODO: Implement default event deck
         return List.of();
     }

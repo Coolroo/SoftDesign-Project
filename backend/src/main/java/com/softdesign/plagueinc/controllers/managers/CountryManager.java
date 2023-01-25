@@ -45,7 +45,7 @@ public class CountryManager {
 
     public List<Plague> getControllers(Country country){
         Map<Plague, Long> infectionCount = getInfectionByPlayer(country);
-        Long max = infectionCount.values().stream().max(Long::compare).get();
-        return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague) == max).toList();
+        long max = infectionCount.values().stream().mapToLong(val -> val).max().getAsLong();
+        return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague).longValue() == max).toList();
     }
 }
