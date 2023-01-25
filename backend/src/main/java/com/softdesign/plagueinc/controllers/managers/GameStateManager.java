@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -293,6 +294,20 @@ public class GameStateManager {
         .filter(country -> countryManager.getControllers(country).contains(gameState.getCurrTurn()))
         .toList();
         createDeathFuture(choppingBlock);
+    }
+
+    public int rollDeathDice(){
+        if(gameState.getReadyToProceed()){
+            logger.error("Attempted to roll the death dice when the game state is ready to proceed");
+            throw new IllegalStateException();
+        }
+        if(deathFuture.isEmpty()){
+            logger.error("Attempted to roll death dice, but the future is invalid!");
+            throw new IllegalStateException("Death state issue");
+        }
+        int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
+        deathFuture.get().complete(randomNum);
+        return randomNum;
     }
 
     private void createDeathFuture(List<Country> choppingBlock){
