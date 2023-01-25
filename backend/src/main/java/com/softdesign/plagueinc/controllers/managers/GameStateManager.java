@@ -1,6 +1,7 @@
 package com.softdesign.plagueinc.controllers.managers;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +87,7 @@ public class GameStateManager {
         if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
             logger.info("All players have voted to start the game, initializing game");
             
-            List<Country> startingCountries = CountryReference.getStartingCountries();
+            List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
             Collections.shuffle(startingCountries);
             gameState.getPlagues().forEach(thisPlague -> {
                 //Give player default points
@@ -101,6 +102,7 @@ public class GameStateManager {
                 gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
                 logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
             });
+            gameState.initCountryDeck(startingCountries);
             gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
             gameState.setPlayState(PlayState.START_OF_TURN);
             gameState.setReadyToProceed(true);

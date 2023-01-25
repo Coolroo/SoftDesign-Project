@@ -87,7 +87,6 @@ public class GameState {
         //TODO: Implement sudden death logic
         this.suddenDeath = false;
 
-        initCountryDeck();
         initTraitDeck();
         initEventDeck();
     }
@@ -229,8 +228,8 @@ public class GameState {
         }
         List<Country> defaultCountryDeck = new ArrayList<>(CountryReference.getDefaultCountryDeck());
         defaultCountryDeck.addAll(remainingCountries);
-        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
         Collections.shuffle(defaultCountryDeck);
+        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
         revealedCountries = new ArrayList<>();
