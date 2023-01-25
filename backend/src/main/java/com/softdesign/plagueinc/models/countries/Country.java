@@ -43,4 +43,8 @@ public class Country {
     public Optional<RestrictionTrait> getRestriction(){ return restriction; }
 
     public Map<String, Optional<Plague>> getCities(){ return cities; }
+
+    public boolean isFull(){
+        return cities.values().stream().allMatch(optional -> optional.isPresent());
+    }
 }

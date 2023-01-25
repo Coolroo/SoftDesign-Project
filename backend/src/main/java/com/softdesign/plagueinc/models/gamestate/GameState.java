@@ -167,7 +167,7 @@ public class GameState {
         traitDiscard.add(card);
     }
 
-    public void refillTraitDeck(){
+    private void refillTraitDeck(){
 
         if(getTraitDeck().size() > 0){
             logger.warn("Attempted to refill the deck when there were cards present in it");
@@ -179,9 +179,31 @@ public class GameState {
         traitDiscard = new HashSet<>();
     }
 
+    public Event drawEventCard(){
+        if(eventDeck.size() == 0){
+            refillEventDeck();
+        }
+        return eventDeck.pop();
+    }
+
+    public void discardEventCard(Event card){
+        eventDiscard.add(card);
+    }
+
+    private void refillEventDeck(){
+        if(eventDeck.size() > 0){
+            logger.warn("Attempted to refill the deck when there were cards present in it");
+            throw new IllegalAccessError();
+        }
+        List<Event> discard = eventDiscard.stream().toList();
+        Collections.shuffle(discard);
+        eventDeck = new ArrayDeque<>(discard);
+        eventDiscard = new HashSet<>();
+    }
+
     private void initCountryDeck(){
         List<Country> defaultCountryDeck = CountryReference.getDefaultCountryDeck();
-        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()) - 1);
+        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
         Collections.shuffle(defaultCountryDeck);
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
@@ -232,9 +254,6 @@ public class GameState {
             revealedCountries.add(countryDeck.pop());
         }
     }
-
-
-
 
 }
     

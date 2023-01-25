@@ -1,7 +1,9 @@
 package com.softdesign.plagueinc.controllers.managers;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -18,6 +20,7 @@ import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 import com.softdesign.plagueinc.util.CountryReference;
@@ -37,6 +40,8 @@ public class GameStateManager {
     private Optional<CompletableFuture<CountryChoice>> countryChoice;
 
     private Optional<CompletableFuture<Country>> infectChoice;
+
+    private Optional<CompletableFuture<Integer>> deathFuture;
 
     public GameStateManager(){
         this.gameState = new GameState();
@@ -255,6 +260,7 @@ public class GameStateManager {
                     }
                     else{
                         gameState.setReadyToProceed(true);
+                        infectChoice = Optional.empty();
                     }
                 }
                 catch(Exception e){
@@ -278,8 +284,45 @@ public class GameStateManager {
 
     //DEATH PHASE
 
+    private void initDeathPhase(){
+       List<Country> choppingBlock = gameState.getBoard()
+        .values()
+        .stream()
+        .flatMap(continent -> continent.stream())
+        .filter(country -> country.isFull())
+        .filter(country -> countryManager.getControllers(country).contains(gameState.getCurrTurn()))
+        .toList();
+        createDeathFuture(choppingBlock);
+    }
+
+    private void createDeathFuture(List<Country> choppingBlock){
+        if(deathFuture.isPresent()){
+            deathFuture.get().cancel(true);
+        }
+        deathFuture = Optional.of(new CompletableFuture<>());
+        deathFuture.get().whenComplete((result, ex) -> {
+            if(ex != null){
+                logger.warn("Death future failed! For reason EX: {}", ex.getMessage());
+            }
+            else{
+                if(result <= gameState.getCurrTurn().getTraitCount(TraitType.LETHALITY)){
+                    killCountry(choppingBlock.get(0));
+                }
+                if(choppingBlock.size() > 1){
+                    createDeathFuture(choppingBlock.subList(1, choppingBlock.size()));
+                }
+                else{
+                    gameState.setReadyToProceed(true);
+                }
+            }
+        });
+    }
+
     public void killCountry(Country country){
-        //TODO: Implement this method
+        Map<Plague, Long> infectionCount = countryManager.getInfectionByPlayer(country);
+        infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
+        gameState.discardCountry(country);
+        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(gameState.drawEventCard()));
     }
 
     //EVENT CARDS
@@ -302,7 +345,7 @@ public class GameStateManager {
     private boolean canInfectCountry(Country country, Plague plague){
 
         //If the country is already full
-        if(country.getCities().values().stream().allMatch(thisPlague -> thisPlague.isPresent())){
+        if(country.isFull()){
             logger.warn("(Plague {}) attempted to infect {}, but all the cities are full", plague.getPlayerId(), country.getCountryName());
             return false;
         }
