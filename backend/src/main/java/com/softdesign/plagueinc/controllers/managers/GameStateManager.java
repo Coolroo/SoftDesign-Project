@@ -3,12 +3,15 @@ package com.softdesign.plagueinc.controllers.managers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.softdesign.plagueinc.controllers.futures.input_types.CountryChoice;
+import com.softdesign.plagueinc.exceptions.ContinentFullException;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
@@ -30,6 +33,8 @@ public class GameStateManager {
     private CountryManager countryManager;
 
     private GameState gameState;
+
+    private Optional<CompletableFuture<CountryChoice>> countryChoice;
 
     public GameStateManager(){
         this.gameState = new GameState();
@@ -113,12 +118,70 @@ public class GameStateManager {
     //COUNTRY PHASE
 
     public void drawCountry(){
-        //TODO: Implement this method
+        if(gameState.getReadyToProceed()){
+            logger.warn("Attempted to draw a country card when the gamestate was ready to proceed");
+            throw new IllegalStateException();
+        }
+        Country drawnCountry = gameState.drawCountry();
+        initCountryChoiceFuture(drawnCountry);
+        gameState.setReadyToProceed(true);
     }
 
     public void selectCountryFromRevealed(int index){
-        //TODO: Implement this method
+        if(gameState.getReadyToProceed()){
+            logger.warn("Attempted to choose a revealed country card when the gamestate was ready to proceed");
+            throw new IllegalStateException();
+        }
+
+        Country chosenCountry = gameState.takeRevealedCountry(index);
+        initCountryChoiceFuture(chosenCountry);
+        gameState.setReadyToProceed(true);
     }
+
+    private void initCountryChoiceFuture(Country drawnCountry){
+        if(countryChoice.isPresent()){
+            countryChoice.get().cancel(true);
+        }
+        countryChoice = Optional.of(new CompletableFuture<>());
+        countryChoice.get().whenComplete((result, ex) -> {
+            if(ex != null){
+                logger.error("Error with country choice future EX: {}", ex.getMessage());
+                initCountryChoiceFuture(drawnCountry);
+            }
+            else{
+                switch(result){
+                    case PLAY:
+                    try{
+                        placeCountry(drawnCountry);
+                        gameState.setReadyToProceed(true);
+                        countryChoice = Optional.empty();
+                    }
+                    catch(ContinentFullException e){
+                        initCountryChoiceFuture(drawnCountry);
+                    }
+                    break;
+                    case DISCARD:
+                        discardCountry(drawnCountry);
+                        gameState.setReadyToProceed(true);
+                        countryChoice = Optional.empty();
+                    break;
+                }
+            }
+        });
+    }
+
+    public void makeCountryChoice(CountryChoice choice){
+        if(gameState.getReadyToProceed()){
+            logger.warn("Attempted to make a country choice, but the gamestate is ready to proceed");
+            throw new IllegalStateException();
+        }
+        if(countryChoice.isEmpty()){
+            logger.error("Attempted to make a country choice, but the gamestate is not waiting for a country choice");
+            throw new IllegalStateException();
+        }
+        countryChoice.get().complete(choice);
+    } 
+
 
     public void placeCountry(Country country){
         if(gameState.getReadyToProceed()){
@@ -132,7 +195,7 @@ public class GameStateManager {
 
         if(gameState.getBoard().get(country.getContinent()).size() == GameState.maxCountries.get(country.getContinent())){
             logger.warn("Cannot place country as the continent {} is full", country.getContinent());
-            throw new IllegalStateException("Continent is full");
+            throw new ContinentFullException();
         }
 
         gameState.getBoard().get(country.getContinent()).add(country);
@@ -151,6 +214,7 @@ public class GameStateManager {
 
         gameState.setReadyToProceed(true);
     }
+    
     //EVOLVE PHASE
 
     public void evolveTrait(int traitSlot, int traitIndex){
