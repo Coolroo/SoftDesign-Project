@@ -1,10 +1,12 @@
 package com.softdesign.plagueinc.models.countries;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.restriction.RestrictionTrait;
+import com.softdesign.plagueinc.models.traits.travel.TravelTrait;
 
 public class Country {
 
@@ -14,18 +16,25 @@ public class Country {
 
     private Optional<RestrictionTrait> restriction;
 
+    private List<TravelTrait> travelTypes;
+
     private Map<String, Optional<Plague>> cities;
 
-    public Country(String countryName, Continent continent, Optional<RestrictionTrait> restrictionTrait, Map<String, Optional<Plague>> cities){
+    public Country(String countryName, Continent continent, Optional<RestrictionTrait> restrictionTrait, List<TravelTrait> travelTypes, Map<String, Optional<Plague>> cities){
         this.countryName = countryName;
         this.continent = continent;
         this.restriction = restrictionTrait;
+        this.travelTypes = travelTypes;
         this.cities = cities;
     }
 
     public String getCountryName(){ return countryName; }
 
     public Continent getContinent(){ return continent; }
+
+    public List<TravelTrait> getTravelTypes(){
+        return travelTypes;
+    }
 
     public boolean hasRestriction(){
         return this.restriction.isPresent();
