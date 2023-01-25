@@ -181,7 +181,7 @@ public class GameState {
 
     private void initCountryDeck(){
         List<Country> defaultCountryDeck = CountryReference.getDefaultCountryDeck();
-        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()) - 1);
+        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
         Collections.shuffle(defaultCountryDeck);
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
