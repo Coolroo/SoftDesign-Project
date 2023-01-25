@@ -67,23 +67,24 @@ public class GameStateManager {
             return Optional.empty();
         }
 
-        if(gameState.getPlagues().size() >= 4){
+        if(gameState.getPlagues().size() >= GameState.MAX_PLAYERS){
             logger.warn("Player attempted to join game but game is already full");
             return Optional.empty();
         }
 
-        Plague plague = new Plague(gameState.getPlagues().size());
+        Plague plague = new Plague();
         gameState.getPlagues().add(plague);
         gameState.getVotesToStart().put(plague, false);
         return Optional.of(plague);
     }
 
-    public void startGame(int playerId){
+    public void startGame(UUID playerId){
         if(gameState.getPlayState() != PlayState.INITIALIZATION){
             logger.warn("(Plague {}) voted to start the game, but the game has already started");
             throw new IllegalStateException();
         }
         
+        //
         Plague plague = gameState.getPlagues().stream().filter(pla -> pla.getPlayerId() == playerId).findFirst().orElseThrow(IllegalArgumentException::new);
         gameState.getVotesToStart().put(plague, true);
         

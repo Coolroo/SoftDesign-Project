@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Stream;
@@ -64,6 +66,8 @@ public class GameState {
     private boolean suddenDeath;
 
     private Stack<ActionLog> actions;
+
+    private Queue<Plague> turnOrder;
 
     public static final int MAX_PLAYERS = 4;
 
@@ -166,6 +170,20 @@ public class GameState {
 
     public void logAction(ActionLog actionLog){
         actions.push(actionLog);
+    }
+
+    public Queue<Plague> getTurnOrder(){
+        return turnOrder;
+    }
+
+    public void setTurnOrder(List<Plague> order){
+        turnOrder = new LinkedList<>(order);
+    }
+
+    public Plague shiftTurnOrder(){
+        Plague oldTurn = turnOrder.poll();
+        turnOrder.add(oldTurn);
+        return turnOrder.peek();
     }
 
     public List<TraitCard> drawTraitCards(int numCards){
