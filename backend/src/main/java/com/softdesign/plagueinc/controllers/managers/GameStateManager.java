@@ -1,6 +1,5 @@
 package com.softdesign.plagueinc.controllers.managers;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

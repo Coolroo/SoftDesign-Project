@@ -8,12 +8,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.softdesign.plagueinc.models.action_log.ActionLog;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
@@ -61,6 +63,8 @@ public class GameState {
 
     private boolean suddenDeath;
 
+    private Stack<ActionLog> actions;
+
     public static final int MAX_PLAYERS = 4;
 
     public static final Map<Integer, Integer> countriesByPlayer = Map.of(2, 24, 3,27, 4, 32);
@@ -78,9 +82,11 @@ public class GameState {
         this.board = new HashMap<>();
         Stream.of(Continent.values()).forEach(continent -> this.board.put(continent, new ArrayList<>()));
         this.votesToStart = new HashMap<>();
+        this.actions = new Stack<>();
         this.readyToProceed = false;
         //TODO: Implement sudden death logic
         this.suddenDeath = false;
+
         initCountryDeck();
         initTraitDeck();
         initEventDeck();
@@ -153,6 +159,14 @@ public class GameState {
 
     public boolean getSuddenDeath(){
         return suddenDeath;
+    }
+
+    public Stack<ActionLog> getActions(){
+        return actions;
+    }
+
+    public void logAction(ActionLog actionLog){
+        actions.push(actionLog);
     }
 
     public List<TraitCard> drawTraitCards(int numCards){
@@ -261,6 +275,10 @@ public class GameState {
         while(revealedCountries.size() < 3 && countryDeck.size() > 0){
             revealedCountries.add(countryDeck.pop());
         }
+    }
+
+    public void clearActionLog(){
+        actions = new Stack<>();
     }
 
 }
