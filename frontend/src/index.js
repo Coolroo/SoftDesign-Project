@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import TraitCard from './components/TraitCard';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    {/* Testing one element at a time, change back to <App /> is you need to render App.js */} 
+    <TraitCard />
   </React.StrictMode>
 );
 
