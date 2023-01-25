@@ -3,6 +3,7 @@ package com.softdesign.plagueinc.controllers.managers;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -318,8 +319,10 @@ public class GameStateManager {
     }
 
     public void killCountry(Country country){
-        //TODO: Implement this method
-
+        Map<Plague, Long> infectionCount = countryManager.getInfectionByPlayer(country);
+        infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
+        gameState.discardCountry(country);
+        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(gameState.drawEventCard()));
     }
 
     //EVENT CARDS
