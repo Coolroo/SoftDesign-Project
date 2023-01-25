@@ -4,9 +4,9 @@ import com.softdesign.plagueinc.models.gamestate.PlayState;
 
 public abstract class ActionLog {
     
-    PlayState state;
+    private PlayState state;
 
-    ActionLog(PlayState state){
+    protected ActionLog(PlayState state){
         this.state = state;
     }
 
