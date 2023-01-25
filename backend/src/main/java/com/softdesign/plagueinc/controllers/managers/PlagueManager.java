@@ -52,18 +52,18 @@ public class PlagueManager {
         
     }
 
-    public void evolveTrait(Plague plague, int cardIndex, int traitSlotIndex){
-        evolveTrait(plague, cardIndex, traitSlotIndex, 0);
+    public TraitCard evolveTrait(Plague plague, int cardIndex, int traitSlotIndex){
+        return evolveTrait(plague, cardIndex, traitSlotIndex, 0);
     }
 
-    public void evolveTrait(Plague plague, int cardIndex, int traitSlotIndex, int dnaDiscount){
+    public TraitCard evolveTrait(Plague plague, int cardIndex, int traitSlotIndex, int dnaDiscount){
         if(cardIndex >= plague.getHand().size() || cardIndex < 0){
             throw new IllegalArgumentException("Cannot evolve a card that is out of bounds (provided index=" + cardIndex + ", size of hand=" + plague.getHand().size() + ")");
         }
-        evolveTrait(plague, plague.getHand().get(cardIndex), traitSlotIndex, dnaDiscount);
+        return evolveTrait(plague, plague.getHand().get(cardIndex), traitSlotIndex, dnaDiscount);
     }
 
-    public void evolveTrait(Plague plague, TraitCard card, int traitSlotIndex, int dnaDiscount){
+    public TraitCard evolveTrait(Plague plague, TraitCard card, int traitSlotIndex, int dnaDiscount){
         if(traitSlotIndex >= plague.getTraitSlots().size()){
             throw new IllegalArgumentException("Cannot evolve a card into a slot with invalid index (provided index=" + traitSlotIndex + ", size of hand=" + plague.getTraitSlots().size() + ")");
         }
@@ -81,7 +81,8 @@ public class PlagueManager {
         traitSlot.setCard(card);
         plague.getHand().remove(card);
         card.traits().forEach(trait -> plague.getTraits().add(trait.getTrait()));
-        plague.spendDnaPoints(Math.max(0, card.cost() - dnaDiscount));        
+        plague.spendDnaPoints(Math.max(0, card.cost() - dnaDiscount));
+        return card;        
     }
 
     public void useEventCard(Plague plague, int eventCardIndex){

@@ -1,6 +1,6 @@
 package com.softdesign.plagueinc.controllers.managers;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.softdesign.plagueinc.controllers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.exceptions.ContinentFullException;
+import com.softdesign.plagueinc.models.action_log.CountryAction;
+import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
+import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
+import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
+import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
@@ -86,7 +92,7 @@ public class GameStateManager {
         if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
             logger.info("All players have voted to start the game, initializing game");
             
-            List<Country> startingCountries = CountryReference.getStartingCountries();
+            List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
             Collections.shuffle(startingCountries);
             gameState.getPlagues().forEach(thisPlague -> {
                 //Give player default points
@@ -101,6 +107,7 @@ public class GameStateManager {
                 gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
                 logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
             });
+            gameState.initCountryDeck(startingCountries);
             gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
             gameState.setPlayState(PlayState.START_OF_TURN);
             gameState.setReadyToProceed(true);
@@ -150,8 +157,11 @@ public class GameStateManager {
                 .findFirst()
                 .get());
 
+                gameState.clearActionLog();
                 gameState.setPlayState(PlayState.START_OF_TURN);
                 readyToProceedState = true;
+                break;
+            default:
                 break;
         }
         gameState.setReadyToProceed(readyToProceedState);
@@ -182,6 +192,7 @@ public class GameStateManager {
         }
         Country drawnCountry = gameState.drawCountry();
         initCountryChoiceFuture(drawnCountry);
+        gameState.logAction(new CountryChosenAction(drawnCountry));
         gameState.setReadyToProceed(true);
     }
 
@@ -197,6 +208,7 @@ public class GameStateManager {
 
         Country chosenCountry = gameState.takeRevealedCountry(index);
         initCountryChoiceFuture(chosenCountry);
+        gameState.logAction(new CountryChosenAction(chosenCountry));
         gameState.setReadyToProceed(true);
     }
 
@@ -248,7 +260,6 @@ public class GameStateManager {
         countryChoice.get().complete(choice);
     } 
 
-
     public void placeCountry(Country country){
         if(gameState.getReadyToProceed()){
             logger.warn("Cannot take an action if the gamestate is ready to proceed");
@@ -265,6 +276,7 @@ public class GameStateManager {
         }
 
         gameState.getBoard().get(country.getContinent()).add(country);
+        gameState.logAction(new CountryAction(CountryChoice.PLAY, country));
         gameState.setReadyToProceed(true);
     }
 
@@ -284,6 +296,8 @@ public class GameStateManager {
 
         gameState.drawTraitCards(5).forEach(card -> gameState.getCurrTurn().drawTraitCard(card));
 
+        gameState.logAction(new CountryAction(CountryChoice.DISCARD, country));
+
         gameState.setReadyToProceed(true);
     }
     
@@ -299,7 +313,8 @@ public class GameStateManager {
             throw new IllegalStateException();
         }
         try{
-            plagueManager.evolveTrait(gameState.getCurrTurn(), traitIndex, traitSlot);
+            TraitCard card = plagueManager.evolveTrait(gameState.getCurrTurn(), traitIndex, traitSlot);
+            gameState.logAction(new EvolveTraitAction(card));
             gameState.setReadyToProceed(true);
         }
         catch(Exception e){
@@ -361,7 +376,7 @@ public class GameStateManager {
         }
 
         countryManager.infectCountry(country, gameState.getCurrTurn());
-        
+        gameState.logAction(new InfectCountryAction(country));
 
     }
 
@@ -403,7 +418,10 @@ public class GameStateManager {
             }
             else{
                 if(result <= gameState.getCurrTurn().getTraitCount(TraitType.LETHALITY)){
-                    killCountry(choppingBlock.get(0));
+                    killCountry(choppingBlock.get(0), result);
+                }
+                else{
+                    failKillCountry(choppingBlock.get(0), result);
                 }
                 if(choppingBlock.size() > 1){
                     createDeathFuture(choppingBlock.subList(1, choppingBlock.size()));
@@ -415,7 +433,7 @@ public class GameStateManager {
         });
     }
 
-    public void killCountry(Country country){
+    private void killCountry(Country country, int roll){
         if(gameState.getReadyToProceed()){
             logger.warn("Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
@@ -428,6 +446,11 @@ public class GameStateManager {
         infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
         gameState.discardCountry(country);
         infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(gameState.drawEventCard()));
+        gameState.logAction(new KillCountryAction(country, roll, true));
+    }
+
+    private void failKillCountry(Country country, int roll){
+        gameState.logAction(new KillCountryAction(country, roll, false));
     }
 
     //EVENT CARDS
