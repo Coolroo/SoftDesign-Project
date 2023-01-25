@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
+import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.Plague;
@@ -39,6 +40,12 @@ public class GameStateManager {
         this.gameState = new GameState();
     }
 
+/**
+ * function that allows a player to join the game.
+ *
+
+ * @docauthor Trelent
+ */
     public Optional<Plague> joinGame(){
         if(gameState.getPlayState() != PlayState.INITIALIZATION)
         {
@@ -166,17 +173,38 @@ public class GameStateManager {
         gameState.setReadyToProceed(true);
     }
 
+    public void infectCountry(Country country){
+        //TODO: Implement this method
+    }
 
+    public void killCountry(Country country){
+        //TODO: Implement this method
+    }
 
-    public boolean canInfectCountry(Country country, Plague plague){
+    public void playEventCard(Event eventCard){
+        //TODO: Implement this method
+    }
+
+/**
+ * The private function canInfectCountry checks if the country has a travel restriction, and if they do, it makes sure that the player has this restriction.
+ * It also takes the continent the country is in, and then sees if there are any countries in those continents that have been infected by this player.
+ * Otherwise, it determines if the player is present in any country with a seaport/airport, if the country provided has one of those.
+ *
+ * @return True if the player infects a country in the same continent, or if they have an airport/seaport to travel between continents
+ *
+ * @docauthor Trelent
+ */
+    private boolean canInfectCountry(Country country, Plague plague){
 
         //If the country is already full
         if(country.getCities().values().stream().allMatch(thisPlague -> thisPlague.isPresent())){
+            logger.warn("(Plague {}) attempted to infect {}, but all the cities are full", plague.getPlayerId(), country.getCountryName());
             return false;
         }
 
         //If the country has a restriction, make sure the player has it
         if(country.hasRestriction() && !plague.hasTrait(country.getRestriction().get().getTrait())){
+            logger.warn("(Plague {}) attempted to infect {}, but does not have the necessary climate restriction", plague.getPlayerId(), country.getCountryName());
             return false;
         }
 
