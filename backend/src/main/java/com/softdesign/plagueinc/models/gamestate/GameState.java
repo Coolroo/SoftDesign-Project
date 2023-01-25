@@ -59,6 +59,8 @@ public class GameState {
 
     private boolean readyToProceed;
 
+    private boolean suddenDeath;
+
     public static final int MAX_PLAYERS = 4;
 
     public static final Map<Integer, Integer> countriesByPlayer = Map.of(2, 24, 3,27, 4, 32);
@@ -77,6 +79,8 @@ public class GameState {
         Stream.of(Continent.values()).forEach(continent -> this.board.put(continent, new ArrayList<>()));
         this.votesToStart = new HashMap<>();
         this.readyToProceed = false;
+        //TODO: Implement sudden death logic
+        this.suddenDeath = false;
         initCountryDeck();
         initTraitDeck();
         initEventDeck();
@@ -145,6 +149,10 @@ public class GameState {
 
     public Map<Plague, Boolean> getVotesToStart(){
         return votesToStart;
+    }
+
+    public boolean getSuddenDeath(){
+        return suddenDeath;
     }
 
     public List<TraitCard> drawTraitCards(int numCards){

@@ -103,12 +103,58 @@ public class GameStateManager {
             });
             gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
             gameState.setPlayState(PlayState.START_OF_TURN);
+            gameState.setReadyToProceed(true);
         }
 
     }
 
     public void proceedState(){
-        //TODO: Implement this method
+        if(!gameState.getReadyToProceed()){
+            logger.warn("Player attempted to proceed the game state before it was ready to move on (Current state: {})", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
+
+        boolean readyToProceedState = false;
+        switch(gameState.getPlayState()){
+            case START_OF_TURN:
+                gameState.setPlayState(PlayState.DNA);
+                scoreDNAPoints();
+                readyToProceedState = true;
+                break;
+            case DNA:
+                gameState.setPlayState(PlayState.CHOOSECOUNTRY);
+                break;
+            case CHOOSECOUNTRY:
+                gameState.setPlayState(PlayState.PLAYCOUNTRY);
+                break;
+            case PLAYCOUNTRY:
+                gameState.setPlayState(PlayState.EVOLVE);
+                break;
+            case EVOLVE:
+                gameState.setPlayState(PlayState.INFECT);
+                initInfectFuture(gameState.getCurrTurn().getTraitCount(TraitType.INFECTIVITY));
+                break;
+            case INFECT:
+                gameState.setPlayState(PlayState.DEATH);
+                initDeathPhase();
+                break;
+            case DEATH:
+                gameState.setPlayState(PlayState.END_OF_TURN);
+                readyToProceedState = true;
+                break;
+            case END_OF_TURN:
+                gameState.setCurrTurn(gameState
+                .getPlagues()
+                .stream()
+                .filter(plague -> plague.getPlayerId() == (gameState.getCurrTurn().getPlayerId() + 1) % gameState.getPlagues().size())
+                .findFirst()
+                .get());
+
+                gameState.setPlayState(PlayState.START_OF_TURN);
+                readyToProceedState = true;
+                break;
+        }
+        gameState.setReadyToProceed(readyToProceedState);
     }
 
     //DNA PHASE
@@ -130,6 +176,10 @@ public class GameStateManager {
             logger.warn("Attempted to draw a country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
         }
+        if(gameState.getPlayState() != PlayState.CHOOSECOUNTRY){
+            logger.error("Attempting to draw a country, when the play state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         Country drawnCountry = gameState.drawCountry();
         initCountryChoiceFuture(drawnCountry);
         gameState.setReadyToProceed(true);
@@ -138,6 +188,10 @@ public class GameStateManager {
     public void selectCountryFromRevealed(int index){
         if(gameState.getReadyToProceed()){
             logger.warn("Attempted to choose a revealed country card when the gamestate was ready to proceed");
+            throw new IllegalStateException();
+        }
+        if(gameState.getPlayState() != PlayState.CHOOSECOUNTRY){
+            logger.error("Attempting to choose a country, when the play state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
 
@@ -187,6 +241,10 @@ public class GameStateManager {
             logger.error("Attempted to make a country choice, but the gamestate is not waiting for a country choice");
             throw new IllegalStateException();
         }
+        if(gameState.getPlayState() != PlayState.PLAYCOUNTRY){
+            logger.error("Attempting to play a country, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         countryChoice.get().complete(choice);
     } 
 
@@ -215,6 +273,10 @@ public class GameStateManager {
             logger.warn("Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
+        if(gameState.getPlayState() != PlayState.PLAYCOUNTRY){
+            logger.error("Attempting to discard a country, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
 
         gameState.discardCountry(country);
 
@@ -228,6 +290,14 @@ public class GameStateManager {
     //EVOLVE PHASE
 
     public void evolveTrait(int traitSlot, int traitIndex){
+        if(gameState.getReadyToProceed()){
+            logger.warn("Cannot take an action if the gamestate is ready to proceed");
+            throw new IllegalStateException("Already placed country");
+        }
+        if(gameState.getPlayState() != PlayState.EVOLVE){
+            logger.error("Attempting to evolve a trait, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         try{
             plagueManager.evolveTrait(gameState.getCurrTurn(), traitIndex, traitSlot);
             gameState.setReadyToProceed(true);
@@ -239,6 +309,10 @@ public class GameStateManager {
     }
 
     public void skipEvolve(){
+        if(gameState.getPlayState() != PlayState.EVOLVE){
+            logger.error("Attempting to skip evolution, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         gameState.setReadyToProceed(true);
     }
 
@@ -256,7 +330,7 @@ public class GameStateManager {
             else{
                 try{
                     infectCountry(country);
-                    if(citiesToInfect > 1){
+                    if(citiesToInfect > 1 && gameState.getCurrTurn().getPlagueTokens() > 0){
                         initInfectFuture(citiesToInfect - 1);
                     }
                     else{
@@ -273,6 +347,14 @@ public class GameStateManager {
     }
 
     public void infectCountry(Country country){
+        if(gameState.getReadyToProceed()){
+            logger.warn("Cannot take an action if the gamestate is ready to proceed");
+            throw new IllegalStateException("Already placed country");
+        }
+        if(gameState.getPlayState() != PlayState.INFECT){
+            logger.error("Attempting to infect a country, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         if(!canInfectCountry(country, gameState.getCurrTurn())){
             logger.warn("(Plague {}) attempted to infect {}, but is unable to", gameState.getCurrTurn().getPlayerId(), country.getCountryName());
             throw new IllegalStateException();
@@ -334,6 +416,14 @@ public class GameStateManager {
     }
 
     public void killCountry(Country country){
+        if(gameState.getReadyToProceed()){
+            logger.warn("Cannot take an action if the gamestate is ready to proceed");
+            throw new IllegalStateException("Already placed country");
+        }
+        if(gameState.getPlayState() != PlayState.DEATH){
+            logger.error("Attempting to kill a country, but the game state is {}", gameState.getPlayState());
+            throw new IllegalStateException();
+        }
         Map<Plague, Long> infectionCount = countryManager.getInfectionByPlayer(country);
         infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
         gameState.discardCountry(country);
