@@ -165,6 +165,10 @@ public class GameState {
         return getTraitDeck().pop();
     }
 
+    public void discardTraitCard(TraitCard card){
+        traitDiscard.add(card);
+    }
+
     public void refillTraitDeck(){
 
         if(getTraitDeck().size() > 0){
@@ -205,6 +209,14 @@ public class GameState {
 
     public Country drawCountry(){
         return countryDeck.pop();
+    }
+
+    public void discardCountry(Country country){
+        if(countryDiscard.contains(country)){
+            logger.warn("Attempted to discard country {}, but this country has already been discarded", country.getCountryName());
+            return;
+        }
+        countryDiscard.add(country);
     }
 
     public Country takeRevealedCountry(int index){

@@ -208,7 +208,9 @@ public class GameStateManager {
             throw new IllegalStateException("Already placed country");
         }
 
-        gameState.getCurrTurn().clearHand().forEach(card -> gameState.getTraitDiscard().add(card));
+        gameState.discardCountry(country);
+
+        gameState.getCurrTurn().clearHand().forEach(card -> gameState.discardTraitCard(card));
 
         gameState.drawTraitCards(5).forEach(card -> gameState.getCurrTurn().drawTraitCard(card));
 
