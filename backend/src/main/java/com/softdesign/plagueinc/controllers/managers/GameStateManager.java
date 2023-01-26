@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -95,9 +97,15 @@ public class GameStateManager {
             
             List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
             Collections.shuffle(startingCountries);
-            gameState.getPlagues().forEach(thisPlague -> {
+
+            List<Plague> plagues = gameState.getPlagues();
+            Collections.shuffle(plagues);
+            gameState.setTurnOrder(plagues);
+            IntStream.range(0, gameState.getPlagues().size()).forEach(index -> {
+
+                Plague thisPlague = plagues.get(index);
                 //Give player default points
-                thisPlague.addDnaPoints(thisPlague.getPlayerId());
+                thisPlague.addDnaPoints(index);
 
                 //Infect initial country
                 Country startingCountry = startingCountries.remove(0);
@@ -108,8 +116,9 @@ public class GameStateManager {
                 gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
                 logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
             });
+
             gameState.initCountryDeck(startingCountries);
-            gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
+            gameState.setCurrTurn(gameState.getTurnOrder().peek());
             gameState.setPlayState(PlayState.START_OF_TURN);
             gameState.setReadyToProceed(true);
         }
@@ -151,12 +160,7 @@ public class GameStateManager {
                 readyToProceedState = true;
                 break;
             case END_OF_TURN:
-                gameState.setCurrTurn(gameState
-                .getPlagues()
-                .stream()
-                .filter(plague -> plague.getPlayerId() == (gameState.getCurrTurn().getPlayerId() + 1) % gameState.getPlagues().size())
-                .findFirst()
-                .get());
+                gameState.shiftTurnOrder();
 
                 gameState.clearActionLog();
                 gameState.setPlayState(PlayState.START_OF_TURN);
