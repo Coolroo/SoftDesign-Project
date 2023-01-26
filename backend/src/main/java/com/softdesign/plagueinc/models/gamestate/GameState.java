@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Stream;
@@ -65,7 +67,11 @@ public class GameState {
 
     private Stack<ActionLog> actions;
 
+    private Queue<Plague> turnOrder;
+
     public static final int MAX_PLAYERS = 4;
+
+    public static final Map<Integer, Integer> countriesByPlayer = Map.of(2, 24, 3,27, 4, 32);
 
     public static final Map<Continent, Integer> maxCountries = Map.of(Continent.NORTH_AMERICA, 3, 
                                                                       Continent.SOUTH_AMERICA, 4, 
@@ -166,6 +172,20 @@ public class GameState {
         actions.push(actionLog);
     }
 
+    public Queue<Plague> getTurnOrder(){
+        return turnOrder;
+    }
+
+    public void setTurnOrder(List<Plague> order){
+        turnOrder = new LinkedList<>(order);
+    }
+
+    public Plague shiftTurnOrder(){
+        Plague oldTurn = turnOrder.poll();
+        turnOrder.add(oldTurn);
+        return turnOrder.peek();
+    }
+
     public List<TraitCard> drawTraitCards(int numCards){
         List<TraitCard> drawnCards = new ArrayList<>();
         for(int i = 0; i<numCards; i++){
@@ -223,12 +243,11 @@ public class GameState {
     public void initCountryDeck(List<Country> remainingCountries){
         if(countryDeck != null){
             logger.error("attempted to init the country deck, after its already been initialized");
-            throw new IllegalStateException();
         }
         List<Country> defaultCountryDeck = new ArrayList<>(CountryReference.getDefaultCountryDeck());
         defaultCountryDeck.addAll(remainingCountries);
         Collections.shuffle(defaultCountryDeck);
-        defaultCountryDeck = defaultCountryDeck.subList(0, CountryReference.getCountriesByPlayer().get(plagues.size()));
+        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
         revealedCountries = new ArrayList<>();
