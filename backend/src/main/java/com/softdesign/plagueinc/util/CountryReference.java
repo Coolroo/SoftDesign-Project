@@ -14,10 +14,6 @@ import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 
 public class CountryReference {
 
-    public static Map<Integer, Integer> getCountriesByPlayer(){
-        return Map.of(2, 24, 3,27, 4, 32);
-    }
-
     public static List<Country> getStartingCountries(){ 
         //TODO: Implement a list of the starting countries
         return List.of(); 
