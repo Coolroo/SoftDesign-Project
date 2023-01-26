@@ -150,13 +150,12 @@ public void proceedState(){
         throw new IllegalStateException();
     }
 
-    boolean readyToProceedState = false;
+    gameState.setReadyToProceed(false);
     switch(gameState.getPlayState()){
         case START_OF_TURN:
             //Score DNA Points & Mark as ready to proceed
             gameState.setPlayState(PlayState.DNA);
             scoreDNAPoints();
-            readyToProceedState = true;
             break;
         case DNA:
             //Move on to choose country phase
@@ -192,22 +191,20 @@ public void proceedState(){
         case DEATH:
             //Move on to the end of round state
             gameState.setPlayState(PlayState.END_OF_TURN);
-            readyToProceedState = true;
+            gameState.setReadyToProceed(true);
             break;
         case END_OF_TURN:
             //Shift turn to next player in line
+            gameState.clearActionLog();
             gameState.shiftTurnOrder();
 
-            gameState.clearActionLog();
             gameState.setPlayState(PlayState.START_OF_TURN);
-            readyToProceedState = true;
+            gameState.setReadyToProceed(true);
             break;
         default:
             logger.error("Weird... this should never happen");
             break;
     }
-    //Update the ready to proceed var according to what the state marked it as
-    gameState.setReadyToProceed(readyToProceedState);
 }
 
     //DNA PHASE
@@ -217,7 +214,16 @@ public void proceedState(){
             logger.warn("Attempted to score DNA points multiple times");
             throw new IllegalStateException();
         }
-        List<Country> controllingCountries = gameState.getBoard().values().stream().flatMap(list -> list.stream()).filter(country -> countryManager.getControllers(country).contains(gameState.getCurrTurn())).toList();
+        //Get all countries controlled by the player
+        List<Country> controllingCountries = gameState.getBoard()
+        .values()
+        .stream()
+        .flatMap(list -> list.stream())
+        .filter(country -> countryManager.getControllers(country)
+        .contains(gameState.getCurrTurn()))
+        .toList();
+
+        //Give DNA points to the player
         gameState.getCurrTurn().addDnaPoints(controllingCountries.size());
         gameState.setReadyToProceed(true);
     }
@@ -233,8 +239,9 @@ public void proceedState(){
             logger.error("Attempting to draw a country, when the play state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
+
+        //draw country, and log the action
         Country drawnCountry = gameState.drawCountry();
-        initCountryChoiceFuture(drawnCountry);
         gameState.logAction(new CountryChosenAction(drawnCountry));
         gameState.setReadyToProceed(true);
     }
@@ -249,6 +256,7 @@ public void proceedState(){
             throw new IllegalStateException();
         }
 
+        //choose country, and log the action
         Country chosenCountry = gameState.takeRevealedCountry(index);
         initCountryChoiceFuture(chosenCountry);
         gameState.logAction(new CountryChosenAction(chosenCountry));
@@ -259,6 +267,8 @@ public void proceedState(){
         if(countryChoice.isPresent()){
             countryChoice.get().cancel(true);
         }
+        
+        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
         countryChoice = Optional.of(new CompletableFuture<>());
         countryChoice.get().whenComplete((result, ex) -> {
             if(ex != null){
@@ -266,8 +276,10 @@ public void proceedState(){
                 initCountryChoiceFuture(drawnCountry);
             }
             else{
+                //Act on which response the player wishes to take
                 switch(result){
                     case PLAY:
+                    //Try to place the country, if there's an issue, we have a problem
                     try{
                         placeCountry(drawnCountry);
                         gameState.setReadyToProceed(true);
@@ -278,6 +290,7 @@ public void proceedState(){
                     }
                     break;
                     case DISCARD:
+                        //Discard the country
                         discardCountry(drawnCountry);
                         gameState.setReadyToProceed(true);
                         countryChoice = Optional.empty();
@@ -356,6 +369,7 @@ public void proceedState(){
             throw new IllegalStateException();
         }
         try{
+            //Try and evolve the card, and log it
             TraitCard card = plagueManager.evolveTrait(gameState.getCurrTurn(), traitIndex, traitSlot);
             gameState.logAction(new EvolveTraitAction(card));
             gameState.setReadyToProceed(true);
@@ -380,12 +394,15 @@ public void proceedState(){
         if(infectChoice.isPresent()){
             infectChoice.get().cancel(true);
         }
+
+        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
         infectChoice = Optional.of(new CompletableFuture<>());
         infectChoice.get().whenComplete((country, ex) -> {
             if(ex != null){
                 logger.warn("Error with infection choice future EX: {}", ex.getMessage());
             }
             else{
+                //Try and infect the chosen country, then if there are any more countries that the player can infect, create another future
                 try{
                     infectCountry(country);
                     if(citiesToInfect > 1 && gameState.getCurrTurn().getPlagueTokens() > 0){
@@ -426,6 +443,7 @@ public void proceedState(){
     //DEATH PHASE
 
     private void initDeathPhase(){
+        //get all killable countries, then make a future from them
        List<Country> choppingBlock = gameState.getBoard()
         .values()
         .stream()
@@ -454,18 +472,21 @@ public void proceedState(){
         if(deathFuture.isPresent()){
             deathFuture.get().cancel(true);
         }
+        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
         deathFuture = Optional.of(new CompletableFuture<>());
         deathFuture.get().whenComplete((result, ex) -> {
             if(ex != null){
                 logger.warn("Death future failed! For reason EX: {}", ex.getMessage());
             }
             else{
+                //If the players lethality is greater than or equal to the roll, then kill the country
                 if(result <= gameState.getCurrTurn().getTraitCount(TraitType.LETHALITY)){
                     killCountry(choppingBlock.get(0), result);
                 }
                 else{
                     failKillCountry(choppingBlock.get(0), result);
                 }
+                //If there are more countries to kill, then reset the future
                 if(choppingBlock.size() > 1){
                     createDeathFuture(choppingBlock.subList(1, choppingBlock.size()));
                 }
@@ -485,9 +506,15 @@ public void proceedState(){
             logger.error("Attempting to kill a country, but the game state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
+
+        //Give players points based on how many tokens they have in the country
         Map<Plague, Long> infectionCount = countryManager.getInfectionByPlayer(country);
         infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
+
+        //Discard the country that was killed, and mark it as killed by this player
         gameState.discardCountry(country);
+        gameState.getCurrTurn().killCountry(country);
+        //give everyone who was present an event card, and log the kill
         infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(gameState.drawEventCard()));
         gameState.logAction(new KillCountryAction(country, roll, true));
     }
