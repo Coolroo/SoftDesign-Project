@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -54,28 +56,23 @@ public class GameStateManager {
         this.gameState = new GameState();
     }
 
-/**
- * function that allows a player to join the game.
- *
-
- * @docauthor Trelent
- */
-    public Optional<Plague> joinGame(){
+    public Plague joinGame(){
         if(gameState.getPlayState() != PlayState.INITIALIZATION)
         {
             logger.warn("Player attempted to join game but game is already started");
-            return Optional.empty();
+            throw new IllegalStateException();
         }
 
         if(gameState.getPlagues().size() >= 4){
             logger.warn("Player attempted to join game but game is already full");
-            return Optional.empty();
+            throw new IllegalStateException();
         }
 
-        Plague plague = new Plague(gameState.getPlagues().size());
+        //Create a new plague, and add it to the gameState
+        Plague plague = new Plague();
         gameState.getPlagues().add(plague);
         gameState.getVotesToStart().put(plague, false);
-        return Optional.of(plague);
+        return plague;
     }
 
     public void startGame(int playerId){
@@ -84,19 +81,40 @@ public class GameStateManager {
             throw new IllegalStateException();
         }
         
-        Plague plague = gameState.getPlagues().stream().filter(pla -> pla.getPlayerId() == playerId).findFirst().orElseThrow(IllegalArgumentException::new);
+        //Find the plague with this UUID
+        Plague plague = gameState.getPlagues()
+        .stream()
+        .filter(pla -> pla.getPlayerId() == playerId)
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
+
+        if(gameState.getVotesToStart().get(plague)){
+            logger.warn("(Plague {}) attempted to vote to start the game, but has already voted to start", plague.getPlayerId());
+        }
+
+        //mark this plague as voted to start
         gameState.getVotesToStart().put(plague, true);
         
         logger.info("(Plague {}) has voted to start the game");
 
+        //If all players have voted to start, and there are more than 1 players in the lobby, then start the game
         if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
             logger.info("All players have voted to start the game, initializing game");
             
+            //init starting country deck
             List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
             Collections.shuffle(startingCountries);
-            gameState.getPlagues().forEach(thisPlague -> {
+
+            //Init turn order
+            List<Plague> players = gameState.getPlagues();
+            Collections.shuffle(players);
+            gameState.setTurnOrder(players);
+
+            //Go through all the players, and initialize their play states (Starting country, starting DNA, starting Traits)
+            IntStream.range(0, players.size()).forEach(index -> {
+                Plague thisPlague = players.get(index);
                 //Give player default points
-                thisPlague.addDnaPoints(thisPlague.getPlayerId());
+                thisPlague.addDnaPoints(index);
 
                 //Infect initial country
                 Country startingCountry = startingCountries.remove(0);
@@ -107,8 +125,13 @@ public class GameStateManager {
                 gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
                 logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
             });
+
+            //Init the country deck in the game state
             gameState.initCountryDeck(startingCountries);
-            gameState.setCurrTurn(gameState.getPlagues().stream().filter(thisPlague -> thisPlague.getPlayerId() == 0).findFirst().get());
+        
+            gameState.setCurrTurn(gameState.getTurnOrder().poll());
+
+            //Prep the gamestate to proceed
             gameState.setPlayState(PlayState.START_OF_TURN);
             gameState.setReadyToProceed(true);
         }
@@ -124,46 +147,60 @@ public class GameStateManager {
         boolean readyToProceedState = false;
         switch(gameState.getPlayState()){
             case START_OF_TURN:
+                //Score DNA Points & Mark as ready to proceed
                 gameState.setPlayState(PlayState.DNA);
                 scoreDNAPoints();
                 readyToProceedState = true;
                 break;
             case DNA:
+                //Move on to choose country phase
                 gameState.setPlayState(PlayState.CHOOSECOUNTRY);
                 break;
             case CHOOSECOUNTRY:
+                //init playCountry future so player can asynchronously choose which action to take, and then proceed to the play country state
+                Country chosenCountry = gameState.getActions()
+                .stream()
+                .filter(action -> action.getClass().equals(CountryChosenAction.class))
+                .map(action -> (CountryChosenAction)action)
+                .findFirst()
+                .get()
+                .getCountry();
+
+                initCountryChoiceFuture(chosenCountry);
                 gameState.setPlayState(PlayState.PLAYCOUNTRY);
                 break;
             case PLAYCOUNTRY:
+                //Move on to evolve phase
                 gameState.setPlayState(PlayState.EVOLVE);
                 break;
             case EVOLVE:
-                gameState.setPlayState(PlayState.INFECT);
+                //Initialize the infect future, and then move onto the infect phase
                 initInfectFuture(gameState.getCurrTurn().getTraitCount(TraitType.INFECTIVITY));
+                gameState.setPlayState(PlayState.INFECT);
                 break;
             case INFECT:
-                gameState.setPlayState(PlayState.DEATH);
+                //Init the death phase, by creating a recursive future that will go through all the killable countries, and then move on to the death state
                 initDeathPhase();
+                gameState.setPlayState(PlayState.DEATH);
                 break;
             case DEATH:
+                //Move on to the end of round state
                 gameState.setPlayState(PlayState.END_OF_TURN);
                 readyToProceedState = true;
                 break;
             case END_OF_TURN:
-                gameState.setCurrTurn(gameState
-                .getPlagues()
-                .stream()
-                .filter(plague -> plague.getPlayerId() == (gameState.getCurrTurn().getPlayerId() + 1) % gameState.getPlagues().size())
-                .findFirst()
-                .get());
+                //Shift turn to next player in line
+                gameState.shiftTurnOrder();
 
                 gameState.clearActionLog();
                 gameState.setPlayState(PlayState.START_OF_TURN);
                 readyToProceedState = true;
                 break;
             default:
+                logger.error("Weird... this should never happen");
                 break;
         }
+        //Update the ready to proceed var according to what the state marked it as
         gameState.setReadyToProceed(readyToProceedState);
     }
 
@@ -207,7 +244,6 @@ public class GameStateManager {
         }
 
         Country chosenCountry = gameState.takeRevealedCountry(index);
-        initCountryChoiceFuture(chosenCountry);
         gameState.logAction(new CountryChosenAction(chosenCountry));
         gameState.setReadyToProceed(true);
     }
@@ -393,20 +429,6 @@ public class GameStateManager {
         createDeathFuture(choppingBlock);
     }
 
-    public int rollDeathDice(){
-        if(gameState.getReadyToProceed()){
-            logger.error("Attempted to roll the death dice when the game state is ready to proceed");
-            throw new IllegalStateException();
-        }
-        if(deathFuture.isEmpty()){
-            logger.error("Attempted to roll death dice, but the future is invalid!");
-            throw new IllegalStateException("Death state issue");
-        }
-        int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
-        deathFuture.get().complete(randomNum);
-        return randomNum;
-    }
-
     private void createDeathFuture(List<Country> choppingBlock){
         if(deathFuture.isPresent()){
             deathFuture.get().cancel(true);
@@ -431,6 +453,20 @@ public class GameStateManager {
                 }
             }
         });
+    }
+
+    public int rollDeathDice(){
+        if(gameState.getReadyToProceed()){
+            logger.error("Attempted to roll the death dice when the game state is ready to proceed");
+            throw new IllegalStateException();
+        }
+        if(deathFuture.isEmpty()){
+            logger.error("Attempted to roll death dice, but the future is invalid!");
+            throw new IllegalStateException("Death state issue");
+        }
+        int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
+        deathFuture.get().complete(randomNum);
+        return randomNum;
     }
 
     private void killCountry(Country country, int roll){
