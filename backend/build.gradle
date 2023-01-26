@@ -16,6 +16,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '2.7.21'
 }
 
 tasks.named('test') {
