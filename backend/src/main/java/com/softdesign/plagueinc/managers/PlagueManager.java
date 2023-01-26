@@ -1,4 +1,4 @@
-package com.softdesign.plagueinc.controllers.managers;
+package com.softdesign.plagueinc.managers;
 
 import java.util.List;
 
