@@ -3,9 +3,9 @@ package com.softdesign.plagueinc.configurations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.softdesign.plagueinc.controllers.managers.CountryManager;
-import com.softdesign.plagueinc.controllers.managers.GameStateManager;
-import com.softdesign.plagueinc.controllers.managers.PlagueManager;
+import com.softdesign.plagueinc.managers.CountryManager;
+import com.softdesign.plagueinc.managers.GameStateManager;
+import com.softdesign.plagueinc.managers.PlagueManager;
 
 @Configuration
 public class ControllerBeans {
