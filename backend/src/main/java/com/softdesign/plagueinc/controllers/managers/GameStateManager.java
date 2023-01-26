@@ -81,7 +81,7 @@ public Plague joinGame(){
     return plague;
 }
 
-public void startGame(int playerId){
+public void startGame(UUID playerId){
     if(gameState.getPlayState() != PlayState.INITIALIZATION){
         logger.warn("(Plague {}) voted to start the game, but the game has already started");
         throw new IllegalStateException();
