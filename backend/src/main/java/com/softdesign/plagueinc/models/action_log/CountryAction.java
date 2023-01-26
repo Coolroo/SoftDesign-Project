@@ -1,6 +1,6 @@
 package com.softdesign.plagueinc.models.action_log;
 
-import com.softdesign.plagueinc.controllers.futures.input_types.CountryChoice;
+import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 

@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.softdesign.plagueinc.controllers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.exceptions.ContinentFullException;
+import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.CountryAction;
 import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
 import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
