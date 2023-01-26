@@ -71,8 +71,6 @@ public class GameState {
 
     public static final int MAX_PLAYERS = 4;
 
-    public static final Map<Integer, Integer> countriesByPlayer = Map.of(2, 24, 3,27, 4, 32);
-
     public static final Map<Continent, Integer> maxCountries = Map.of(Continent.NORTH_AMERICA, 3, 
                                                                       Continent.SOUTH_AMERICA, 4, 
                                                                       Continent.EUROPE, 5, 
@@ -243,11 +241,12 @@ public class GameState {
     public void initCountryDeck(List<Country> remainingCountries){
         if(countryDeck != null){
             logger.error("attempted to init the country deck, after its already been initialized");
+            throw new IllegalStateException();
         }
         List<Country> defaultCountryDeck = new ArrayList<>(CountryReference.getDefaultCountryDeck());
         defaultCountryDeck.addAll(remainingCountries);
         Collections.shuffle(defaultCountryDeck);
-        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
+        defaultCountryDeck = defaultCountryDeck.subList(0, CountryReference.getCountriesByPlayer().get(plagues.size()));
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
         revealedCountries = new ArrayList<>();
