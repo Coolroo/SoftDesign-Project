@@ -194,6 +194,10 @@ public void proceedState(){
             gameState.setReadyToProceed(true);
             break;
         case END_OF_TURN:
+
+            if(checkForWin()){
+                return;
+            }
             //Shift turn to next player in line
             gameState.clearActionLog();
             gameState.shiftTurnOrder();
@@ -206,6 +210,15 @@ public void proceedState(){
             break;
     }
 }
+
+    private boolean checkForWin(){
+
+        if(gameState.getPlagues().stream().anyMatch(plague -> gameState.isPlagueEradicated(plague) || gameState.unableToMove(plague))){
+            gameState.endGame();
+            return true;
+        }
+        return false;
+    }
 
     //DNA PHASE
 
@@ -396,6 +409,11 @@ public void proceedState(){
         if(infectChoice.isPresent()){
             infectChoice.get().cancel(true);
         }
+        if(gameState.unableToMove(gameState.getCurrTurn())){
+            logger.info("(Plague {}) cannot place any tokens, skipping infect phase", gameState.getCurrTurn().getPlayerId());
+            gameState.setReadyToProceed(true);
+            return;
+        }
 
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
         infectChoice = Optional.of(new CompletableFuture<>());
@@ -456,7 +474,7 @@ public void proceedState(){
             logger.error("Attempting to infect a country, but the game state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
-        if(!canInfectCountry(country, gameState.getCurrTurn())){
+        if(!gameState.canInfectCountry(country, gameState.getCurrTurn())){
             logger.warn("(Plague {}) attempted to infect {}, but is unable to", gameState.getCurrTurn().getPlayerId(), country.getCountryName());
             throw new IllegalStateException();
         }
@@ -497,6 +515,12 @@ public void proceedState(){
     private void createDeathFuture(List<Country> choppingBlock){
         if(deathFuture.isPresent()){
             deathFuture.get().cancel(true);
+        }
+
+        if(choppingBlock.size() == 0){
+            logger.info("(Plague {}) has no countries to kill, skipping death phase", gameState.getCurrTurn().getPlayerId());
+            gameState.setReadyToProceed(true);
+            return;
         }
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
         deathFuture = Optional.of(new CompletableFuture<>());
@@ -556,59 +580,6 @@ public void proceedState(){
     }
 
     //UTIL
-
-/**
- * The private function canInfectCountry checks if the country has a travel restriction, and if they do, it makes sure that the player has this restriction.
- * It also takes the continent the country is in, and then sees if there are any countries in those continents that have been infected by this player.
- * Otherwise, it determines if the player is present in any country with a seaport/airport, if the country provided has one of those.
- *
- * @return True if the player infects a country in the same continent, or if they have an airport/seaport to travel between continents
- *
- * @docauthor Trelent
- */
-    private boolean canInfectCountry(Country country, Plague plague){
-
-        //If the country is already full
-        if(country.isFull()){
-            logger.warn("(Plague {}) attempted to infect {}, but all the cities are full", plague.getPlayerId(), country.getCountryName());
-            return false;
-        }
-
-        //If the country has a restriction, make sure the player has it
-        if(country.hasRestriction() && !plague.hasTrait(country.getRestriction().get().getTrait())){
-            logger.warn("(Plague {}) attempted to infect {}, but does not have the necessary climate restriction", plague.getPlayerId(), country.getCountryName());
-            return false;
-        }
-
-        //Get all countries that the player infects
-        List<Country> infectedCountries = gameState.getBoard()
-        .values()
-        .stream()
-        .flatMap(continent -> continent.stream())
-        .filter(thisCountry -> thisCountry.getCities().values().stream().filter(Optional::isPresent).map(Optional::get).anyMatch(thisPlague -> thisPlague.equals(plague)))
-        .toList();
-
-        //Check what continent the player is present in
-        List<Continent> continentPresence = Stream.of(Continent.values())
-        .filter(continent -> infectedCountries.stream()
-        .anyMatch(thisCountry -> thisCountry.getContinent() == continent))
-        .toList();
-
-        //If the player infects a country in the same continent, then they can infect this country
-        if(continentPresence.contains(country.getContinent())){
-            return true;
-        }
-
-        //If the player infects a country with an airport, and this country has an airport
-        boolean airportConnected = infectedCountries.stream().anyMatch(thisCountry -> thisCountry.getTravelTypes().contains(new AirborneTrait()))
-        && country.getTravelTypes().contains(new AirborneTrait());
-
-        //If the player infects a country with a seaport, and this country has a seaport
-        boolean waterportConnected = infectedCountries.stream().anyMatch(thisCountry -> thisCountry.getTravelTypes().contains(new WaterborneTrait())) 
-        && country.getTravelTypes().contains(new WaterborneTrait());
-
-        return airportConnected || waterportConnected;
-    }
 
     public GameState getGameState(){
         return gameState;
