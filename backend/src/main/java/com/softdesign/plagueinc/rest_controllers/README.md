@@ -1,38 +1,38 @@
 # REST Endpoints
 
-## GameStateEndpoints.java
+# GameStateEndpoints.java
 
-### POST /joinGame
+## POST /joinGame
 
 called when a player attempts to join the game
 
-#### Expects
+### Expects
 
 Nothing
 
-#### Responses
+### Responses
 
 **200**: Player ID
 
-#### Body
+### Body
 
 ```
 {}
 ```
 
-### POST /voteToStart
+## POST /voteToStart
 
 Called when a player votes to start the game
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -44,15 +44,15 @@ Called when a player votes to start the game
 
 Called when a player is ready to proceed to the next turn phase
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Returns
+### Returns
 
 **200**: Drawn Country
 
-#### Body
+### Body
 
 ```
 {
@@ -64,15 +64,15 @@ Called when a player is ready to proceed to the next turn phase
 
 Called during the Country phase, when a player chooses to take a card from the deck
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Drawn Country
 
-#### Body
+### Body
 
 ```
 {
@@ -84,16 +84,16 @@ Called during the Country phase, when a player chooses to take a card from the d
 
 Called during the Country phase, when a plyer chooses to take one of the revealed cards
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 **cardIndex**: Integer
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -106,15 +106,15 @@ Called during the Country phase, when a plyer chooses to take one of the reveale
 
 Called during the Country phase, when a player decides to play the revealed country
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -126,15 +126,15 @@ Called during the Country phase, when a player decides to play the revealed coun
 
 Called during the Country phase, when a player decides to discard the revealed country
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -146,17 +146,17 @@ Called during the Country phase, when a player decides to discard the revealed c
 
 Called during the Evolution phase, when a player decides to evolve a trait in their hand
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 **traitIndex**: Integer
 **traitSlot**: Integer
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -170,15 +170,15 @@ Called during the Evolution phase, when a player decides to evolve a trait in th
 
 Called during the evolution phase, when a player decides not to evolve any traits
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -190,16 +190,16 @@ Called during the evolution phase, when a player decides not to evolve any trait
 
 Called during the infection phase, when a player tries to infect a country on the board
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 **CountryName**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
@@ -212,15 +212,15 @@ Called during the infection phase, when a player tries to infect a country on th
 
 Called during the DEATH phase when a player attempts to kill a country
 
-#### Expects
+### Expects
 
 **PlayerID**: String
 
-#### Responses
+### Responses
 
 **200**: Nothing
 
-#### Body
+### Body
 
 ```
 {
