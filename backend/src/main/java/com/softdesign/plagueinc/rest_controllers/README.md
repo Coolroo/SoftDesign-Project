@@ -26,7 +26,7 @@ Called when a player votes to start the game
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
@@ -46,7 +46,7 @@ Called when a player is ready to proceed to the next turn phase
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Returns
 
@@ -66,7 +66,7 @@ Called during the Country phase, when a player chooses to take a card from the d
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
@@ -86,7 +86,7 @@ Called during the Country phase, when a plyer chooses to take one of the reveale
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 **cardIndex**: Integer
 
@@ -109,7 +109,7 @@ Called during the Country phase, when a player decides to play the revealed coun
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
@@ -129,7 +129,7 @@ Called during the Country phase, when a player decides to discard the revealed c
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
@@ -149,7 +149,7 @@ Called during the Evolution phase, when a player decides to evolve a trait in th
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 **traitIndex**: Integer
 **traitSlot**: Integer
 
@@ -173,7 +173,7 @@ Called during the evolution phase, when a player decides not to evolve any trait
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
@@ -193,7 +193,7 @@ Called during the infection phase, when a player tries to infect a country on th
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 **CountryName**: String
 
 ### Responses
@@ -215,7 +215,7 @@ Called during the DEATH phase when a player attempts to kill a country
 
 ### Expects
 
-**PlayerID**: String
+**PlayerID**: UUID
 
 ### Responses
 
