@@ -230,7 +230,7 @@ public void proceedState(){
 
     //COUNTRY PHASE
 
-    public void drawCountry(){
+    public Country drawCountry(){
         if(gameState.getReadyToProceed()){
             logger.warn("Attempted to draw a country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
@@ -244,9 +244,10 @@ public void proceedState(){
         Country drawnCountry = gameState.drawCountry();
         gameState.logAction(new CountryChosenAction(drawnCountry));
         gameState.setReadyToProceed(true);
+        return drawnCountry;
     }
 
-    public void selectCountryFromRevealed(int index){
+    public Country selectCountryFromRevealed(int index){
         if(gameState.getReadyToProceed()){
             logger.warn("Attempted to choose a revealed country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
@@ -261,6 +262,7 @@ public void proceedState(){
         initCountryChoiceFuture(chosenCountry);
         gameState.logAction(new CountryChosenAction(chosenCountry));
         gameState.setReadyToProceed(true);
+        return chosenCountry;
     }
 
     private void initCountryChoiceFuture(Country drawnCountry){
