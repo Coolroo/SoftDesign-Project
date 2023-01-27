@@ -87,11 +87,12 @@ Called during the Country phase, when a plyer chooses to take one of the reveale
 ### Expects
 
 **PlayerID**: String
+
 **cardIndex**: Integer
 
 ### Responses
 
-**200**: Nothing
+**200**: Chosen Country
 
 ### Body
 
