@@ -421,7 +421,31 @@ public void proceedState(){
         });
     }
 
-    public void infectCountry(Country country){
+    public void attemptInfect(String countryName){
+        if(gameState.getPlayState() != PlayState.INFECT){
+            logger.warn("Attempted to infect {}, but the game state is {}", countryName, gameState.getPlayState());
+            throw new IllegalStateException();
+        }
+        if(gameState.getReadyToProceed()){
+            logger.warn("Attempted to infect {}, but the game is ready to proceed", countryName);
+            throw new IllegalStateException();
+        }
+        if(infectChoice.isEmpty()){
+            logger.warn("Attempted to infect {}, but the future is not valid", countryName);
+            throw new IllegalStateException();
+        }
+
+        Country country = gameState.getBoard()
+        .values()
+        .stream()
+        .flatMap(continent -> continent.stream())
+        .filter(thisCountry -> thisCountry.getCountryName().equals(countryName))
+        .findFirst().orElseThrow(IllegalArgumentException::new);
+
+        infectChoice.get().complete(country);
+    }
+
+    private void infectCountry(Country country){
         if(gameState.getReadyToProceed()){
             logger.warn("Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
@@ -586,6 +610,10 @@ public void proceedState(){
 
     public GameState getGameState(){
         return gameState;
+    }
+
+    public boolean verifyTurn(UUID playerId){
+        return gameState.getCurrTurn().getPlayerId().equals(playerId);
     }
     
 }
