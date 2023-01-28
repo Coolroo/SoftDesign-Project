@@ -3,8 +3,6 @@ package com.softdesign.plagueinc.models.countries;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.restriction.RestrictionTrait;
@@ -48,9 +46,5 @@ public class Country {
 
     public boolean isFull(){
         return cities.values().stream().allMatch(optional -> optional.isPresent());
-    }
-
-    public Map<Plague, Long> getInfectionByPlayer(){
-        return getCities().values().stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 }
