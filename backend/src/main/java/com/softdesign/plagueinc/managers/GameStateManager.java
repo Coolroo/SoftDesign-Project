@@ -260,6 +260,7 @@ public class GameStateManager {
 
         //draw country, and log the action
         Country drawnCountry = gameState.drawCountry();
+        logger.info("Drew Country {}", drawnCountry.getCountryName());
         gameState.logAction(new CountryChosenAction(drawnCountry));
         gameState.setReadyToProceed(true);
         return drawnCountry;
@@ -289,7 +290,8 @@ public class GameStateManager {
         }
         
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        CompletableFuture<CountryChoice> choiceFuture = countryChoice.get().whenComplete((result, ex) -> {
+        countryChoice = Optional.of(new CompletableFuture<>());
+        countryChoice.get().whenComplete((result, ex) -> {
             if(ex != null){
                 logger.error("Error with country choice future EX: {}", ex.getMessage());
                 initCountryChoiceFuture(drawnCountry);
@@ -298,6 +300,7 @@ public class GameStateManager {
                 //Act on which response the player wishes to take
                 switch(result){
                     case PLAY:
+                    logger.info("Attempting to place country {}", drawnCountry.getCountryName());
                     //Try to place the country, if there's an issue, we have a problem
                     try{
                         placeCountry(drawnCountry);
@@ -305,6 +308,7 @@ public class GameStateManager {
                         countryChoice = Optional.empty();
                     }
                     catch(ContinentFullException e){
+                        logger.warn("Continent {} is full, cannot place {} there", drawnCountry.getContinent(), drawnCountry.getCountryName());
                         initCountryChoiceFuture(drawnCountry);
                     }
                     break;
@@ -317,7 +321,6 @@ public class GameStateManager {
                 }
             }
         });
-        countryChoice = Optional.of(choiceFuture);
     }
 
     public void makeCountryChoice(CountryChoice choice){
@@ -333,6 +336,7 @@ public class GameStateManager {
             logger.error("Attempting to play a country, but the game state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
+        logger.info("Received country choice of {}", choice.toString());
         countryChoice.get().complete(choice);
     } 
 
