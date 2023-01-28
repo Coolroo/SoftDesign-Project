@@ -34,12 +34,17 @@ import com.softdesign.plagueinc.util.CountryReference;
 import com.softdesign.plagueinc.util.EventReference;
 import com.softdesign.plagueinc.util.TraitReference;
 
+import lombok.Getter;
+import lombok.Setter;
+
 
 @JsonIgnoreProperties(value = {
     "countryDeck",
     "traitDeck",
     "eventDeck"
 })
+@Getter
+@Setter
 public class GameState {
 
     Logger logger = LoggerFactory.getLogger(GameState.class);
@@ -107,86 +112,14 @@ public class GameState {
         initEventDeck();
     }
 
-
-    public List<Plague> getPlagues() {
-        return this.plagues;
-    }
-
-    public Plague getCurrTurn() {
-        return this.currTurn;
-    }
-
-    public void setCurrTurn(Plague currTurn) {
-        this.currTurn = currTurn;
-    }
-
-    public PlayState getPlayState() {
-        return this.playState;
-    }
-
-    public void setPlayState(PlayState playState) {
-        this.playState = playState;
-    }
-
-    public Map<Continent,List<Country>> getBoard() {
-        return this.board;
-    }
-
-    public ArrayDeque<Country> getCountryDeck() {
-        return this.countryDeck;
-    }
-
-    public List<Country> getRevealedCountries() {
-        return this.revealedCountries;
-    }
-
-    public Set<Country> getCountryDiscard() {
-        return this.countryDiscard;
-    }
-
-    public ArrayDeque<TraitCard> getTraitDeck() {
-        return this.traitDeck;
-    }
-
-    public Set<TraitCard> getTraitDiscard() {
-        return this.traitDiscard;
-    }
-
-    public ArrayDeque<Event> getEventDeck() {
-        return this.eventDeck;
-    }
-
-    public Set<Event> getEventDiscard() {
-        return this.eventDiscard;
-    }
-
     public boolean getReadyToProceed(){
         return readyToProceed;
-    }
-
-    public void setReadyToProceed(boolean readyToProceed){
-        this.readyToProceed = readyToProceed;
-    }
-
-    public Map<Plague, Boolean> getVotesToStart(){
-        return votesToStart;
-    }
-
-    public boolean getSuddenDeath(){
-        return suddenDeath;
-    }
-
-    public Stack<ActionLog> getActions(){
-        return actions;
     }
 
     public void logAction(ActionLog actionLog){
         actions.push(actionLog);
     }
 
-    public Queue<Plague> getTurnOrder(){
-        return turnOrder;
-    }
 
     public void setTurnOrder(List<Plague> order){
         turnOrder = new LinkedList<>(order);
