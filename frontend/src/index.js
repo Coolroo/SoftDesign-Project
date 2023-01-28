@@ -7,8 +7,7 @@ import TraitCard from './components/TraitCard';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* Testing one element at a time, change back to <App /> is you need to render App.js */} 
-    <TraitCard />
+    <TraitCard name={"TEST1"} cost={4} description = {"Description."}/>
   </React.StrictMode>
 );
 
@@ -16,3 +15,4 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
