@@ -9,6 +9,5 @@ public enum PlayState {
     EVOLVE,
     INFECT,
     DEATH,
-    END_OF_TURN,
-    END_OF_GAME
+    END_OF_TURN
 }

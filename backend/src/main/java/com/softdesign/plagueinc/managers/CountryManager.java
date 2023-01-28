@@ -3,6 +3,8 @@ package com.softdesign.plagueinc.managers;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.softdesign.plagueinc.exceptions.CityFullException;
 import com.softdesign.plagueinc.exceptions.CountryFullException;
@@ -37,8 +39,12 @@ public class CountryManager {
         plague.placePlagueToken();
     }
 
+    public Map<Plague, Long> getInfectionByPlayer(Country country){
+        return country.getCities().values().stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
     public List<Plague> getControllers(Country country){
-        Map<Plague, Long> infectionCount = country.getInfectionByPlayer();
+        Map<Plague, Long> infectionCount = getInfectionByPlayer(country);
         long max = infectionCount.values().stream().mapToLong(val -> val).max().getAsLong();
         return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague).longValue() == max).toList();
     }
