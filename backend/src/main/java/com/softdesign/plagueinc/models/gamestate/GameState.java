@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.comparator.Comparators;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
@@ -366,6 +367,15 @@ public class GameState {
         .forEach(plague -> plague.addDnaPoints(ULTIMATE_WIPEOUT_POINTS));
 
         playState = PlayState.END_OF_GAME;
+    }
+
+    public List<Plague> getWinners(){
+        if(playState != PlayState.END_OF_GAME){
+            logger.warn("Attempted to get the game winner, but the game is still in progress");
+            throw new IllegalAccessError();
+        }
+        int maxPoints = plagues.stream().mapToInt(plague -> plague.getDnaPoints()).max().getAsInt();
+        return plagues.stream().filter(plague -> plague.getDnaPoints() == maxPoints).toList();
     }
 
     public boolean isPlagueEradicated(Plague plague){
