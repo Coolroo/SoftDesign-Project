@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
 import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
 import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
 import com.softdesign.plagueinc.models.action_log.KillCountryAction;
-import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.GameState;
@@ -30,8 +28,6 @@ import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
-import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
-import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 import com.softdesign.plagueinc.util.CountryReference;
 
 public class GameStateManager {
@@ -56,95 +52,95 @@ public class GameStateManager {
         this.gameState = new GameState();
     }
 
-/**
- * function that allows a player to join the game.
- *
+    /**
+     * function that allows a player to join the game.
+     *
 
- * @docauthor Trelent
- */
-public Plague joinGame(){
-    if(gameState.getPlayState() != PlayState.INITIALIZATION)
-    {
-        logger.warn("Player attempted to join game but game is already started");
-        throw new IllegalStateException();
+    * @docauthor Trelent
+    */
+    public Plague joinGame(){
+        if(gameState.getPlayState() != PlayState.INITIALIZATION)
+        {
+            logger.warn("Player attempted to join game but game is already started");
+            throw new IllegalStateException();
+        }
+
+        if(gameState.getPlagues().size() >= 4){
+            logger.warn("Player attempted to join game but game is already full");
+            throw new IllegalStateException();
+        }
+
+        //Create a new plague, and add it to the gameState
+        Plague plague = new Plague();
+        gameState.getPlagues().add(plague);
+        gameState.getVotesToStart().put(plague, false);
+        return plague;
     }
 
-    if(gameState.getPlagues().size() >= 4){
-        logger.warn("Player attempted to join game but game is already full");
-        throw new IllegalStateException();
-    }
-
-    //Create a new plague, and add it to the gameState
-    Plague plague = new Plague();
-    gameState.getPlagues().add(plague);
-    gameState.getVotesToStart().put(plague, false);
-    return plague;
-}
-
-public void startGame(UUID playerId){
-    if(gameState.getPlayState() != PlayState.INITIALIZATION){
-        logger.warn("(Plague {}) voted to start the game, but the game has already started");
-        throw new IllegalStateException();
-    }
-    
-    //Find the plague with this UUID
-    Plague plague = gameState.getPlagues()
-    .stream()
-    .filter(pla -> pla.getPlayerId() == playerId)
-    .findFirst()
-    .orElseThrow(IllegalArgumentException::new);
-
-    if(gameState.getVotesToStart().get(plague)){
-        logger.warn("(Plague {}) attempted to vote to start the game, but has already voted to start", plague.getPlayerId());
-    }
-
-    //mark this plague as voted to start
-    gameState.getVotesToStart().put(plague, true);
-    
-    logger.info("(Plague {}) has voted to start the game");
-
-    //If all players have voted to start, and there are more than 1 players in the lobby, then start the game
-    if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
-        logger.info("All players have voted to start the game, initializing game");
+    public void startGame(UUID playerId){
+        if(gameState.getPlayState() != PlayState.INITIALIZATION){
+            logger.warn("(Plague {}) voted to start the game, but the game has already started");
+            throw new IllegalStateException();
+        }
         
-        //init starting country deck
-        List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
-        Collections.shuffle(startingCountries);
+        //Find the plague with this UUID
+        Plague plague = gameState.getPlagues()
+        .stream()
+        .filter(pla -> pla.getPlayerId() == playerId)
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
 
-        //Init turn order
-        List<Plague> players = gameState.getPlagues();
-        Collections.shuffle(players);
-        gameState.setTurnOrder(players);
+        if(gameState.getVotesToStart().get(plague)){
+            logger.warn("(Plague {}) attempted to vote to start the game, but has already voted to start", plague.getPlayerId());
+        }
 
-        //Go through all the players, and initialize their play states (Starting country, starting DNA, starting Traits)
-        IntStream.range(0, players.size()).forEach(index -> {
-            Plague thisPlague = players.get(index);
-            //Give player default points
-            thisPlague.addDnaPoints(index);
+        //mark this plague as voted to start
+        gameState.getVotesToStart().put(plague, true);
+        
+        logger.info("(Plague {}) has voted to start the game");
 
-            //Infect initial country
-            Country startingCountry = startingCountries.remove(0);
-            placeCountry(startingCountry);
-            countryManager.infectCountry(startingCountry, thisPlague);
+        //If all players have voted to start, and there are more than 1 players in the lobby, then start the game
+        if(gameState.getVotesToStart().values().stream().allMatch(bool -> bool) && gameState.getPlagues().size() > 1){
+            logger.info("All players have voted to start the game, initializing game");
+            
+            //init starting country deck
+            List<Country> startingCountries = new ArrayList<>(CountryReference.getStartingCountries());
+            Collections.shuffle(startingCountries);
 
-            //draw initial traits
-            gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
-            logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
-        });
+            //Init turn order
+            List<Plague> players = gameState.getPlagues();
+            Collections.shuffle(players);
+            gameState.setTurnOrder(players);
 
-        //Init the country deck in the game state
-        gameState.initCountryDeck(startingCountries);
-    
-        gameState.setCurrTurn(gameState.getTurnOrder().poll());
+            //Go through all the players, and initialize their play states (Starting country, starting DNA, starting Traits)
+            IntStream.range(0, players.size()).forEach(index -> {
+                Plague thisPlague = players.get(index);
+                //Give player default points
+                thisPlague.addDnaPoints(index);
 
-        //Prep the gamestate to proceed
-        gameState.setPlayState(PlayState.START_OF_TURN);
-        gameState.setReadyToProceed(true);
+                //Infect initial country
+                Country startingCountry = startingCountries.remove(0);
+                placeCountry(startingCountry);
+                countryManager.infectCountry(startingCountry, thisPlague);
+
+                //draw initial traits
+                gameState.drawTraitCards(5).forEach(card -> thisPlague.drawTraitCard(card));
+                logger.info("(Plague {}) initialized", thisPlague.getPlayerId());
+            });
+
+            //Init the country deck in the game state
+            gameState.initCountryDeck(startingCountries);
+        
+            gameState.setCurrTurn(gameState.getTurnOrder().poll());
+
+            //Prep the gamestate to proceed
+            gameState.setPlayState(PlayState.START_OF_TURN);
+            gameState.setReadyToProceed(true);
+        }
+
     }
 
-}
-
-public void proceedState(){
+    public void proceedState(){
     if(!gameState.getReadyToProceed()){
         logger.warn("Player attempted to proceed the game state before it was ready to move on (Current state: {})", gameState.getPlayState());
         throw new IllegalStateException();
@@ -196,6 +192,7 @@ public void proceedState(){
         case END_OF_TURN:
 
             if(checkForWin()){
+                gameState.endGame();
                 return;
             }
             //Shift turn to next player in line
@@ -213,11 +210,7 @@ public void proceedState(){
 
     private boolean checkForWin(){
 
-        if(gameState.getPlagues().stream().anyMatch(plague -> gameState.isPlagueEradicated(plague) || gameState.unableToMove(plague))){
-            gameState.endGame();
-            return true;
-        }
-        return false;
+        return gameState.getPlagues().stream().anyMatch(plague -> gameState.isPlagueEradicated(plague) || gameState.unableToMove(plague));
     }
 
     //DNA PHASE
@@ -341,7 +334,7 @@ public void proceedState(){
             throw new IllegalStateException("Country already placed");
         }
 
-        if(gameState.getBoard().get(country.getContinent()).size() == GameState.maxCountries.get(country.getContinent())){
+        if(gameState.getBoard().get(country.getContinent()).size() == GameState.MAX_COUNTRIES.get(country.getContinent())){
             logger.warn("Cannot place country as the continent {} is full", country.getContinent());
             throw new ContinentFullException();
         }
@@ -558,8 +551,11 @@ public void proceedState(){
         }
 
         //Give players points based on how many tokens they have in the country
-        Map<Plague, Long> infectionCount = countryManager.getInfectionByPlayer(country);
+        Map<Plague, Long> infectionCount = country.getInfectionByPlayer();
         infectionCount.keySet().forEach(plague -> plague.addDnaPoints(infectionCount.get(plague).intValue()));
+
+        //Give players back their tokens
+        infectionCount.entrySet().forEach(entry -> entry.getKey().returnPlagueTokens(entry.getValue().intValue()));
 
         //Discard the country that was killed, and mark it as killed by this player
         gameState.discardCountry(country);

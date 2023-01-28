@@ -3,6 +3,7 @@ package com.softdesign.plagueinc.models.gamestate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -12,6 +13,8 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -74,14 +77,19 @@ public class GameState {
 
     public static final int MAX_PLAYERS = 4;
 
-    public static final Map<Integer, Integer> countriesByPlayer = Map.of(2, 24, 3,27, 4, 32);
+    public static final Map<Integer, Integer> COUNTRIES_BY_PLAYER = Map.of(2, 24, 3,27, 4, 32);
 
-    public static final Map<Continent, Integer> maxCountries = Map.of(Continent.NORTH_AMERICA, 3, 
+    public static final Map<Continent, Integer> MAX_COUNTRIES = Map.of(Continent.NORTH_AMERICA, 3, 
                                                                       Continent.SOUTH_AMERICA, 4, 
                                                                       Continent.EUROPE, 5, 
                                                                       Continent.ASIA, 5, 
                                                                       Continent.AFRICA, 5, 
                                                                       Continent.OCEANIA, 3);
+    private static final int LUCKY_ESCAPE_POINTS = 4;
+
+    private static final int CONTINENT_KILLER_POINTS = 6;
+
+    private static final int ULTIMATE_WIPEOUT_POINTS = 7;
 
     public GameState(){
         this.plagues = new ArrayList<>();
@@ -250,7 +258,7 @@ public class GameState {
         List<Country> defaultCountryDeck = new ArrayList<>(CountryReference.getDefaultCountryDeck());
         defaultCountryDeck.addAll(remainingCountries);
         Collections.shuffle(defaultCountryDeck);
-        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.countriesByPlayer.get(plagues.size()));
+        defaultCountryDeck = defaultCountryDeck.subList(0, GameState.COUNTRIES_BY_PLAYER.get(plagues.size()));
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
         revealedCountries = new ArrayList<>();
@@ -313,7 +321,51 @@ public class GameState {
     }
 
     public void endGame(){
-        //TODO: Implement this method
+        //TODO: Add logic for first to do X gets it
+        
+        //Give each plague points from their trait slots
+        plagues.forEach(plague -> plague.getTraitSlots()
+        .stream()
+        .filter(slot -> slot.hasCard()).map(slot -> slot.getCard())
+        .forEach(card -> plague.addDnaPoints(card.cost())));
+
+        //Lucky escape bonus
+        plagues.stream()
+        .collect(Collectors.toMap(Function.identity(), Plague::getPlagueTokens))
+        .entrySet()
+        .stream()
+        .filter(entry -> entry.getValue() == plagues.stream().map(Plague::getPlagueTokens).max(Comparator.comparing(tokens -> tokens)).get())
+        .forEach(entry -> entry.getKey().addDnaPoints(LUCKY_ESCAPE_POINTS));
+
+        //Continent Killer Bonus
+        Map<Continent, Long> maxKillsPerContinent = Stream.of(Continent.values())
+        .collect(Collectors
+        .toMap(Function.identity(), continent -> plagues.stream()
+            .map(Plague::getKilledCountries)
+            .map(set -> set.stream().filter(country -> country.getContinent() == continent)).count())); 
+        
+        Stream.of(Continent.values())
+        .forEach(continent -> plagues.stream()
+            .filter(plague -> plague.getKilledCountries()
+                .stream()
+                .filter(country -> country.getContinent() == continent)
+                .count() == maxKillsPerContinent.get(continent))
+            .forEach(plague -> plague.addDnaPoints(CONTINENT_KILLER_POINTS)));
+
+        //Ultimate Wipeout Bonus
+        final int largestNumCities = plagues.stream()
+        .map(plague -> plague.getKilledCountries())
+        .flatMap(set -> set.stream())
+        .max(Comparator.comparing(country -> country.getCities().size()))
+        .get()
+        .getCities()
+        .size();
+
+        plagues.stream()
+        .filter(plague -> plague.getKilledCountries().stream().anyMatch(country -> country.getCities().size() == largestNumCities))
+        .forEach(plague -> plague.addDnaPoints(ULTIMATE_WIPEOUT_POINTS));
+
+        playState = PlayState.END_OF_GAME;
     }
 
     public boolean isPlagueEradicated(Plague plague){
