@@ -52,7 +52,11 @@ import lombok.Setter;
 @JsonIgnoreProperties(value = {
     "countryDeck",
     "traitDeck",
-    "eventDeck"
+    "eventDeck",
+    "actions",
+    "countryChoice",
+    "infectChoice",
+    "deathFuture"
 })
 @Getter
 @Setter
