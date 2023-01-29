@@ -6,10 +6,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.softdesign.plagueinc.exceptions.CityFullException;
+import com.softdesign.plagueinc.exceptions.CountryFullException;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.restriction.RestrictionTrait;
 import com.softdesign.plagueinc.models.traits.travel.TravelTrait;
 
+import lombok.Getter;
+
+@Getter
 public class Country {
 
     private String countryName;
@@ -30,21 +35,9 @@ public class Country {
         this.cities = cities;
     }
 
-    public String getCountryName(){ return countryName; }
-
-    public Continent getContinent(){ return continent; }
-
-    public List<TravelTrait> getTravelTypes(){
-        return travelTypes;
-    }
-
     public boolean hasRestriction(){
         return this.restriction.isPresent();
     }
-
-    public Optional<RestrictionTrait> getRestriction(){ return restriction; }
-
-    public Map<String, Optional<Plague>> getCities(){ return cities; }
 
     public boolean isFull(){
         return cities.values().stream().allMatch(optional -> optional.isPresent());
@@ -52,5 +45,37 @@ public class Country {
 
     public Map<Plague, Long> getInfectionByPlayer(){
         return getCities().values().stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    public void infectCountry(Plague plague){
+        Optional<String> city = getCities().keySet().stream().filter(cityName -> getCities().get(cityName).isEmpty()).findFirst();
+
+        if(city.isEmpty()){
+            throw new CountryFullException();
+        }
+        infectCity(plague, city.get());
+    }
+
+    public void infectCity(Plague plague, String city){
+        if(!getCities().containsKey(city)){
+            throw new IllegalArgumentException("Input was an invalid city");
+        }
+
+        if(getCities().get(city).isPresent()){
+            throw new CityFullException();
+        }
+
+        if(plague.getPlagueTokens() == 0){
+            throw new IllegalStateException("Plague " + plague.getPlayerId() + " cannot infect this city as they don't have any plague tokens left!");
+        }
+
+        getCities().put(city, Optional.of(plague));
+        plague.placePlagueToken();
+    }
+
+    public List<Plague> getControllers(){
+        Map<Plague, Long> infectionCount = getInfectionByPlayer();
+        long max = infectionCount.values().stream().mapToLong(val -> val).max().getAsLong();
+        return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague).longValue() == max).toList();
     }
 }

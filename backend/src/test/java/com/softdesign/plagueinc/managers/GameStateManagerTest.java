@@ -27,17 +27,15 @@ import com.softdesign.plagueinc.models.plague.Plague;
 
 @SpringBootTest
 public class GameStateManagerTest {
-    
+
     @Autowired
     GameStateManager gameStateManager;
-
 
     @Test
     void testInfectFuture(){
 
         //init
         GameState gameState = new GameState();
-        gameStateManager.setGameState(gameState);
         Plague plague = new Plague();
         gameState.setCurrTurn(plague);
 
@@ -55,33 +53,36 @@ public class GameStateManagerTest {
         
         //Testing
 
-        gameStateManager.proceedState();
+        gameState.proceedState();
 
         Assertions.assertThat(gameState.getPlayState()).isEqualTo(PlayState.INFECT);
 
-        gameStateManager.attemptInfect("null");
+        gameState.attemptInfect("null");
 
         //Make sure that country was infected, and that the game is not ready to proceed
 
         Assertions.assertThat(country.getInfectionByPlayer().get(plague)).isEqualTo(2);
 
-        Assertions.assertThat(gameState.getReadyToProceed()).isFalse();
+        Assertions.assertThat(gameState.isReadyToProceed()).isFalse();
 
-        gameStateManager.attemptInfect("null");
+        gameState.attemptInfect("null");
 
         //After 2 infections, the player cannot place any more, and the game should be marked as ready to proceed
 
         Assertions.assertThat(country.getInfectionByPlayer().get(plague)).isEqualTo(3);
 
-        Assertions.assertThat(gameState.getReadyToProceed()).isTrue();
+        Assertions.assertThat(gameState.isReadyToProceed()).isTrue();
 
-        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> gameStateManager.attemptInfect("null"));
+        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> gameState.attemptInfect("null"));
 
     }
 
     @Test
     void testPlaceCountry(){
         GameState gameState = new GameState();
+        gameStateManager.setGameState(gameState);
+        Plague plague = new Plague();
+        gameState.setCurrTurn(plague);
         Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), Map.of());
         gameState.setCountryDeck(new ArrayDeque<>(List.of(country)));
 
@@ -90,13 +91,11 @@ public class GameStateManagerTest {
 
         gameState.setPlayState(PlayState.CHOOSECOUNTRY);
 
-        gameStateManager.setGameState(gameState);
-
-        gameStateManager.drawCountry();
-        gameStateManager.proceedState();
+        gameStateManager.drawCountryAction(plague.getPlayerId());
+        gameState.proceedState();
 
         //Now play the country
-        gameStateManager.makeCountryChoice(CountryChoice.PLAY);
+        gameState.makeCountryChoice(CountryChoice.PLAY);
 
         Assertions.assertThat(gameState.getBoard().get(Continent.AFRICA).size()).isGreaterThan(0);
     }
