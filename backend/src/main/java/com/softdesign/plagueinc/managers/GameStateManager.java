@@ -30,6 +30,11 @@ import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.util.CountryReference;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class GameStateManager {
 
     Logger logger = LoggerFactory.getLogger(GameStateManager.class);
@@ -50,6 +55,9 @@ public class GameStateManager {
 
     public GameStateManager(){
         this.gameState = new GameState();
+        this.countryChoice = Optional.empty();
+        this.infectChoice = Optional.empty();
+        this.deathFuture = Optional.empty();
     }
 
     /**
@@ -195,9 +203,13 @@ public class GameStateManager {
                 gameState.endGame();
                 return;
             }
+            //Reset player's abilities
+            //gameState.getCurrTurn().refreshAbilities();
+
             //Shift turn to next player in line
             gameState.clearActionLog();
             gameState.shiftTurnOrder();
+
 
             gameState.setPlayState(PlayState.START_OF_TURN);
             gameState.setReadyToProceed(true);
@@ -248,6 +260,7 @@ public class GameStateManager {
 
         //draw country, and log the action
         Country drawnCountry = gameState.drawCountry();
+        logger.info("Drew Country {}", drawnCountry.getCountryName());
         gameState.logAction(new CountryChosenAction(drawnCountry));
         gameState.setReadyToProceed(true);
         return drawnCountry;
@@ -287,6 +300,7 @@ public class GameStateManager {
                 //Act on which response the player wishes to take
                 switch(result){
                     case PLAY:
+                    logger.info("Attempting to place country {}", drawnCountry.getCountryName());
                     //Try to place the country, if there's an issue, we have a problem
                     try{
                         placeCountry(drawnCountry);
@@ -294,6 +308,7 @@ public class GameStateManager {
                         countryChoice = Optional.empty();
                     }
                     catch(ContinentFullException e){
+                        logger.warn("Continent {} is full, cannot place {} there", drawnCountry.getContinent(), drawnCountry.getCountryName());
                         initCountryChoiceFuture(drawnCountry);
                     }
                     break;
@@ -321,6 +336,7 @@ public class GameStateManager {
             logger.error("Attempting to play a country, but the game state is {}", gameState.getPlayState());
             throw new IllegalStateException();
         }
+        logger.info("Received country choice of {}", choice.toString());
         countryChoice.get().complete(choice);
     } 
 
@@ -413,6 +429,7 @@ public class GameStateManager {
         infectChoice.get().whenComplete((country, ex) -> {
             if(ex != null){
                 logger.warn("Error with infection choice future EX: {}", ex.getMessage());
+                initInfectFuture(citiesToInfect);
             }
             else{
                 //Try and infect the chosen country, then if there are any more countries that the player can infect, create another future
@@ -455,6 +472,7 @@ public class GameStateManager {
         .filter(thisCountry -> thisCountry.getCountryName().equals(countryName))
         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        logger.info("Received request to infect country {}", country.getCountryName());
         infectChoice.get().complete(country);
     }
 
@@ -583,6 +601,10 @@ public class GameStateManager {
 
     public boolean verifyTurn(UUID playerId){
         return gameState.getCurrTurn().getPlayerId().equals(playerId);
+    }
+
+    public void setGameState(GameState gameState){
+        this.gameState = gameState;
     }
     
 }
