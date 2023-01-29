@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -21,6 +20,7 @@ import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
+import com.softdesign.plagueinc.util.PlagueReference;
 
 import lombok.Getter;
 
@@ -49,7 +49,7 @@ public class Plague {
 
     private static final List<TraitType> DEFAULT_TRAITS = List.of(TraitType.INFECTIVITY, TraitType.INFECTIVITY, TraitType.LETHALITY);
 
-    public Plague(){
+    public Plague(DiseaseType diseaseType){
         this.playerId = UUID.randomUUID();
         this.dnaPoints = 0;
         this.plagueTokens = INITIAL_PLAGUE_TOKENS;
@@ -59,10 +59,7 @@ public class Plague {
         this.eventCards = new ArrayList<>();
         this.traitSlots = new ArrayList<>();
         this.killedCountries = new HashSet<>();
-        //TODO: Implement disease abilities
-        for(int i = 0; i<5; i++){
-            this.traitSlots.add(new TraitSlot(Optional.empty()));
-        }
+        this.traitSlots = Map.of(DiseaseType.BACTERIA, PlagueReference.bacteriaSlots(), DiseaseType.VIRUS, PlagueReference.virusSlots()).get(diseaseType);
     }
 
     public int getTraitCount(TraitType trait){

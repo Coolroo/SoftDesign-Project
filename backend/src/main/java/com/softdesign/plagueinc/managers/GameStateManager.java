@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 
 import lombok.Getter;
@@ -25,8 +26,8 @@ public class GameStateManager {
 
     private GameState gameState;
 
-    public Plague joinGame(){
-        return gameState.joinGame();
+    public Plague joinGame(DiseaseType diseaseType){
+        return gameState.joinGame(diseaseType);
     }
 
     public void voteToStart(UUID plagueId){

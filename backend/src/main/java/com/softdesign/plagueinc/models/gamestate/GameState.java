@@ -36,6 +36,7 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
@@ -237,7 +238,7 @@ public class GameState {
      */
 
     //Join Game
-    public Plague joinGame(){
+    public Plague joinGame(DiseaseType diseaseType){
         if(getPlayState() != PlayState.INITIALIZATION)
         {
             logger.warn("Player attempted to join game but game is already started");
@@ -250,7 +251,7 @@ public class GameState {
         }
 
         //Create a new plague, and add it to the gameState
-        Plague plague = new Plague();
+        Plague plague = new Plague(diseaseType);
         getPlagues().add(plague);
         getVotesToStart().put(plague, false);
         return plague;
