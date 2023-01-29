@@ -27,7 +27,7 @@ public class GameStateEndpoints {
     @PostMapping("/voteToStart")
     public ResponseEntity<Void> voteToStart(@RequestBody PlayerId playerId){
         try{
-            gameStateManager.startGame(playerId.playerId());
+            gameStateManager.voteToStart(playerId.playerId());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -39,13 +39,8 @@ public class GameStateEndpoints {
     @PostMapping("/takeCountry")
     public ResponseEntity<Country> takeCountry(@RequestBody TakeCountryDTO takeCountryDTO){
         //First ensure that the player calling is the right one
-        if(!gameStateManager.verifyTurn(takeCountryDTO.playerId())){
-            logger.warn("Player with ID: {}, attempted to take a country, but it is not their turn", takeCountryDTO.playerId());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         try{
-            Country country = gameStateManager.selectCountryFromRevealed(takeCountryDTO.cardIndex());
+            Country country = gameStateManager.selectCountryFromRevealed(takeCountryDTO.playerId(), takeCountryDTO.cardIndex());
             return ResponseEntity.ok().body(country);
         }
         catch(Exception e){
