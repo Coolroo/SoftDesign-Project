@@ -7,7 +7,7 @@ import TraitCard from './components/TraitCard';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <TraitCard cardName={'lethality'}/>
+    <TraitCard cardName={'coma'}/>
   </React.StrictMode>
 );
 
