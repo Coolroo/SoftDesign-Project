@@ -3,7 +3,7 @@ import TraitCard from "./TraitCard";
 
 const hand = [];
 for(let i = 0; i < 5; i++){
-    hand.push(<span><TraitCard cardName={'coma'}/></span>)
+    hand.push(<span className="cardInHand"><TraitCard cardName={'coma'}/></span>)
 } 
 
 class TraitHand extends Component{
@@ -11,7 +11,7 @@ class TraitHand extends Component{
     render() {
         return(
             <React.Fragment>{
-                <div>
+                <div className="hand">
                     {hand}
                 </div>
             }

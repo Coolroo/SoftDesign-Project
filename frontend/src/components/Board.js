@@ -5,9 +5,9 @@ class Board extends Component{
     render() {
         return(
             <React.Fragment>{
-                    <div className="card">
-                        <img src={`/Board.jpg`}  alt="img" height="603" width="825"/>
-                    </div>   
+                    <div>
+                        <img src={`/Board.jpg`}  className="board" alt="img"/>
+                    </div>
                 }
             </React.Fragment>
         )
