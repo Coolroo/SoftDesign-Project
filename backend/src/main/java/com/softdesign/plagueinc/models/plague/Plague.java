@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
@@ -131,7 +132,7 @@ public class Plague {
         hand.forEach(card -> drawTraitCard(card));
     }
 
-    public void activateTraitSlot(int slot){
+    public void activateTraitSlot(int slot, GameState gameState){
         if(slot >= getTraitSlots().size()){
             throw new IndexOutOfBoundsException("Index is greater than the number of slots that exist");
         }
@@ -153,7 +154,7 @@ public class Plague {
             }
         }
         finally{
-            traitSlot.activate();
+            traitSlot.activate(gameState);
         }
         
     }
@@ -206,8 +207,6 @@ public class Plague {
 
         }
         
-
     }
-
 
 }

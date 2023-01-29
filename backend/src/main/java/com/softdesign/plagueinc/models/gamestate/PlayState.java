@@ -2,6 +2,7 @@ package com.softdesign.plagueinc.models.gamestate;
 
 public enum PlayState {
     INITIALIZATION,
+    EVENT_CHOICE,
     START_OF_TURN,
     DNA,
     CHOOSECOUNTRY,

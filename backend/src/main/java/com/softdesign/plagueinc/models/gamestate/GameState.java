@@ -36,6 +36,7 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.TraitCard;
@@ -102,6 +103,18 @@ public class GameState {
     private Optional<CompletableFuture<Country>> infectChoice;
 
     private Optional<CompletableFuture<Integer>> deathFuture;
+
+    //Event Futures
+
+    private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
+
+    private Optional<CompletableFuture<Country>> countrySelectionFuture;
+
+    private Optional<CompletableFuture<TraitCard>> selectTraitCard;
+
+    private Optional<CompletableFuture<Continent>> selectContinent;
+
+    private Optional<Plague> eventPlayer;
 
     private static final int MAX_PLAYERS = 4;
 

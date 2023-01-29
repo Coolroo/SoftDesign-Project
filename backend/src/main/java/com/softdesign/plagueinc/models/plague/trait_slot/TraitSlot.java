@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.softdesign.plagueinc.exceptions.TraitSlotFullException;
+import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.abilities.Ability;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 
@@ -60,12 +61,12 @@ public class TraitSlot {
         return this.ability.get();
     }
 
-    public void activate(){
+    public void activate(GameState gameState){
         if(this.card.isEmpty()){
             if(this.ability.isEmpty()){
                 throw new IllegalStateException("Cannot activate a slot that has nothing in it");
             }
-            this.ability.get().resolveAbility();
+            this.ability.get().resolveAbility(gameState);
         }
         else{
             this.card = Optional.empty();

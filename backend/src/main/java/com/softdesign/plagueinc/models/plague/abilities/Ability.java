@@ -1,10 +1,17 @@
 package com.softdesign.plagueinc.models.plague.abilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.softdesign.plagueinc.models.gamestate.GameState;
+
 public abstract class Ability {
 
-    private boolean activated;
+    protected Logger logger = LoggerFactory.getLogger(Ability.class);
 
-    private String name;
+    protected boolean activated;
+
+    protected String name;
 
     protected Ability(String name){
         this.activated = false;
@@ -15,7 +22,7 @@ public abstract class Ability {
         return name;
     }
 
-    public void resolveAbility(){}
+    public void resolveAbility(GameState gameState){}
 
     public void resetAbility(){
         this.activated = false;
