@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 
-class TraitCard extends Component{
+class Board extends Component{
 
     render() {
         return(
             <React.Fragment>{
                     <div className="card">
-                        <img src={`/traitcards/${this.props.cardName}.png`}  alt="img" height="200" width="144"/>
+                        <img src={`/Board.jpg`}  alt="img" height="603" width="825"/>
                     </div>   
                 }
             </React.Fragment>
@@ -14,4 +14,4 @@ class TraitCard extends Component{
     }
 }
 
-export default TraitCard;
+export default Board;
