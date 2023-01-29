@@ -3,14 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-import Board from './components/Board';
-import TraitHand from './components/TraitHand';
+import GameView from './components/GameView';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Board/>
-    <TraitHand />
+    <GameView/>
   </React.StrictMode>
 );
 
