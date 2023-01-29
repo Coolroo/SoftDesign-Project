@@ -6,8 +6,8 @@ class Board extends Component{
         return(
             <React.Fragment>{
                     <div>
-                        <img src={`/Board.jpg`}  alt="img" height="603" width="825"/>
-                    </div>   
+                        <img src={`/Board.jpg`}  className="board" alt="img"/>
+                    </div>
                 }
             </React.Fragment>
         )
