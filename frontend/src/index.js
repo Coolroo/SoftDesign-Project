@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import TraitCard from './components/TraitCard';
+
+import Board from './components/Board';
+import TraitHand from './components/TraitHand';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <TraitCard cardName={'coma'}/>
+    <Board/>
+    <TraitHand />
   </React.StrictMode>
 );
 
