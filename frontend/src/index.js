@@ -7,7 +7,7 @@ import TraitCard from './components/TraitCard';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <TraitCard name={"TEST1"} cost={4} description = {"Description."}/>
+    <TraitCard cardName={'lethality'}/>
   </React.StrictMode>
 );
 
