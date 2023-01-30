@@ -18,13 +18,36 @@ code {
 
 .board{
   max-width: 50%;
+
 }
 
 .card{
-  height: 205px;
+  max-width: 100%;
+}
+
+.plagueCard{
+  max-width: 50%
 }
 
 .cardInHand{
-  height: 50px;
+  max-width: 20%;
+  display: inline-block;
+}
+
+.boardCountrySlot{
+  background-color: green;
+  position:absolute;
+  width: 4.5%;
+  height: 11%;
+  z-index: 9;
+}
+
+.hand{
+  white-space: nowrap;
+  max-width:50%
+}
+
+.bottomBar{
+  max-width: 100%;
   display: inline-block;
 }
