@@ -51,6 +51,10 @@ code {
   z-index: 9;
 }
 
+.boardCountrySlot:hover {
+  background-color: yellow;
+}
+
 .hand{
   white-space: nowrap;
   max-width:50%;
