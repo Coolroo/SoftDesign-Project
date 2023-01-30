@@ -11,7 +11,7 @@ class TraitHand extends Component{
     render() {
         return(
             <React.Fragment>{
-                <div className="hand">
+                <div>
                     {hand}
                 </div>
             }

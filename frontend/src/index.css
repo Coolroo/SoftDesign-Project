@@ -7,6 +7,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+img{
+  width: 100%;
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -17,7 +22,9 @@ code {
 }
 
 .board{
-  max-width: 50%;
+  max-width: 40%;
+  margin: auto;
+  position: relative;
 
 }
 
@@ -26,7 +33,9 @@ code {
 }
 
 .plagueCard{
-  max-width: 50%
+  width: 30%;
+  height: auto;
+  float: left;
 }
 
 .cardInHand{
@@ -36,18 +45,19 @@ code {
 
 .boardCountrySlot{
   background-color: green;
-  position:absolute;
-  width: 4.5%;
-  height: 11%;
+  position: absolute;
+  width: 9.2%;
+  height: 17.5%;
   z-index: 9;
 }
 
 .hand{
   white-space: nowrap;
-  max-width:50%
+  max-width:50%;
+  float: left;
 }
 
 .bottomBar{
-  max-width: 100%;
-  display: inline-block;
+    max-width: 100%;
+    display: inline-block;
 }

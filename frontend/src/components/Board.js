@@ -6,9 +6,9 @@ class Board extends Component{
     render() {
         return(
             <React.Fragment>{
-                    <div>
-                        <img src={`/Board.jpg`} className="board" alt="img"/>
-                        <div style={{top:'60px', left:'131px'}} className="boardCountrySlot"><BoardCountrySlot/></div>
+                    <div className="board">
+                        <img src={`/Board.jpg`} alt="img"/>
+                        <div style={{top:'11.3%', left:'18.2%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
                     </div>
                 }
             </React.Fragment>
