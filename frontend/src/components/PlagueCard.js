@@ -6,7 +6,7 @@ class PlagueCard extends Component{
         return(
             <React.Fragment>{
                     <div>
-                        <img src={`/plaguecards/${this.props.cardName}.png`} className="plagueCard" alt="img"/>
+                        <img src={`/plaguecards/${this.props.cardName}.png`} alt="img"/>
                     </div>   
                 }
             </React.Fragment>
