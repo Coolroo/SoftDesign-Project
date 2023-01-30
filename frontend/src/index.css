@@ -18,6 +18,7 @@ code {
 
 .board{
   max-width: 50%;
+
 }
 
 .card{
@@ -27,4 +28,12 @@ code {
 .cardInHand{
   height: 50px;
   display: inline-block;
+}
+
+.boardCountrySlot{
+  background-color: green;
+  position:absolute;
+  width: 4.5%;
+  height: 11%;
+  z-index: 9;
 }
