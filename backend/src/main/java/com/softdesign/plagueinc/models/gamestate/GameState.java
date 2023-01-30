@@ -801,7 +801,7 @@ public class GameState {
 
     //Action Logging
 
-    private void logAction(ActionLog actionLog){
+    public void logAction(ActionLog actionLog){
         actions.push(actionLog);
     }
 
