@@ -6,7 +6,6 @@ public class WaterborneTrait extends TravelTrait {
 
     public WaterborneTrait() {
         super(TraitType.WATERBORNE);
-        //TODO Auto-generated constructor stub
     }
     
 }

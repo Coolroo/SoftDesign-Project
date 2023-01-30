@@ -7,7 +7,6 @@ public class RestrictionTrait extends Trait {
 
     protected RestrictionTrait(TraitType traitType) {
         super(traitType);
-        //TODO Auto-generated constructor stub
     }
     
 }

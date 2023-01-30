@@ -14,8 +14,9 @@ public class Outbreak extends Ability {
 
     public Outbreak() {
         super("outbreak");
-        //TODO Auto-generated constructor stub
     }
+
+    //TODO: Implement checks to ensure player does not become soft-locked
 
     @Override
     public void resolveAbility(GameState gameState){

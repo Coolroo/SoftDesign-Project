@@ -39,6 +39,7 @@ import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
@@ -113,6 +114,8 @@ public class GameState {
     private Optional<CompletableFuture<TraitCard>> selectTraitCard;
 
     private Optional<CompletableFuture<Continent>> selectContinent;
+
+    private Optional<CompletableFuture<Integer>> selectTraitSlot;
 
     private Optional<Plague> eventPlayer;
 
@@ -706,7 +709,7 @@ public class GameState {
 
     //Trait Deck
 
-    private List<TraitCard> drawTraitCards(int numCards){
+    public List<TraitCard> drawTraitCards(int numCards){
         List<TraitCard> drawnCards = new ArrayList<>();
         for(int i = 0; i<numCards; i++){
             drawnCards.add(drawTraitCard());
@@ -714,7 +717,7 @@ public class GameState {
         return drawnCards;
     }
 
-    private TraitCard drawTraitCard(){
+    public TraitCard drawTraitCard(){
         if(getTraitDeck().size() == 0){
             refillTraitDeck();
         }
