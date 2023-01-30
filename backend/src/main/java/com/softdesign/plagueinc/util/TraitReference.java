@@ -27,6 +27,10 @@ public class TraitReference {
         return new TraitCard("cold_resistance", 4, List.of(new ColdTrait()));
     }
 
+    public static TraitCard diarrhoea(){
+        return new TraitCard("diarrhoea", 13, List.of(new HeatTrait(), new InfectivityTrait()));
+    }
+
 
 
 }

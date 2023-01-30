@@ -9,6 +9,7 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.restriction.ColdTrait;
+import com.softdesign.plagueinc.models.traits.restriction.HeatTrait;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 
@@ -42,6 +43,14 @@ public class CountryReference {
         Optional.empty(),
         List.of(),
         citiesToMap(List.of("warsaw", "krakow", "lodz", "wroclaw")));
+    }
+
+    public static Country turkey(){
+        return new Country("turkey",
+        Continent.EUROPE,
+        Optional.of(new HeatTrait()),
+        List.of(),
+        citiesToMap(List.of("istanbul", "ankara", "izmir", "bursa", "adana")));
     }
 
     private static Map<String, Optional<Plague>> citiesToMap(List<String> cities){
