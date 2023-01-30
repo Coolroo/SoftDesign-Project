@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
@@ -90,7 +92,10 @@ public class GameStateEndpoints {
     /***@PostMapping("/playCountry")
     public ResponseEntity<Void> playCountry(@RequestBody PlayerId playerId){
         try{
-            gameStateManager.
+            //uh
+        }
+        catch(Exception e){
+
         }
     }
 
@@ -103,4 +108,26 @@ public class GameStateEndpoints {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }***/
+
+    @PostMapping("/evolve")
+    public ResponseEntity<Void> evolve(@RequestBody EvolveDTO evolveDTO){
+        try{
+            gameStateManager.evolveTrait(evolveDTO.traitSlot(), evolveDTO.traitIndex());
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/infect")
+    public ResponseEntity<Void> infect(@RequestBody InfectDTO infectDTO){
+        try{
+            gameStateManager.attemptInfect(infectDTO.countryName());
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
