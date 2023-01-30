@@ -39,7 +39,6 @@ import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
-import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
