@@ -22,7 +22,7 @@ code {
 }
 
 .board{
-  max-width: 40%;
+  max-width: 50%;
   margin: auto;
   position: relative;
 
@@ -36,6 +36,7 @@ code {
   width: 30%;
   height: auto;
   float: left;
+  position:relative;
 }
 
 .cardInHand{
@@ -52,6 +53,18 @@ code {
 }
 
 .boardCountrySlot:hover {
+  background-color: yellow;
+}
+
+.plagueCardTraitSlot{
+  background-color: hotpink;
+  position: absolute;
+  width: 16.0%;
+  height: 37%;
+  z-index: 9;
+}
+
+.plagueCardTraitSlot:hover {
   background-color: yellow;
 }
 

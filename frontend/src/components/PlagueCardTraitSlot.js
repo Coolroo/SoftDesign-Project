@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 
-class BoardCountrySlot extends Component{
+class PlagueCardTraitSlot extends Component{
 
     render() {
         return(
             <React.Fragment>{
                 <div>
-                    
+               
                 </div>   
     }       </React.Fragment>
         )
     }
 }
 
-export default BoardCountrySlot;
+export default PlagueCardTraitSlot;
