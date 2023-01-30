@@ -1,8 +1,5 @@
 package com.softdesign.plagueinc.managers;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +20,7 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 
 @SpringBootTest
@@ -36,7 +34,7 @@ public class GameStateManagerTest {
 
         //init
         GameState gameState = new GameState();
-        Plague plague = new Plague();
+        Plague plague = new Plague(DiseaseType.BACTERIA);
         gameState.setCurrTurn(plague);
 
         Map<String, Optional<Plague>> cities =  new HashMap<>(Map.of("jeffistan", Optional.of(plague), 
@@ -81,7 +79,7 @@ public class GameStateManagerTest {
     void testPlaceCountry(){
         GameState gameState = new GameState();
         gameStateManager.setGameState(gameState);
-        Plague plague = new Plague();
+        Plague plague = new Plague(DiseaseType.BACTERIA);
         gameState.setCurrTurn(plague);
         Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), Map.of());
         gameState.setCountryDeck(new ArrayDeque<>(List.of(country)));

@@ -6,7 +6,6 @@ public class HeatTrait extends RestrictionTrait {
 
     public HeatTrait() {
         super(TraitType.HEAT_RESISTANCE);
-        //TODO Auto-generated constructor stub
     }
     
 }

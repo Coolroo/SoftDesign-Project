@@ -6,7 +6,6 @@ public class ColdTrait extends RestrictionTrait {
 
     public ColdTrait() {
         super(TraitType.COLD_RESISTANCE);
-        //TODO Auto-generated constructor stub
     }
     
 }

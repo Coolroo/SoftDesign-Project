@@ -7,7 +7,6 @@ public class TravelTrait extends Trait {
 
     protected TravelTrait(TraitType traitType) {
         super(traitType);
-        //TODO Auto-generated constructor stub
     }
     
 }

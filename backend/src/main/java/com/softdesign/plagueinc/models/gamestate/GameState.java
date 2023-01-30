@@ -36,6 +36,8 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
@@ -52,7 +54,11 @@ import lombok.Setter;
 @JsonIgnoreProperties(value = {
     "countryDeck",
     "traitDeck",
-    "eventDeck"
+    "eventDeck",
+    "actions",
+    "countryChoice",
+    "infectChoice",
+    "deathFuture"
 })
 @Getter
 @Setter
@@ -97,6 +103,20 @@ public class GameState {
     private Optional<CompletableFuture<Country>> infectChoice;
 
     private Optional<CompletableFuture<Integer>> deathFuture;
+
+    //Event Futures
+
+    private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
+
+    private Optional<CompletableFuture<Country>> countrySelectionFuture;
+
+    private Optional<CompletableFuture<TraitCard>> selectTraitCard;
+
+    private Optional<CompletableFuture<Continent>> selectContinent;
+
+    private Optional<CompletableFuture<Integer>> selectTraitSlot;
+
+    private Optional<Plague> eventPlayer;
 
     private static final int MAX_PLAYERS = 4;
 
@@ -233,7 +253,7 @@ public class GameState {
      */
 
     //Join Game
-    public Plague joinGame(){
+    public Plague joinGame(DiseaseType diseaseType){
         if(getPlayState() != PlayState.INITIALIZATION)
         {
             logger.warn("Player attempted to join game but game is already started");
@@ -246,7 +266,7 @@ public class GameState {
         }
 
         //Create a new plague, and add it to the gameState
-        Plague plague = new Plague();
+        Plague plague = new Plague(diseaseType);
         getPlagues().add(plague);
         getVotesToStart().put(plague, false);
         return plague;
@@ -688,7 +708,7 @@ public class GameState {
 
     //Trait Deck
 
-    private List<TraitCard> drawTraitCards(int numCards){
+    public List<TraitCard> drawTraitCards(int numCards){
         List<TraitCard> drawnCards = new ArrayList<>();
         for(int i = 0; i<numCards; i++){
             drawnCards.add(drawTraitCard());
@@ -696,7 +716,7 @@ public class GameState {
         return drawnCards;
     }
 
-    private TraitCard drawTraitCard(){
+    public TraitCard drawTraitCard(){
         if(getTraitDeck().size() == 0){
             refillTraitDeck();
         }
@@ -783,7 +803,7 @@ public class GameState {
 
     //Action Logging
 
-    private void logAction(ActionLog actionLog){
+    public void logAction(ActionLog actionLog){
         actions.push(actionLog);
     }
 
