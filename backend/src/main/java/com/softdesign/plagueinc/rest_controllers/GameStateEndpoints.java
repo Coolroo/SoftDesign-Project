@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
+import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
@@ -23,6 +24,17 @@ public class GameStateEndpoints {
 
     @Autowired
     private GameStateManager gameStateManager;
+
+    @PostMapping("/joinGame")
+    public ResponseEntity<Plague> joinGame(@RequestBody PlayerId playerId){
+        try{
+            Plague plague = gameStateManager.joinGame();
+            return ResponseEntity.ok().body(plague);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+        }
+    }
     
     @PostMapping("/voteToStart")
     public ResponseEntity<Void> voteToStart(@RequestBody PlayerId playerId){
@@ -34,6 +46,28 @@ public class GameStateEndpoints {
         }
         return new ResponseEntity<>(HttpStatus.OK);
         
+    }
+
+    @PostMapping("/proceedState")
+    public ResponseEntity<Void> proceedState(@RequestBody PlayerId playerId){
+        try{
+            gameStateManager.proceedState();
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/drawCountry")
+    public ResponseEntity<Country> drawCountry(@RequestBody PlayerId playerId){
+        try{
+            Country country = gameStateManager.drawCountry();
+            return ResponseEntity.ok().body(country);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/takeCountry")
@@ -52,4 +86,21 @@ public class GameStateEndpoints {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /***@PostMapping("/playCountry")
+    public ResponseEntity<Void> playCountry(@RequestBody PlayerId playerId){
+        try{
+            gameStateManager.
+        }
+    }
+
+    @PostMapping("/discardCountry")
+    public ResponseEntity<Void> discardCountry(@RequestBody PlayerId playerId){
+        try{
+            gameStateManager.discardCountry();
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }***/
 }
