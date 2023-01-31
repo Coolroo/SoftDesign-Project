@@ -107,8 +107,8 @@ public class Outbreak extends Ability {
                     .orElseThrow(IllegalArgumentException::new);
 
                     //Remove token from old city, and place one in new city
-                    takingCountry.getCities().put(citySelection.city(), Optional.empty());
-                    country.getCities().put(result.city(), Optional.of(gameState.getCurrTurn()));
+                    takingCountry.getCities().set(citySelection.city(), Optional.empty());
+                    country.getCities().set(result.city(), Optional.of(gameState.getCurrTurn()));
 
                     //Clear future, and update game state
                     gameState.setCitySelectionFuture(Optional.empty());
