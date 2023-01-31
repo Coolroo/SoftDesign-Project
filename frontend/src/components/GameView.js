@@ -17,7 +17,7 @@ class GameView extends Component{
                         <Board/>
                     </div>
                     <div className="bottomBar">
-                        <span className="plagueCard"><PlagueCard cardName="bluevirus"/></span><span className="hand"><TraitHand/></span>    
+                        <span className="plagueCard"><PlagueCard cardName="orangebacteria"/></span><span className="hand"><TraitHand/></span>    
                     </div>
                 </div> 
                 }
