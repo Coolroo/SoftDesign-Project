@@ -888,7 +888,7 @@ public class GameState {
         return board.values()
         .stream()
         .flatMap(continent -> continent.stream())
-        .flatMap(country -> country.getCities().values().stream())
+        .flatMap(country -> country.getCities().stream())
         .filter(Optional::isPresent)
         .map(Optional::get)
         .anyMatch(thisPlague -> thisPlague.equals(plague));
@@ -928,7 +928,7 @@ public class GameState {
         List<Country> infectedCountries = board.values()
         .stream()
         .flatMap(continent -> continent.stream())
-        .filter(thisCountry -> thisCountry.getCities().values().stream().filter(Optional::isPresent).map(Optional::get).anyMatch(thisPlague -> thisPlague.equals(plague)))
+        .filter(thisCountry -> thisCountry.getCities().stream().filter(Optional::isPresent).map(Optional::get).anyMatch(thisPlague -> thisPlague.equals(plague)))
         .toList();
 
         //Check what continent the player is present in
