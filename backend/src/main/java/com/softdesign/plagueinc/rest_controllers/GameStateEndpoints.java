@@ -15,6 +15,7 @@ import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
@@ -28,9 +29,9 @@ public class GameStateEndpoints {
     private GameStateManager gameStateManager;
 
     @PostMapping("/joinGame")
-    public ResponseEntity<Plague> joinGame(@RequestBody PlayerId playerId){
+    public ResponseEntity<Plague> joinGame(@RequestBody JoinGameDTO joinGameDTO){
         try{
-            Plague plague = gameStateManager.joinGame();
+            Plague plague = gameStateManager.joinGame(joinGameDTO.diseaseType());
             return ResponseEntity.ok().body(plague);
         }
         catch(Exception e){
@@ -53,7 +54,7 @@ public class GameStateEndpoints {
     @PostMapping("/proceedState")
     public ResponseEntity<Void> proceedState(@RequestBody PlayerId playerId){
         try{
-            gameStateManager.proceedState();
+            gameStateManager.proceedState(playerId.playerId());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -64,7 +65,7 @@ public class GameStateEndpoints {
     @PostMapping("/drawCountry")
     public ResponseEntity<Country> drawCountry(@RequestBody PlayerId playerId){
         try{
-            Country country = gameStateManager.drawCountry();
+            Country country = gameStateManager.drawCountryAction(playerId.playerId());
             return ResponseEntity.ok().body(country);
         }
         catch(Exception e){
@@ -84,30 +85,32 @@ public class GameStateEndpoints {
         }
     }
 
-    /***@PostMapping("/playCountry")
+    @PostMapping("/playCountry")
     public ResponseEntity<Void> playCountry(@RequestBody PlayerId playerId){
         try{
-            //uh
+            gameStateManager.playCountry(playerId.playerId());
         }
         catch(Exception e){
-
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/discardCountry")
     public ResponseEntity<Void> discardCountry(@RequestBody PlayerId playerId){
         try{
-            gameStateManager.discardCountry();
+            gameStateManager.discardCountry(playerId.playerId());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }***/
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PostMapping("/evolve")
     public ResponseEntity<Void> evolve(@RequestBody EvolveDTO evolveDTO){
         try{
-            gameStateManager.evolveTrait(evolveDTO.traitSlot(), evolveDTO.traitIndex());
+            gameStateManager.evolveTrait(evolveDTO.playerId(),evolveDTO.traitSlot(), evolveDTO.traitIndex());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -118,7 +121,7 @@ public class GameStateEndpoints {
     @PostMapping("skipEvolution")
     public ResponseEntity<Void> skipEvolution(@RequestBody PlayerId playerId){
         try{
-            gameStateManager.skipEvolve();
+            gameStateManager.skipEvolve(playerId.playerId());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -129,7 +132,7 @@ public class GameStateEndpoints {
     @PostMapping("/infect")
     public ResponseEntity<Void> infect(@RequestBody InfectDTO infectDTO){
         try{
-            gameStateManager.attemptInfect(infectDTO.countryName());
+            gameStateManager.attemptInfect(infectDTO.playerId(),infectDTO.countryName());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -140,12 +143,12 @@ public class GameStateEndpoints {
     @PostMapping("/rollDeathDice")
     public ResponseEntity<Integer> rollDeathDice(@RequestBody PlayerId playerId){
         try{
-            int diceNum = gameStateManager.rollDeathDice();
-            return ResponseEntity.ok().body(diceNum);
+            gameStateManager.rollDeathDice(playerId.playerId());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
 }
