@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -17,10 +16,16 @@ import org.slf4j.LoggerFactory;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
+import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
+import com.softdesign.plagueinc.util.PlagueReference;
 
+import lombok.Getter;
+
+@Getter
 public class Plague {
 
     Logger logger = LoggerFactory.getLogger(Plague.class);
@@ -45,7 +50,7 @@ public class Plague {
 
     private static final List<TraitType> DEFAULT_TRAITS = List.of(TraitType.INFECTIVITY, TraitType.INFECTIVITY, TraitType.LETHALITY);
 
-    public Plague(){
+    public Plague(DiseaseType diseaseType){
         this.playerId = UUID.randomUUID();
         this.dnaPoints = 0;
         this.plagueTokens = INITIAL_PLAGUE_TOKENS;
@@ -55,27 +60,8 @@ public class Plague {
         this.eventCards = new ArrayList<>();
         this.traitSlots = new ArrayList<>();
         this.killedCountries = new HashSet<>();
-        //TODO: Implement disease abilities
-        for(int i = 0; i<5; i++){
-            this.traitSlots.add(new TraitSlot(Optional.empty()));
-        }
+        this.traitSlots = Map.of(DiseaseType.BACTERIA, PlagueReference.bacteriaSlots(), DiseaseType.VIRUS, PlagueReference.virusSlots()).get(diseaseType);
     }
-
-    public UUID getPlayerId(){ return playerId; }
-
-    public int getDnaPoints(){ return dnaPoints; }
-
-    public int getPlagueTokens(){ return plagueTokens; }
-
-    public List<TraitSlot> getTraitSlots(){ return traitSlots; }
-
-    public List<TraitType> getTraits(){ return traits; }
-
-    public List<TraitCard> getHand(){ return hand; }
-
-    public List<Event> getEventCards(){ return eventCards; }
-
-    public Set<Country> getKilledCountries(){ return killedCountries; }
 
     public int getTraitCount(TraitType trait){
         return traits.stream().filter(thisTrait -> thisTrait == trait).toList().size();
@@ -141,5 +127,86 @@ public class Plague {
         return traits.contains(trait);
     }
 
+    public void initializePlague(Country startingCountry, List<TraitCard> hand){
+        startingCountry.infectCountry(this);
+        hand.forEach(card -> drawTraitCard(card));
+    }
+
+    public void activateTraitSlot(int slot, GameState gameState){
+        if(slot >= getTraitSlots().size()){
+            throw new IndexOutOfBoundsException("Index is greater than the number of slots that exist");
+        }
+        TraitSlot traitSlot = getTraitSlots().get(slot);
+        try{
+            TraitCard card = traitSlot.getCard();
+            List<Trait> traits = card.traits();
+
+            traits.forEach(thisTrait -> getTraits().remove(thisTrait.getTrait()));
+            logger.info("(Plague {}) Discarding card {} from slot {}", getPlayerId(), card.name(), slot);
+        }
+        catch(IllegalStateException e){
+            try{
+                logger.info("(Plague {}) Activating ability {}", getPlayerId(), traitSlot.getAbility().getName());
+            }
+            catch(IllegalStateException e2){
+                logger.warn("(Plague {}) Tried activating slot {} which has no contents", getPlayerId(), slot);
+                return;
+            }
+        }
+        finally{
+            traitSlot.activate(gameState);
+        }
+        
+    }
+
+    public TraitCard evolveTrait(int cardIndex, int traitSlotIndex){
+        return evolveTrait(cardIndex, traitSlotIndex, 0);
+    }
+
+    public TraitCard evolveTrait(int cardIndex, int traitSlotIndex, int dnaDiscount){
+        if(cardIndex >= getHand().size() || cardIndex < 0){
+            throw new IllegalArgumentException("Cannot evolve a card that is out of bounds (provided index=" + cardIndex + ", size of hand=" + getHand().size() + ")");
+        }
+        return evolveTrait(getHand().get(cardIndex), traitSlotIndex, dnaDiscount);
+    }
+
+    public TraitCard evolveTrait(TraitCard card, int traitSlotIndex, int dnaDiscount){
+        if(traitSlotIndex >= getTraitSlots().size()){
+            throw new IllegalArgumentException("Cannot evolve a card into a slot with invalid index (provided index=" + traitSlotIndex + ", size of hand=" + getTraitSlots().size() + ")");
+        }
+        
+        if(getDnaPoints() < card.cost() - dnaDiscount){
+            throw new IllegalStateException("Plague " + getPlayerId() + " does not have enough DNA to evolve " + card.name() + " (DNA=" + getDnaPoints() + ", required DNA =" + (card.cost() - dnaDiscount));
+        }
+
+        TraitSlot traitSlot = getTraitSlots().get(traitSlotIndex);
+
+        if(traitSlot.hasCard()){
+            throw new IllegalStateException("Cannot evolve a card into a slot that already has a card");
+        }
+
+        traitSlot.setCard(card);
+        getHand().remove(card);
+        card.traits().forEach(trait -> getTraits().add(trait.getTrait()));
+        spendDnaPoints(Math.max(0, card.cost() - dnaDiscount));
+        return card;        
+    }
+
+    public void useEventCard(int eventCardIndex){
+        if(eventCardIndex < 0 || eventCardIndex >= getEventCards().size()){
+            throw new IllegalArgumentException("Cannot play event card which has an index which is out of bounds (eventCardIndex=" + eventCardIndex + ", eventCard Size=" + getEventCards().size() + ")");
+        }
+        Event event = getEventCards().get(eventCardIndex);
+        
+        try{
+            event.resolveEffect(this);
+            getEventCards().remove(eventCardIndex);
+        }
+        //TODO: Implement error checking
+        catch(Exception e){
+
+        }
+        
+    }
 
 }

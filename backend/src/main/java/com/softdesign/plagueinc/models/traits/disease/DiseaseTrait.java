@@ -7,7 +7,6 @@ public class DiseaseTrait extends Trait {
 
     protected DiseaseTrait(TraitType traitType) {
         super(traitType);
-        //TODO Auto-generated constructor stub
     }
     
 }

@@ -6,7 +6,6 @@ public class AirborneTrait extends TravelTrait {
 
     public AirborneTrait() {
         super(TraitType.AIRBORNE);
-        //TODO Auto-generated constructor stub
     }
     
 }

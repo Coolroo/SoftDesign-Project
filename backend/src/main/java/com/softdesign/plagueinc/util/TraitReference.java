@@ -7,6 +7,7 @@ import com.softdesign.plagueinc.models.traits.disease.InfectivityTrait;
 import com.softdesign.plagueinc.models.traits.restriction.ColdTrait;
 import com.softdesign.plagueinc.models.traits.restriction.HeatTrait;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
+import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 
 public class TraitReference {
 
@@ -27,6 +28,11 @@ public class TraitReference {
         return new TraitCard("cold_resistance", 4, List.of(new ColdTrait()));
     }
 
+    public static TraitCard diarrhoea(){
+        return new TraitCard("diarrhoea", 13, List.of(new HeatTrait(), new InfectivityTrait()));
+    }
 
-
+    public static TraitCard waterTransmission(){
+        return new TraitCard("water_transmission", 2, List.of(new WaterborneTrait()));
+    }
 }
