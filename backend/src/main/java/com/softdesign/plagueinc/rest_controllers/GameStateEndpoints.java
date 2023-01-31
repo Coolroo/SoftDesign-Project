@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
+import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
@@ -151,4 +153,14 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
+    @GetMapping("/getGameState")
+    public ResponseEntity<GameState> getGameState(){
+        try{
+            GameState gamestate = gameStateManager.getGameState();
+            return new ResponseEntity<GameState>(gamestate, HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
