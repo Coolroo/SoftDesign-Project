@@ -120,6 +120,17 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("skipEvolution")
+    public ResponseEntity<Void> skipEvolution(@RequestBody PlayerId playerId){
+        try{
+            gameStateManager.skipEvolve();
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/infect")
     public ResponseEntity<Void> infect(@RequestBody InfectDTO infectDTO){
         try{
@@ -130,4 +141,16 @@ public class GameStateEndpoints {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/rollDeathDice")
+    public ResponseEntity<Integer> rollDeathDice(@RequestBody PlayerId playerId){
+        try{
+            int diceNum = gameStateManager.rollDeathDice();
+            return ResponseEntity.ok().body(diceNum);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }
