@@ -1,9 +1,11 @@
 package com.softdesign.plagueinc.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
@@ -110,7 +112,7 @@ public class CountryReference {
     public static Country china(){
         return new Country("china",
         Continent.ASIA,
-        Optional.of(),
+        Optional.empty(),
         List.of(new AirborneTrait(), new WaterborneTrait()),
         citiesToMap(8));
     }
@@ -126,7 +128,7 @@ public class CountryReference {
     public static Country philippines(){
         return new Country("philippines",
         Continent.OCEANIA,
-        Optional.of(),
+        Optional.empty(),
         List.of(new WaterborneTrait()),
         citiesToMap(3));
     }
@@ -182,7 +184,7 @@ public class CountryReference {
     public static Country chile(){
         return new Country("chile",
         Continent.SOUTH_AMERICA,
-        Optional.Of(new ColdTrait()),
+        Optional.of(new ColdTrait()),
         List.of(new AirborneTrait()),
         citiesToMap(4));
     }
@@ -364,9 +366,9 @@ public class CountryReference {
     }
 
 
-    private static Map<String, Optional<Plague>> citiesToMap(List<String> cities){
-        HashMap<String, Optional<Plague>> map = new HashMap<>();
-        cities.forEach(city -> map.put(city, Optional.empty()));
-        return map;
+    private static List<Optional<Plague>> citiesToMap(int cities){
+        List<Optional<Plague>> cityList = new ArrayList<>();
+        IntStream.range(0, cities).forEach(val -> cityList.add(Optional.empty()));
+        return cityList;
     }
 }
