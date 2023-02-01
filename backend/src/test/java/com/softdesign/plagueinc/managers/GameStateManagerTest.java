@@ -37,10 +37,10 @@ public class GameStateManagerTest {
         Plague plague = new Plague(DiseaseType.BACTERIA);
         gameState.setCurrTurn(plague);
 
-        Map<String, Optional<Plague>> cities =  new HashMap<>(Map.of("jeffistan", Optional.of(plague), 
-        "sus", Optional.empty(), 
-        "tata", Optional.empty(),
-        "doda", Optional.empty()));
+        List<Optional<Plague>> cities =  new ArrayList<>(List.of(Optional.of(plague), 
+        Optional.empty(), 
+        Optional.empty(),
+        Optional.empty()));
 
         Country country = new Country("null", Continent.AFRICA, Optional.empty(), List.of(), cities);
         HashMap<Continent, List<Country>> map = new HashMap<>(Map.of(Continent.AFRICA, new ArrayList<>(List.of(country))));
@@ -81,7 +81,7 @@ public class GameStateManagerTest {
         gameStateManager.setGameState(gameState);
         Plague plague = new Plague(DiseaseType.BACTERIA);
         gameState.setCurrTurn(plague);
-        Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), Map.of());
+        Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), List.of());
         gameState.setCountryDeck(new ArrayDeque<>(List.of(country)));
 
         Map<Continent, List<Country>> board = Stream.of(Continent.values()).collect(Collectors.toMap(Function.identity(), continent -> new ArrayList<>()));
