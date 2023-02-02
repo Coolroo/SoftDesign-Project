@@ -22,12 +22,30 @@ code {
   background-image: url(/public/background.png);
 }
 
+.countryDraftZone{
+  max-width: 25%;
+  margin: auto;
+  position: relative;
+}
+
+.draftZoneCountrySlot{
+  background-color: rgb(92, 234, 92);
+  position: absolute;
+  width: 20%;
+  height: 80%;
+  z-index: 9;
+}
+
+.draftZoneCountrySlot:hover{
+  width: 30%;
+  height: 120%;
+  z-index: 11;
+}
+
 .board{
-  max-width: 50%;
+  max-width: 42%;
   position: relative;
   margin: auto;
-  border: 2px solid;
-  border-color: aquamarine;
 }
 
 .card{
@@ -37,7 +55,7 @@ code {
 
 
 .plagueCard{
-  width: 30%;
+  width: 28%;
   height: auto;
   float: left;
   position:relative;
