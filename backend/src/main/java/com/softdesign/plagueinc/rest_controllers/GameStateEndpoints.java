@@ -28,6 +28,8 @@ public class GameStateEndpoints {
     @Autowired
     private GameStateManager gameStateManager;
 
+    //POST Endpoints
+
     @PostMapping("/joinGame")
     public ResponseEntity<Plague> joinGame(@RequestBody JoinGameDTO joinGameDTO){
         try{
@@ -118,7 +120,7 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("skipEvolution")
+    @PostMapping("/skipEvolution")
     public ResponseEntity<Void> skipEvolution(@RequestBody PlayerId playerId){
         try{
             gameStateManager.skipEvolve(playerId.playerId());
