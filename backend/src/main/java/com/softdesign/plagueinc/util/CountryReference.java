@@ -1,9 +1,7 @@
 package com.softdesign.plagueinc.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -18,13 +16,107 @@ import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 public class CountryReference {
 
     public static List<Country> getStartingCountries(){ 
-        //TODO: Implement a list of the starting countries
-        return List.of(); 
+        return List.of(argentina(),
+        france(),
+        japan(),
+        southAfrica(),
+        southKorea(),
+        usa()); 
     }
 
     public static List<Country> getDefaultCountryDeck(){
-        //TODO: Implement a list of the country deck
-        return List.of();
+        return List.of(turkey(),
+        india(),
+        germany(),
+        uk(),
+        iceland(),
+        ukraine(),
+        spain(),
+        iran(),
+        iraq(),
+        russia(),
+        china(),
+        australia(),
+        philippines(),
+        libya(),
+        colombia(),
+        greenland(),
+        canada(),
+        poland(),
+        brazil(),
+        chile(),
+        saudiArabia(),
+        sweden(),
+        sudan(),
+        pakistan(),
+        mongolia(),
+        kazakhstan(),
+        norway(),
+        newZealand(),
+        pNewGuinea(),
+        peru(),
+        bolivia(),
+        ethiopia(),
+        morocco(),
+        egypt(),
+        cuba(),
+        mexico(),
+        indonesia(),
+        panama(),
+        nigeria(),
+        kenya(),
+        madagascar(),
+        venezuela());
+    }
+
+    //Starting Countries
+
+    public static Country argentina(){
+        return new Country("argentina",
+        Continent.SOUTH_AMERICA,
+        Optional.empty(),
+        List.of(new WaterborneTrait()),
+        citiesToMap(4));
+    }
+
+    public static Country france(){
+        return new Country("france",
+        Continent.EUROPE,
+        Optional.empty(),
+        List.of(new AirborneTrait()),
+        citiesToMap(5));
+    }
+
+    public static Country japan(){
+        return new Country("japan",
+        Continent.ASIA,
+        Optional.empty(),
+        List.of(new WaterborneTrait(), new AirborneTrait()),
+        citiesToMap(6));
+    }
+
+    public static Country southAfrica(){
+        return new Country("south_africa",
+        Continent.AFRICA,
+        Optional.empty(),
+        List.of(new AirborneTrait()),
+        citiesToMap(5));
+    }
+
+    public static Country southKorea(){
+        return new Country("south_korea",
+        Continent.ASIA,
+        Optional.empty(),
+        List.of(new WaterborneTrait()),
+        citiesToMap(5));
+    }
+
+    public static Country usa(){
+        return new Country("usa",
+        Continent.NORTH_AMERICA,
+        Optional.empty(),
+        List.of(new WaterborneTrait(), new AirborneTrait()),
+        citiesToMap(7));
     }
 
 
@@ -189,7 +281,7 @@ public class CountryReference {
         citiesToMap(4));
     }
 
-    public static Country saudi_arabia(){
+    public static Country saudiArabia(){
         return new Country("saudi_arabia",
         Continent.ASIA,
         Optional.of(new HeatTrait()),
@@ -245,7 +337,7 @@ public class CountryReference {
         citiesToMap(3));
     }
 
-    public static Country new_zealand(){
+    public static Country newZealand(){
         return new Country("new_zealand",
         Continent.OCEANIA,
         Optional.empty(),
@@ -253,7 +345,7 @@ public class CountryReference {
         citiesToMap(3));
     }
 
-    public static Country p_new_guinea(){
+    public static Country pNewGuinea(){
         return new Country("p_new_guinea",
         Continent.OCEANIA,
         Optional.empty(),
