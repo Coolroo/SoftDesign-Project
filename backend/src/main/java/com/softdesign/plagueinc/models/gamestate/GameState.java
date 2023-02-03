@@ -1,17 +1,16 @@
 package com.softdesign.plagueinc.models.gamestate;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.softdesign.plagueinc.exceptions.ContinentFullException;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
@@ -37,9 +40,11 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
-import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
+import com.softdesign.plagueinc.models.serializers.CountrySerializers.CountryNameSerializer;
+import com.softdesign.plagueinc.models.serializers.PlagueSerializers.PlagueListToColorSerializer;
+import com.softdesign.plagueinc.models.serializers.PlagueSerializers.PlagueToColorSerializer;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
@@ -60,6 +65,7 @@ public class GameState {
 
     private List<Plague> plagues;
     
+    @JsonSerialize(using = PlagueToColorSerializer.class)
     private Plague currTurn;
 
     private PlayState playState;
@@ -69,19 +75,21 @@ public class GameState {
     @JsonIgnore
     private ArrayDeque<Country> countryDeck;
 
+    @JsonSerialize(using = CountryNameSerializer.class)
     private List<Country> revealedCountries;
 
-    private Set<Country> countryDiscard;
+    @JsonSerialize(using = CountryNameSerializer.class)
+    private List<Country> countryDiscard;
 
     @JsonIgnore
     private ArrayDeque<TraitCard> traitDeck;
 
-    private Set<TraitCard> traitDiscard;
+    private List<TraitCard> traitDiscard;
 
     @JsonIgnore
     private ArrayDeque<Event> eventDeck;
 
-    private Set<Event> eventDiscard;
+    private List<Event> eventDiscard;
 
     private Map<UUID, Boolean> votesToStart;
 
@@ -92,6 +100,7 @@ public class GameState {
     @JsonIgnore
     private Stack<ActionLog> actions;
 
+    @JsonSerialize(using = PlagueListToColorSerializer.class)
     private Queue<Plague> turnOrder;
 
     @JsonIgnore
@@ -105,14 +114,19 @@ public class GameState {
 
     //Event Futures
 
+    @JsonIgnore
     private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
 
+    @JsonIgnore
     private Optional<CompletableFuture<Country>> countrySelectionFuture;
 
+    @JsonIgnore
     private Optional<CompletableFuture<TraitCard>> selectTraitCard;
 
+    @JsonIgnore
     private Optional<CompletableFuture<Continent>> selectContinent;
 
+    @JsonIgnore
     private Optional<CompletableFuture<Integer>> selectTraitSlot;
 
     private Optional<Plague> eventPlayer;
@@ -158,14 +172,14 @@ public class GameState {
         List<TraitCard> defaultTraitDeck = TraitReference.getDefaultTraitDeck();
         Collections.shuffle(defaultTraitDeck);
         traitDeck = new ArrayDeque<>(defaultTraitDeck);
-        traitDiscard = new HashSet<>();
+        traitDiscard = new ArrayList<>();
     }
 
     private void initEventDeck(){
         List<Event> defaultEventDeck = EventReference.getDefaultEventDeck();
         Collections.shuffle(defaultEventDeck);
         eventDeck = new ArrayDeque<>(defaultEventDeck);
-        eventDiscard = new HashSet<>();
+        eventDiscard = new ArrayList<>();
     }
 
     private void initCountryDeck(List<Country> remainingCountries){
@@ -179,7 +193,7 @@ public class GameState {
 
         countryDeck = new ArrayDeque<>(defaultCountryDeck);
         revealedCountries = new ArrayList<>();
-        countryDiscard = new HashSet<>();
+        countryDiscard = new ArrayList<>();
 
         refillRevealedCountries();
     }
@@ -238,7 +252,7 @@ public class GameState {
             //Init the country deck in the game state
             initCountryDeck(startingCountries);
         
-            setCurrTurn(getTurnOrder().poll());
+            this.currTurn = turnOrder.peek();
 
             //Prep the gamestate to proceed
             setPlayState(PlayState.START_OF_TURN);
@@ -327,7 +341,7 @@ public class GameState {
                 break;
             case END_OF_TURN:
     
-                if(checkForWin()){
+                if(suddenDeath && checkForWin()){
                     endGame();
                     return;
                 }
@@ -336,7 +350,7 @@ public class GameState {
     
                 //Shift turn to next player in line
                 clearActionLog();
-                shiftTurnOrder();
+                this.currTurn = shiftTurnOrder();
     
     
                 setPlayState(PlayState.START_OF_TURN);
@@ -389,7 +403,7 @@ public class GameState {
         return drawnCountry;
     }
 
-    public Country selectCountryFromRevealed(int index){
+    public Country selectCountryFromRevealed(String countryName){
         if(isReadyToProceed()){
             logger.warn("Attempted to choose a revealed country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
@@ -400,7 +414,7 @@ public class GameState {
         }
 
         //choose country, and log the action
-        Country chosenCountry = takeRevealedCountry(index);
+        Country chosenCountry = takeRevealedCountry(countryName);
         initCountryChoiceFuture(chosenCountry);
         logAction(new CountryChosenAction(chosenCountry));
         setReadyToProceed(true);
@@ -464,7 +478,7 @@ public class GameState {
     } 
 
     public void placeCountry(Country country){
-        if(isReadyToProceed()){
+        if(isReadyToProceed() && playState != PlayState.INITIALIZATION){
             logger.warn("Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
@@ -741,7 +755,7 @@ public class GameState {
         List<TraitCard> discard = getTraitDiscard().stream().toList();
         Collections.shuffle(discard);
         traitDeck = new ArrayDeque<>(discard);
-        traitDiscard = new HashSet<>();
+        traitDiscard = new ArrayList<>();
     }
 
     //Event Deck
@@ -765,7 +779,7 @@ public class GameState {
         List<Event> discard = eventDiscard.stream().toList();
         Collections.shuffle(discard);
         eventDeck = new ArrayDeque<>(discard);
-        eventDiscard = new HashSet<>();
+        eventDiscard = new ArrayList<>();
     }
 
     //Country Deck
@@ -786,12 +800,14 @@ public class GameState {
         countryDiscard.add(country);
     }
 
-    private Country takeRevealedCountry(int index){
-        if(index < 0 || index >= revealedCountries.size()){
-            logger.error("attempted to take a card from an index that is out of bounds ({})", index);
-            throw new IndexOutOfBoundsException();
-        }
-        Country takenCountry = revealedCountries.remove(index);
+    private Country takeRevealedCountry(String countryName){
+        
+        Country takenCountry = revealedCountries.stream()
+        .collect(Collectors.toMap(country -> country.getCountryName(), Function.identity()))
+        .get(countryName);
+
+        revealedCountries.remove(takenCountry);
+
         refillRevealedCountries();
         if(revealedCountries.size() == 0){
             suddenDeath = true;

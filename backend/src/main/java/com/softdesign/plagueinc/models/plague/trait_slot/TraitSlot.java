@@ -49,7 +49,6 @@ public class TraitSlot {
 
     public TraitCard getCard(){
         if(this.card.isEmpty()){
-            logger.warn("Cannot get card from an empty slot");
             return null;
         }
         return this.card.get();
@@ -57,7 +56,6 @@ public class TraitSlot {
 
     public Ability getAbility(){
         if(this.ability.isEmpty()){
-            logger.warn("No ability to get!");
             return null;
         }
         return this.ability.get();

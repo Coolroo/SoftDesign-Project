@@ -72,6 +72,7 @@ public class Plague {
         this.eventCards = new ArrayList<>();
         this.traitSlots = new ArrayList<>();
         this.killedCountries = new HashSet<>();
+        setDiseaseType(DiseaseType.BACTERIA);
     }
 
     public void setDiseaseType(DiseaseType diseaseType){

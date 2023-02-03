@@ -50,9 +50,9 @@ public class GameStateManager {
         return gameState.drawCountryAction();
     }
 
-    public Country selectCountryFromRevealed(UUID plagueId, int index){
+    public Country selectCountryFromRevealed(UUID plagueId, String name){
         gameState.verifyTurn(plagueId);
-        return gameState.selectCountryFromRevealed(index);
+        return gameState.selectCountryFromRevealed(name);
     }
 
     public void playCountry(UUID plagueId){
