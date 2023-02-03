@@ -1,6 +1,8 @@
 package com.softdesign.plagueinc.util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.disease.InfectivityTrait;
@@ -13,7 +15,15 @@ public class TraitReference {
 
     public static List<TraitCard> getDefaultTraitDeck(){
         //TODO: Implement default trait deck
-        return List.of();
+        ArrayList<TraitCard> deck = new ArrayList<>();
+        IntStream.range(0,10).forEach(val -> {
+            deck.add(paranoia());
+            deck.add(pustules());
+            deck.add(coldResistance());
+            deck.add(diarrhoea());
+            deck.add(waterTransmission());
+        });
+        return deck;
     }
 
     public static TraitCard paranoia(){

@@ -1,18 +1,24 @@
 package com.softdesign.plagueinc.rest_controllers;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
-import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
@@ -23,6 +29,7 @@ import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 @CrossOrigin
 public class GameStateEndpoints {
 
+    
     Logger logger = LoggerFactory.getLogger(GameStateEndpoints.class);
 
     @Autowired
@@ -31,10 +38,9 @@ public class GameStateEndpoints {
     //POST Endpoints
 
     @PostMapping("/joinGame")
-    public ResponseEntity<Plague> joinGame(@RequestBody JoinGameDTO joinGameDTO){
+    public ResponseEntity<UUID> joinGame(@RequestBody JoinGameDTO joinGameDTO){
         try{
-            Plague plague = gameStateManager.joinGame(joinGameDTO.diseaseType());
-            return ResponseEntity.ok().body(plague);
+            return ResponseEntity.ok().body(gameStateManager.joinGame(joinGameDTO.plagueColor()));
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
@@ -47,7 +53,9 @@ public class GameStateEndpoints {
             gameStateManager.voteToStart(playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw e;
+            //logger.error(e.toString());
+            //return ResponseEntity.badRequest().eTag(e.getMessage()).build();
         }
         return new ResponseEntity<>(HttpStatus.OK);
         
@@ -79,7 +87,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Country> takeCountry(@RequestBody TakeCountryDTO takeCountryDTO){
         //First ensure that the player calling is the right one
         try{
-            Country country = gameStateManager.selectCountryFromRevealed(takeCountryDTO.playerId(), takeCountryDTO.cardIndex());
+            Country country = gameStateManager.selectCountryFromRevealed(takeCountryDTO.playerId(), takeCountryDTO.countryName());
             return ResponseEntity.ok().body(country);
         }
         catch(Exception e){
@@ -151,6 +159,35 @@ public class GameStateEndpoints {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //GET Mappings
+    @GetMapping("/gameState")
+    public ResponseEntity<GameState> getGameState(){
+        return ResponseEntity.ok().body(gameStateManager.getGameState());
+    }
+
+    @GetMapping("/getHand")
+    public ResponseEntity<List<String>> getHand(@RequestParam("playerId") UUID playerId){
+        try{
+            List<String> hand = gameStateManager.getGameState()
+            .getPlagues()
+            .stream()
+            .filter(plague -> plague.getPlayerId().equals(playerId))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new)
+            .getHand()
+            .stream()
+            .map(card -> card.name())
+            .toList();
+            return ResponseEntity.ok().body(hand);
+        }
+        catch(Exception e){
+            return ResponseEntity.badRequest().eTag("Invalid player ID").build();
+        }
+        
+        
+        
     }
     
 }

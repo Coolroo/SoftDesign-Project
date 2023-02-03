@@ -22,6 +22,7 @@ import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.plague.PlagueColor;
 
 @SpringBootTest
 public class GameStateManagerTest {
@@ -34,7 +35,7 @@ public class GameStateManagerTest {
 
         //init
         GameState gameState = new GameState();
-        Plague plague = new Plague(DiseaseType.BACTERIA);
+        Plague plague = new Plague(PlagueColor.RED);
         gameState.setCurrTurn(plague);
 
         List<Optional<Plague>> cities =  new ArrayList<>(List.of(Optional.of(plague), 
@@ -79,7 +80,7 @@ public class GameStateManagerTest {
     void testPlaceCountry(){
         GameState gameState = new GameState();
         gameStateManager.setGameState(gameState);
-        Plague plague = new Plague(DiseaseType.BACTERIA);
+        Plague plague = new Plague(PlagueColor.RED);
         gameState.setCurrTurn(plague);
         Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), List.of());
         gameState.setCountryDeck(new ArrayDeque<>(List.of(country)));

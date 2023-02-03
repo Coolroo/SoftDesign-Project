@@ -6,28 +6,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
-import com.softdesign.plagueinc.models.plague.DiseaseType;
-import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.plague.PlagueColor;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Component
 public class GameStateManager {
 
+    @JsonIgnore
     Logger logger = LoggerFactory.getLogger(GameStateManager.class);
 
     private GameState gameState;
 
-    public Plague joinGame(DiseaseType diseaseType){
-        return gameState.joinGame(diseaseType);
+    public GameStateManager(){
+        this.gameState = new GameState();
+    }
+
+    public UUID joinGame(PlagueColor plagueColor){
+        if(plagueColor == null){
+            throw new IllegalArgumentException("Provided plague must have a color");
+        }
+        return gameState.joinGame(plagueColor);
     }
 
     public void voteToStart(UUID plagueId){
@@ -44,9 +50,9 @@ public class GameStateManager {
         return gameState.drawCountryAction();
     }
 
-    public Country selectCountryFromRevealed(UUID plagueId, int index){
+    public Country selectCountryFromRevealed(UUID plagueId, String name){
         gameState.verifyTurn(plagueId);
-        return gameState.selectCountryFromRevealed(index);
+        return gameState.selectCountryFromRevealed(name);
     }
 
     public void playCountry(UUID plagueId){
