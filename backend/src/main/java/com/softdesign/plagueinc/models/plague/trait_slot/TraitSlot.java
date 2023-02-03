@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.softdesign.plagueinc.exceptions.TraitSlotFullException;
 import com.softdesign.plagueinc.models.gamestate.GameState;
@@ -14,6 +15,7 @@ import com.softdesign.plagueinc.models.traits.TraitCard;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TraitSlot {
 
+    @JsonIgnore
     Logger logger = LoggerFactory.getLogger(TraitSlot.class);
 
     private Optional<TraitCard> card;

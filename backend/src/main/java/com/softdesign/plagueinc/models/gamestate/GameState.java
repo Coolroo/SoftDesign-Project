@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.exceptions.ContinentFullException;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
@@ -39,6 +39,7 @@ import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.plague.PlagueColor;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
@@ -50,20 +51,11 @@ import com.softdesign.plagueinc.util.TraitReference;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@JsonIgnoreProperties(value = {
-    "countryDeck",
-    "traitDeck",
-    "eventDeck",
-    "actions",
-    "countryChoice",
-    "infectChoice",
-    "deathFuture"
-})
 @Getter
 @Setter
 public class GameState {
 
+    @JsonIgnore
     Logger logger = LoggerFactory.getLogger(GameState.class);
 
     private List<Plague> plagues;
@@ -73,35 +65,42 @@ public class GameState {
     private PlayState playState;
 
     private Map<Continent, List<Country>> board;
-
+    
+    @JsonIgnore
     private ArrayDeque<Country> countryDeck;
 
     private List<Country> revealedCountries;
 
     private Set<Country> countryDiscard;
 
+    @JsonIgnore
     private ArrayDeque<TraitCard> traitDeck;
 
     private Set<TraitCard> traitDiscard;
 
+    @JsonIgnore
     private ArrayDeque<Event> eventDeck;
 
     private Set<Event> eventDiscard;
 
-    private Map<Plague, Boolean> votesToStart;
+    private Map<UUID, Boolean> votesToStart;
 
     private boolean readyToProceed;
 
     private boolean suddenDeath;
 
+    @JsonIgnore
     private Stack<ActionLog> actions;
 
     private Queue<Plague> turnOrder;
 
+    @JsonIgnore
     private Optional<CompletableFuture<CountryChoice>> countryChoice;
 
+    @JsonIgnore
     private Optional<CompletableFuture<Country>> infectChoice;
 
+    @JsonIgnore
     private Optional<CompletableFuture<Integer>> deathFuture;
 
     //Event Futures
@@ -187,28 +186,28 @@ public class GameState {
 
     public void startGame(UUID playerId){
         if(getPlayState() != PlayState.INITIALIZATION){
-            logger.warn("(Plague {}) voted to start the game, but the game has already started");
+            logger.warn("(Plague {}) voted to start the game, but the game has already started", playerId);
             throw new IllegalStateException();
         }
         
         //Find the plague with this UUID
         Plague plague = getPlagues()
         .stream()
-        .filter(pla -> pla.getPlayerId() == playerId)
+        .filter(pla -> pla.getPlayerId().equals(playerId))
         .findFirst()
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
 
-        if(getVotesToStart().get(plague)){
+        if(votesToStart.get(plague.getPlayerId())){
             logger.warn("(Plague {}) attempted to vote to start the game, but has already voted to start", plague.getPlayerId());
         }
 
         //mark this plague as voted to start
-        getVotesToStart().put(plague, true);
+        votesToStart.put(plague.getPlayerId(), true);
         
-        logger.info("(Plague {}) has voted to start the game");
+        logger.info("(Plague {}) has voted to start the game", playerId);
 
         //If all players have voted to start, and there are more than 1 players in the lobby, then start the game
-        if(getVotesToStart().values().stream().allMatch(bool -> bool) && getPlagues().size() > 1){
+        if(getVotesToStart().values().stream().allMatch(bool -> bool.booleanValue()) && getPlagues().size() > 1){
             logger.info("All players have voted to start the game, initializing game");
             
             //init starting country deck
@@ -253,7 +252,7 @@ public class GameState {
      */
 
     //Join Game
-    public Plague joinGame(DiseaseType diseaseType){
+    public UUID joinGame(PlagueColor plagueColor){
         if(getPlayState() != PlayState.INITIALIZATION)
         {
             logger.warn("Player attempted to join game but game is already started");
@@ -265,11 +264,16 @@ public class GameState {
             throw new IllegalStateException();
         }
 
+        if(plagues.stream().anyMatch(plague -> plague.getColor() == plagueColor)){
+            logger.warn("Player attempted to join game as {}, but player is already {}", plagueColor, plagueColor);
+            throw new IllegalArgumentException();
+        }
+
         //Create a new plague, and add it to the gameState
-        Plague plague = new Plague(diseaseType);
+        Plague plague = new Plague(plagueColor);
         getPlagues().add(plague);
-        getVotesToStart().put(plague, false);
-        return plague;
+        getVotesToStart().put(plague.getPlayerId(), false);
+        return plague.getPlayerId();
     }
 
     public void proceedState(){

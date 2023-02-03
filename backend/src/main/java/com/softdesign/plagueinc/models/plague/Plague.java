@@ -10,9 +10,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
@@ -28,9 +30,15 @@ import lombok.Getter;
 @Getter
 public class Plague {
 
+    @JsonIgnore
     Logger logger = LoggerFactory.getLogger(Plague.class);
     
+    @JsonIgnore
     private UUID playerId;
+
+    private PlagueColor color;
+
+    private DiseaseType diseaseType;
 
     private int dnaPoints;
 
@@ -38,10 +46,13 @@ public class Plague {
 
     private List<TraitSlot> traitSlots;
 
+    @JsonIgnore
     private List<TraitType> traits;
 
+    @JsonIgnore
     private List<TraitCard> hand;
 
+    @JsonIgnore
     private List<Event> eventCards;
 
     private Set<Country> killedCountries;
@@ -50,9 +61,10 @@ public class Plague {
 
     private static final List<TraitType> DEFAULT_TRAITS = List.of(TraitType.INFECTIVITY, TraitType.INFECTIVITY, TraitType.LETHALITY);
 
-    public Plague(DiseaseType diseaseType){
+    public Plague(PlagueColor plagueColor){
         this.playerId = UUID.randomUUID();
         this.dnaPoints = 0;
+        this.color = plagueColor;
         this.plagueTokens = INITIAL_PLAGUE_TOKENS;
         this.traits = new ArrayList<>();
         this.traits.addAll(DEFAULT_TRAITS);
@@ -60,7 +72,11 @@ public class Plague {
         this.eventCards = new ArrayList<>();
         this.traitSlots = new ArrayList<>();
         this.killedCountries = new HashSet<>();
-        this.traitSlots = Map.of(DiseaseType.BACTERIA, PlagueReference.bacteriaSlots(), DiseaseType.VIRUS, PlagueReference.virusSlots()).get(diseaseType);
+    }
+
+    public void setDiseaseType(DiseaseType diseaseType){
+        this.diseaseType = diseaseType;
+        this.traitSlots = PlagueReference.getTraitSlots(diseaseType);
     }
 
     public int getTraitCount(TraitType trait){

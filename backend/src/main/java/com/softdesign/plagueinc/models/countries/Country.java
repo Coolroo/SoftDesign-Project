@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.exceptions.CityFullException;
 import com.softdesign.plagueinc.exceptions.CountryFullException;
 import com.softdesign.plagueinc.models.plague.Plague;
@@ -19,10 +20,13 @@ public class Country {
 
     private String countryName;
 
+    @JsonIgnore
     private Continent continent;
 
+    @JsonIgnore
     private Optional<RestrictionTrait> restriction;
 
+    @JsonIgnore
     private List<TravelTrait> travelTypes;
 
     private List<Optional<Plague>> cities;

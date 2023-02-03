@@ -1,8 +1,7 @@
 package com.softdesign.plagueinc.rest_controllers.DTOs;
 
-import java.util.UUID;
-import com.softdesign.plagueinc.models.plague.DiseaseType;
+import com.softdesign.plagueinc.models.plague.PlagueColor;
 
-public record JoinGameDTO(UUID playerID, DiseaseType diseaseType) {
+public record JoinGameDTO(PlagueColor plagueColor) {
     
 }
