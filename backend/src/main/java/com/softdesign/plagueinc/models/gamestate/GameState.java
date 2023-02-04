@@ -282,7 +282,7 @@ public class GameState {
 
         //Create a new plague, and add it to the gameState
         Plague plague = new Plague(plagueColor);
-        getPlagues().add(plague);
+        plagues.add(plague);
         getVotesToStart().put(plague.getColor(), false);
         logger.info("[INITIALIZATION] Plague with id ({}) created, and assigned color {}", plague.getPlayerId(), plague.getColor());
         return plague.getPlayerId();
