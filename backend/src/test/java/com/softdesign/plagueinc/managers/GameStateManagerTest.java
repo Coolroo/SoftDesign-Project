@@ -78,8 +78,8 @@ public class GameStateManagerTest {
 
     @Test
     void testPlaceCountry(){
-        GameState gameState = new GameState();
-        gameStateManager.setGameState(gameState);
+        String gameStateId = gameStateManager.createGame();
+        GameState gameState = gameStateManager.getGameState(gameStateId);
         Plague plague = new Plague(PlagueColor.RED);
         gameState.setCurrTurn(plague);
         Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), List.of());
@@ -90,7 +90,7 @@ public class GameStateManagerTest {
 
         gameState.setPlayState(PlayState.CHOOSECOUNTRY);
 
-        gameStateManager.drawCountryAction(plague.getPlayerId());
+        gameStateManager.drawCountryAction(gameStateId, plague.getPlayerId());
         gameState.proceedState();
 
         //Now play the country
