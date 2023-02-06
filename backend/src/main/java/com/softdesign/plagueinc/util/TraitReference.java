@@ -1,7 +1,9 @@
 package com.softdesign.plagueinc.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import com.softdesign.plagueinc.models.traits.TraitCard;
@@ -14,51 +16,186 @@ import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
 
 public class TraitReference {
 
+    private static final Map<String, Integer> idToCount = new HashMap<>(){{
+        put("heat_resistance", 6); 
+        put("cold_resistance", 5);
+        put("sweating", 1);
+        put("meningitis", 1); 
+        put("confusion", 1); 
+        put("dysentery", 1); 
+        put("coma", 1); 
+        put("insanity", 1); 
+        put("pustules", 1); 
+        put("delirium", 1); 
+        put("psychosis", 1); 
+        put("coughing", 1); 
+        put("blindness", 1); 
+        put("paranoia", 1); 
+        put("headache", 1); 
+        put("hallucinations", 1); 
+        put("nose_bleed", 1); 
+        put("cysts", 1); 
+        put("insomnia", 1); 
+        put("gastric_ulceration", 1); 
+        put("hypothermia", 1); 
+        put("respiratory_failure", 1); 
+        put("rash", 1); 
+        put("pneumonia", 1); 
+        put("paralysis", 1); 
+        put("seizures", 1); 
+        put("tumours", 1); 
+        put("fever", 1); 
+        put("cannibalism", 1); 
+        put("skin_lesions", 1); 
+        put("necrosis", 1); 
+        put("sneezing", 1); 
+        put("total_organ_failure", 1); 
+        put("sore_throat", 1); 
+        put("air_transmission", 6); 
+        put("water_transmission", 6); 
+        put("vomiting", 1); 
+        put("haemorrhagic_shock", 1); 
+        put("systemic_infection", 1); 
+        put("internal_haemorrhaging", 1); 
+        put("buboes", 1); 
+        put("abcesses", 1); 
+    }};
+
     public static List<TraitCard> getDefaultTraitDeck(){
         //TODO: Implement default trait deck
-        ArrayList<TraitCard> deck = new ArrayList<>();
-            deck.add(coldResistance());
-            deck.add(psychosis());
-            deck.add(paranoia());
-            deck.add(heatResistance());
-            deck.add(waterTransmission());
-            deck.add(delirium());
-            deck.add(insanity());
-            deck.add(necrosis());
-            deck.add(airTransmission());
-            deck.add(rash());
-            deck.add(coma());
-            deck.add(meningitis());
-            deck.add(skinLesions());
-            deck.add(diarrhoea());
-            deck.add(abcesses());
-            deck.add(haemorrhagicShock());
-            deck.add(pustules());
-            deck.add(noseBleed());
-            deck.add(cannibalism());
-            deck.add(soreThroat());
-            deck.add(gastricUlceration());
-            deck.add(hallucinations());
-            deck.add(headache());
-            deck.add(paralysis());
-            deck.add(cysts());
-            deck.add(hypothermia());
-            deck.add(fever());
-            deck.add(insomnia());
-            deck.add(tumours());
-            deck.add(vomiting());
-            deck.add(dysentery());
-            deck.add(coughing());
-            deck.add(internalHaemorrhaging());
-            deck.add(totalOrganFailure());
-            deck.add(respitoryFailure());
-            deck.add(buboes());
-            deck.add(sneezing());
-            deck.add(systemicInfection());
-            deck.add(seizures());
-            deck.add(sweating());
-            deck.add(pneumonia());
-            deck.add(confusion());
+        List<TraitCard> deck = new ArrayList<>();
+            idToCount.keySet().forEach(id -> {
+                IntStream.range(0, idToCount.get(id)).forEach(val -> {
+                    switch(id){
+                        case "heat_resistance":
+                        deck.add(heatResistance());
+                        break;
+                        case "cold_resistance":
+                        deck.add(heatResistance());
+                        break;
+                        case "sweating":
+                        deck.add(sweating());
+                        break;
+                        case "meningitis":
+                        deck.add(meningitis());
+                        break;
+                        case "confusion":
+                        deck.add(confusion());
+                        break;
+                        case "dysentery":
+                        deck.add(dysentery());
+                        break;
+                        case "coma":
+                        deck.add(coma());
+                        break;
+                        case "insanity":
+                        deck.add(insanity());
+                        break;
+                        case "pustules":
+                        deck.add(pustules());
+                        break;
+                        case "delirium":
+                        deck.add(delirium());
+                        break;
+                        case "psychosis":
+                        deck.add(psychosis());
+                        break;
+                        case "coughing":
+                        deck.add(coughing());
+                        break; 
+                        case "blindness":
+                        deck.add(blindness());
+                        break;
+                        case "paranoia":
+                        deck.add(paranoia());
+                        break;
+                        case "headache":
+                        deck.add(headache());
+                        break;
+                        case "hallucinations":
+                        deck.add(hallucinations());
+                        break;
+                        case "nose_bleed":
+                        deck.add(noseBleed());
+                        break;
+                        case "cysts":
+                        deck.add(cysts());
+                        break;
+                        case "insomnia":
+                        deck.add(insomnia());
+                        break;
+                        case "gastric_ulceration":
+                        deck.add(gastricUlceration());
+                        break;
+                        case "hypothermia":
+                        deck.add(hypothermia());
+                        break;
+                        case "respiratory_failure":
+                        deck.add(respitoryFailure());
+                        break;
+                        case "rash":
+                        deck.add(rash());
+                        break;
+                        case "pneumonia":
+                        deck.add(pneumonia());
+                        break;
+                        case "paralysis":
+                        deck.add(paralysis());
+                        break;
+                        case "seizures":
+                        deck.add(seizures());
+                        break;
+                        case "tumours":
+                        deck.add(tumours());
+                        break;
+                        case "fever":
+                        deck.add(fever());
+                        break;
+                        case "cannibalism":
+                        deck.add(cannibalism());
+                        break;
+                        case "skin_lesions":
+                        deck.add(skinLesions());
+                        break; 
+                        case "necrosis":
+                        deck.add(necrosis());
+                        break;
+                        case "sneezing":
+                        deck.add(sneezing());
+                        break;
+                        case "total_organ_failure":
+                        deck.add(totalOrganFailure());
+                        break;
+                        case "sore_throat":
+                        deck.add(soreThroat());
+                        break;
+                        case "air_transmission":
+                        deck.add(airTransmission());
+                        break;
+                        case "water_transmission":
+                        deck.add(waterTransmission());
+                        break;
+                        case "vomiting":
+                        deck.add(vomiting());
+                        break;
+                        case "haemorrhagic_shock":
+                        deck.add(haemorrhagicShock());
+                        break;
+                        case "systemic_infection":
+                        deck.add(systemicInfection());
+                        break;
+                        case "internal_haemorrhaging":
+                        deck.add(internalHaemorrhaging());
+                        break;
+                        case "buboes":
+                        deck.add(buboes());
+                        break;
+                        case "abcesses":
+                        deck.add(abcesses());
+                        break;
+                    }
+                });             
+            });
         return deck;
     }
 
@@ -229,6 +366,11 @@ public class TraitReference {
     public static TraitCard confusion(){
         return new TraitCard("confusion", 11, List.of(new AirborneTrait(), new ColdTrait()));
     }
+
+    public static TraitCard blindness(){
+        return new TraitCard("blindness", 2, List.of(new LethalityTrait()));
+    }
+
  
 
 
