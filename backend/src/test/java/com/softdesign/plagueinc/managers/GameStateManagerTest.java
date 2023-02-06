@@ -22,6 +22,7 @@ import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.models.plague.PlagueColor;
 
 @SpringBootTest
 public class GameStateManagerTest {
@@ -34,13 +35,13 @@ public class GameStateManagerTest {
 
         //init
         GameState gameState = new GameState();
-        Plague plague = new Plague(DiseaseType.BACTERIA);
+        Plague plague = new Plague(PlagueColor.RED);
         gameState.setCurrTurn(plague);
 
-        Map<String, Optional<Plague>> cities =  new HashMap<>(Map.of("jeffistan", Optional.of(plague), 
-        "sus", Optional.empty(), 
-        "tata", Optional.empty(),
-        "doda", Optional.empty()));
+        List<Optional<Plague>> cities =  new ArrayList<>(List.of(Optional.of(plague), 
+        Optional.empty(), 
+        Optional.empty(),
+        Optional.empty()));
 
         Country country = new Country("null", Continent.AFRICA, Optional.empty(), List.of(), cities);
         HashMap<Continent, List<Country>> map = new HashMap<>(Map.of(Continent.AFRICA, new ArrayList<>(List.of(country))));
@@ -77,11 +78,11 @@ public class GameStateManagerTest {
 
     @Test
     void testPlaceCountry(){
-        GameState gameState = new GameState();
-        gameStateManager.setGameState(gameState);
-        Plague plague = new Plague(DiseaseType.BACTERIA);
+        String gameStateId = gameStateManager.createGame();
+        GameState gameState = gameStateManager.getGameState(gameStateId);
+        Plague plague = new Plague(PlagueColor.RED);
         gameState.setCurrTurn(plague);
-        Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), Map.of());
+        Country country = new Country("gobble", Continent.AFRICA, java.util.Optional.empty(), List.of(), List.of());
         gameState.setCountryDeck(new ArrayDeque<>(List.of(country)));
 
         Map<Continent, List<Country>> board = Stream.of(Continent.values()).collect(Collectors.toMap(Function.identity(), continent -> new ArrayList<>()));
@@ -89,7 +90,7 @@ public class GameStateManagerTest {
 
         gameState.setPlayState(PlayState.CHOOSECOUNTRY);
 
-        gameStateManager.drawCountryAction(plague.getPlayerId());
+        gameStateManager.drawCountryAction(gameStateId, plague.getPlayerId());
         gameState.proceedState();
 
         //Now play the country

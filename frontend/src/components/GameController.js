@@ -1,17 +1,17 @@
 import React, { Component } from "react";
-import CountryCard from "./CountryCard";
+import GameView from "./GameView";
 
-class BoardCountrySlot extends Component{
+class GameController extends Component{
 
     render() {
         return(
             <React.Fragment>{
                 <div>
-                    <CountryCard />
+                    <GameView />
                 </div>   
     }       </React.Fragment>
         )
     }
 }
 
-export default BoardCountrySlot;
+export default GameController;
