@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.disease.InfectivityTrait;
+import com.softdesign.plagueinc.models.traits.disease.LethalityTrait;
 import com.softdesign.plagueinc.models.traits.restriction.ColdTrait;
 import com.softdesign.plagueinc.models.traits.restriction.HeatTrait;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
@@ -16,8 +17,6 @@ public class TraitReference {
     public static List<TraitCard> getDefaultTraitDeck(){
         //TODO: Implement default trait deck
         ArrayList<TraitCard> deck = new ArrayList<>();
-        IntStream.range(0,10).forEach(val -> {
-
             deck.add(coldResistance());
             deck.add(psychosis());
             deck.add(paranoia());
@@ -60,8 +59,6 @@ public class TraitReference {
             deck.add(sweating());
             deck.add(pneumonia());
             deck.add(confusion());
-
-        });
         return deck;
     }
 
@@ -134,7 +131,7 @@ public class TraitReference {
     }
 
     public static TraitCard noseBleed(){
-        return new("nose_bleed",2, List.of(new InfectivityTrait()));
+        return new TraitCard("nose_bleed",2, List.of(new InfectivityTrait()));
     }
 
     public static TraitCard cannibalism(){
