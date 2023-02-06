@@ -45,55 +45,124 @@ public class GameStateManager {
     }
 
     public void voteToStart(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).startGame(plagueId);
     }
 
     public void proceedState(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).proceedState();
     }
 
     public Country drawCountryAction(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         return games.get(gameStateId).drawCountryAction();
     }
 
     public Country selectCountryFromRevealed(String gameStateId, UUID plagueId, String name){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
+        if(name == null){
+            throw new IllegalArgumentException("Must provide name");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         return games.get(gameStateId).selectCountryFromRevealed(name);
     }
 
     public void playCountry(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).makeCountryChoice(CountryChoice.PLAY);
     }
 
     public void discardCountry(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).makeCountryChoice(CountryChoice.DISCARD);
     }
 
     public void evolveTrait(String gameStateId, UUID plagueId, int traitSlot, int traitIndex){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).evolveTrait(traitSlot, traitIndex);
     }
 
     public void skipEvolve(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).skipEvolve();
     }
 
     public void attemptInfect(String gameStateId, UUID plagueId, String countryName){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
+        if(countryName == null){
+            throw new IllegalArgumentException("Must provide countryName");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).attemptInfect(countryName);
     }
 
     public void rollDeathDice(String gameStateId, UUID plagueId){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         games.get(gameStateId).verifyTurn(plagueId);
         games.get(gameStateId).rollDeathDice();
     }
 
     public GameState getGameState(String gameStateId){
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
         return games.get(gameStateId);
     }
 
