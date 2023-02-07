@@ -31,6 +31,7 @@ public class GameStateManager {
         String randomId;
         while(games.containsKey(randomId = generateRandomId())){}
         games.put(randomId, new GameState());
+        logger.info("[UTIL] Created game lobby with ID ({})", randomId);
         return randomId;
     }
 
