@@ -38,16 +38,14 @@ public class GameStateEndpoints {
     //POST Endpoints
 
 /**
- * The @PostMapping(&quot;/createGame&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Post Mapping for /createGame used to
+ * create a new game and return its ID
  *
- * @param esponseEntity&lt;String Return a string to the client
+ * @param 
  *
- * @return A responseentity&lt;string&gt;
+ * @return a String representing the Game ID;
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PostMapping("/createGame")
     public ResponseEntity<String> createGame(){
@@ -60,16 +58,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/joinGame&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /joinGame used to
+ * join a game using a given game ID
  *
- * @param esponseEntity&lt;UUID Return the uuid of the game state
+ * @param gameStateId String
+ * @param joinGameDTO JoinGameDTO
  *
- * @return A responseentity&lt;uuid&gt; which is a type of httpstatus
+ * @return UUID
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/joinGame")
     public ResponseEntity<UUID> joinGame(@RequestParam("gameStateId") String gameStateId, @RequestBody JoinGameDTO joinGameDTO){
@@ -82,16 +79,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/voteToStart&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /voteToStart used to
+ * allow users to submit their vote to start the game
  *
- * @param esponseEntity&lt;Void Return no data
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return ?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */    
     @PatchMapping("/voteToStart")
     public ResponseEntity<Void> voteToStart(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -108,16 +104,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/proceedState&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /proceedState used to
+ * proceed the players current state in turn
  *
- * @param esponseEntity&lt;Void Return no data
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return A responseentity&lt;void&gt;?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/proceedState")
     public ResponseEntity<Void> proceedState(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -131,17 +126,16 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/drawCountry&quot;)
-    public function accomplishes:
+ * The Patch Mapping for /drawCountry used to:
  *  - Draws a country from the GameState's deck of countries.
  *  - Returns the drawn Country object to the caller.
- 
  *
- * @param esponseEntity&lt;Country Return the country that was drawn
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return A responseentity&lt;country&gt; object
+ * @return Country
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/drawCountry")
     public ResponseEntity<Country> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -155,16 +149,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/takeCountry&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /takeCountry used to
+ * take a revealed country card
  *
- * @param esponseEntity&lt;Country Return the country object to the caller
+ * @param gameStateId String
+ * @param takeCountryDTO TakeCountryDTO
  *
- * @return A responseentity&lt;country&gt;?
+ * @return Country
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/takeCountry")
     public ResponseEntity<Country> takeCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
@@ -179,14 +172,13 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/playCountry&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /playCountry used to
+ * play the given country card
  *
- * @param esponseEntity&lt;Void Return a 204 no content response
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return A responseentity&lt;void&gt; object
+ * @return void
  *
  * @docauthor Trelent
  */
@@ -202,16 +194,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/discardCountry&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /discardCountry used to
+ * discard the revealed country card
  *
- * @param esponseEntity&lt;Void Return a response with no body
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return ?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/discardCountry")
     public ResponseEntity<Void> discardCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -225,16 +216,16 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/evolve&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /evolve used when a
+ * player decides to evolve a trait in their hand
  *
- * @param esponseEntity&lt;Void Return an empty response
+ * @param gameStateId String
+ * @param playerId PlayerID
+ * @param evolveDTO EvolveDTO
  *
- * @return ?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/evolve")
     public ResponseEntity<Void> evolve(@RequestParam("gameStateId") String gameStateId, @RequestBody EvolveDTO evolveDTO){
@@ -248,16 +239,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/skipEvolution&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /skipEvolution used to
+ * skip the evolution phase of a players turn
  *
- * @param esponseEntity&lt;Void Return no content
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return ?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/skipEvolution")
     public ResponseEntity<Void> skipEvolution(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -271,16 +261,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/infect&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /infect used to
+ * infect a country on the board
  *
- * @param esponseEntity&lt;Void Return a 204 no content response
+ * @param gameStateId String
+ * @param infectDTO InfectDTO
  *
- * @return A responseentity&lt;void&gt;?
+ * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/infect")
     public ResponseEntity<Void> infect(@RequestParam("gameStateId") String gameStateId, @RequestBody InfectDTO infectDTO){
@@ -294,16 +283,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The @PostMapping(&quot;/rollDeathDice&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Patch Mapping for /rollDeathDice used to
+ * roll the dice at the end of a turn i necessary
  *
- * @param esponseEntity&lt;Integer Return the number of death dice rolled
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
- * @return A responseentity&lt;integer&gt;?
+ * @return Integer
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/rollDeathDice")
     public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
@@ -318,17 +306,15 @@ public class GameStateEndpoints {
 
 
 /**
- * The @GetMapping(&quot;/gameState&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Get Mapping for /gameState used to
+ * retrieve the current game State as JSON
  *
- * @param esponseEntity&lt;GameState Return a gamestate object
+ * @param gameStateId String
  *
- * @return A responseentity&lt;gamestate&gt;
+ * @return GameState
  *
- * @docauthor Trelent
- */    //GET Mappings
+ * @docauthor Nick Lee
+ */
     @GetMapping("/gameState")
     public ResponseEntity<GameState> getGameState(@RequestParam("gameStateId") String gameStateId){
         return ResponseEntity.ok().body(gameStateManager.getGameState(gameStateId));
@@ -336,16 +322,15 @@ public class GameStateEndpoints {
 
     
 /**
- * The @GetMapping(&quot;/getHand&quot;)
-    public function accomplishes:
- * 
- * 
+ * The Get Mapping for /getHand used to
+ * retrieve the hand of a given player
  *
- * @param esponseEntity&lt;List&lt;String&gt; Return the list of cards in hand
+ * @param gameStateId String
+ * @param playerId PlayerID
  *
  * @return A list of strings
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @GetMapping("/getHand")
     public ResponseEntity<List<String>> getHand(@RequestParam("gameStateId") String gameStateId, @RequestParam("playerId") UUID playerId){
