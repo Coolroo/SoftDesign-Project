@@ -59,6 +59,7 @@ code {
   height: auto;
   float: left;
   position:relative;
+  margin-left: 5%;
 }
 
 .cardInHand{
@@ -67,7 +68,7 @@ code {
 }
 
 .cardInHand:hover{
-  width: 22%;
+  width: 23%;
 }
 
 .boardDNASlot{
@@ -107,6 +108,7 @@ code {
   white-space: nowrap;
   max-width:30%;
   float: left;
+  margin-left: 2%;
 }
 
 .bottomBar{
