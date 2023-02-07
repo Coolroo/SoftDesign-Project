@@ -7,9 +7,19 @@ const postRequestOptions = {
 }; 
 
 class GameController extends Component{
-    gameID
-    gameState;
-    UUID;
+
+    state = {
+        board: {
+            AFRICA: [],
+            NORTH_AMERICA: [],
+            SOUTH_AMERICA: [],
+            OCEANIA: [],
+            ASIA: [],
+            EUROPE: []
+        }
+        
+        
+    };
 
     async createGame(){
         this.gameID = await fetch(`http://localhost:8080/createGame`, postRequestOptions)
@@ -22,13 +32,34 @@ class GameController extends Component{
 
     async getState(id){
         await fetch('http://localhost:8080/gameState?gameStateId=' + id)
-            .then((response) => response.json())
-            .then((data) => this.gameState = data);
-        this.forceUpdate();
+            .then(function(response) {
+                return response.json();
+            }).then(data => {
+                console.log(data);
+                this.setState((prevState) => {
+                    return {
+                        ...prevState,
+                    board: data.board,
+                    countryDiscard: data.countryDiscard,
+                    currTurn: data.currTurn,
+                    eventDiscard:data.eventDiscard,
+                    eventPlayer:data.eventPlayer,
+                    plagues: data.plagues,
+                    playState: data.plagues,
+                    readyToProceed: data.readyToProceed,
+                    revealedCountries: data.revealedCountries,
+                    suddenDeath: data.suddenDeath,
+                    traitDiscard: data.traitDiscard,
+                    turnOrder: data.turnOrder,
+                    votesToStart: data.votesToStart
+                    };
+                },
+                () => {});
+            })
     }
        
     render() {
-        console.log(this.gameState)
+        console.log(this.state.board.AFRICA)
         return(
             <React.Fragment>{
                 <div>
