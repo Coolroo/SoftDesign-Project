@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,7 +71,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/joinGame")
+    @PatchMapping("/joinGame")
     public ResponseEntity<UUID> joinGame(@RequestParam("gameStateId") String gameStateId, @RequestBody JoinGameDTO joinGameDTO){
         try{
             return ResponseEntity.ok().body(gameStateManager.joinGame(gameStateId, joinGameDTO.plagueColor()));
@@ -92,7 +93,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */    
-    @PostMapping("/voteToStart")
+    @PatchMapping("/voteToStart")
     public ResponseEntity<Void> voteToStart(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.voteToStart(gameStateId, playerId.playerId());
@@ -118,7 +119,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/proceedState")
+    @PatchMapping("/proceedState")
     public ResponseEntity<Void> proceedState(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.proceedState(gameStateId, playerId.playerId());
@@ -142,7 +143,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/drawCountry")
+    @PatchMapping("/drawCountry")
     public ResponseEntity<Country> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             Country country = gameStateManager.drawCountryAction(gameStateId, playerId.playerId());
@@ -165,7 +166,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/takeCountry")
+    @PatchMapping("/takeCountry")
     public ResponseEntity<Country> takeCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
         //First ensure that the player calling is the right one
         try{
@@ -189,7 +190,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/playCountry")
+    @PatchMapping("/playCountry")
     public ResponseEntity<Void> playCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.playCountry(gameStateId, playerId.playerId());
@@ -212,7 +213,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/discardCountry")
+    @PatchMapping("/discardCountry")
     public ResponseEntity<Void> discardCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.discardCountry(gameStateId, playerId.playerId());
@@ -235,7 +236,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/evolve")
+    @PatchMapping("/evolve")
     public ResponseEntity<Void> evolve(@RequestParam("gameStateId") String gameStateId, @RequestBody EvolveDTO evolveDTO){
         try{
             gameStateManager.evolveTrait(gameStateId, evolveDTO.playerId(),evolveDTO.traitSlot(), evolveDTO.traitIndex());
@@ -258,7 +259,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/skipEvolution")
+    @PatchMapping("/skipEvolution")
     public ResponseEntity<Void> skipEvolution(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.skipEvolve(gameStateId, playerId.playerId());
@@ -281,7 +282,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/infect")
+    @PatchMapping("/infect")
     public ResponseEntity<Void> infect(@RequestParam("gameStateId") String gameStateId, @RequestBody InfectDTO infectDTO){
         try{
             gameStateManager.attemptInfect(gameStateId, infectDTO.playerId(),infectDTO.countryName());
@@ -304,7 +305,7 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PostMapping("/rollDeathDice")
+    @PatchMapping("/rollDeathDice")
     public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.rollDeathDice(gameStateId, playerId.playerId());
@@ -333,6 +334,7 @@ public class GameStateEndpoints {
         return ResponseEntity.ok().body(gameStateManager.getGameState(gameStateId));
     }
 
+    
 /**
  * The @GetMapping(&quot;/getHand&quot;)
     public function accomplishes:
