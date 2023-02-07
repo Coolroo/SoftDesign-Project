@@ -727,6 +727,7 @@ public class GameState {
         //Discard the country that was killed, and mark it as killed by this player
         discardCountry(country);
         getCurrTurn().killCountry(country);
+        board.get(country.getContinent()).remove(country);
         //give everyone who was present an event card, and log the kill
         infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(drawEventCard()));
         logger.info("[DEATH] Player {} successfully killed {}", currTurn.getColor(), country.getCountryName());
@@ -873,14 +874,27 @@ public class GameState {
         .forEach(card -> plague.addDnaPoints(card.cost())));
 
         //Lucky escape bonus
+        luckyEscape();
+
+        //Continent Killer Bonus
+        continentKiller();
+
+        //Ultimate Wipeout Bonus
+        ultimateWipeout();
+
+        playState = PlayState.END_OF_GAME;
+    }
+
+    private void luckyEscape(){
         plagues.stream()
         .collect(Collectors.toMap(Function.identity(), Plague::getPlagueTokens))
         .entrySet()
         .stream()
         .filter(entry -> entry.getValue() == plagues.stream().map(Plague::getPlagueTokens).max(Comparator.comparing(tokens -> tokens)).get())
         .forEach(entry -> entry.getKey().addDnaPoints(LUCKY_ESCAPE_POINTS));
+    }
 
-        //Continent Killer Bonus
+    private void continentKiller(){
         Map<Continent, Long> maxKillsPerContinent = Stream.of(Continent.values())
         .collect(Collectors
         .toMap(Function.identity(), continent -> plagues.stream()
@@ -894,8 +908,9 @@ public class GameState {
                 .filter(country -> country.getContinent() == continent)
                 .count() == maxKillsPerContinent.get(continent))
             .forEach(plague -> plague.addDnaPoints(CONTINENT_KILLER_POINTS)));
+    }
 
-        //Ultimate Wipeout Bonus
+    private void ultimateWipeout(){
         final int largestNumCities = plagues.stream()
         .map(plague -> plague.getKilledCountries())
         .flatMap(set -> set.stream())
@@ -907,8 +922,6 @@ public class GameState {
         plagues.stream()
         .filter(plague -> plague.getKilledCountries().stream().anyMatch(country -> country.getCities().size() == largestNumCities))
         .forEach(plague -> plague.addDnaPoints(ULTIMATE_WIPEOUT_POINTS));
-
-        playState = PlayState.END_OF_GAME;
     }
 
     private List<Plague> getWinners(){
@@ -919,6 +932,7 @@ public class GameState {
         int maxPoints = plagues.stream().mapToInt(plague -> plague.getDnaPoints()).max().getAsInt();
         return plagues.stream().filter(plague -> plague.getDnaPoints() == maxPoints).toList();
     }
+    
 
     //Util
 
