@@ -105,7 +105,7 @@ public class GameStateEndpoints {
 
 /**
  * The Patch Mapping for /proceedState used to
- * proceed the players current state in turn
+ * proceed the game state
  *
  * @param gameStateId String
  * @param playerId PlayerID
@@ -128,20 +128,20 @@ public class GameStateEndpoints {
 /**
  * The Patch Mapping for /drawCountry used to:
  *  - Draws a country from the GameState's deck of countries.
- *  - Returns the drawn Country object to the caller.
+ *  - Returns the name of the drawn Country object to the caller.
  *
  * @param gameStateId String
  * @param playerId PlayerID
  *
- * @return Country
+ * @return Country name
  *
  * @docauthor Nick Lee
  */
     @PatchMapping("/drawCountry")
-    public ResponseEntity<Country> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
+    public ResponseEntity<String> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             Country country = gameStateManager.drawCountryAction(gameStateId, playerId.playerId());
-            return ResponseEntity.ok().body(country);
+            return ResponseEntity.ok().body(country.getCountryName());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -155,16 +155,16 @@ public class GameStateEndpoints {
  * @param gameStateId String
  * @param takeCountryDTO TakeCountryDTO
  *
- * @return Country
+ * @return name of Country
  *
  * @docauthor Nick Lee
  */
     @PatchMapping("/takeCountry")
-    public ResponseEntity<Country> takeCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
+    public ResponseEntity<String> takeCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
         //First ensure that the player calling is the right one
         try{
             Country country = gameStateManager.selectCountryFromRevealed(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
-            return ResponseEntity.ok().body(country);
+            return ResponseEntity.ok().body(country.getCountryName());
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
