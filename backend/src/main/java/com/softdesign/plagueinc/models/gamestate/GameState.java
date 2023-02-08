@@ -35,6 +35,7 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
@@ -83,9 +84,9 @@ public class GameState {
     private List<TraitCard> traitDiscard;
 
     @JsonIgnore
-    private ArrayDeque<Event> eventDeck;
+    private ArrayDeque<EventCard> eventDeck;
 
-    private List<Event> eventDiscard;
+    private List<EventCard> eventDiscard;
 
     private Map<PlagueColor, Boolean> votesToStart;
 
@@ -173,7 +174,7 @@ public class GameState {
     }
 
     private void initEventDeck(){
-        List<Event> defaultEventDeck = EventReference.getDefaultEventDeck();
+        List<EventCard> defaultEventDeck = EventReference.getDefaultEventDeck();
         Collections.shuffle(defaultEventDeck);
         eventDeck = new ArrayDeque<>(defaultEventDeck);
         eventDiscard = new ArrayList<>();
@@ -776,14 +777,14 @@ public class GameState {
 
     //Event Deck
 
-    private Event drawEventCard(){
+    private EventCard drawEventCard(){
         if(eventDeck.size() == 0){
             refillEventDeck();
         }
         return eventDeck.pop();
     }
 
-    private void discardEventCard(Event card){
+    private void discardEventCard(EventCard card){
         eventDiscard.add(card);
     }
 
@@ -792,7 +793,7 @@ public class GameState {
             logger.warn("Attempted to refill the deck when there were cards present in it");
             throw new IllegalAccessError();
         }
-        List<Event> discard = eventDiscard.stream().toList();
+        List<EventCard> discard = eventDiscard.stream().toList();
         Collections.shuffle(discard);
         eventDeck = new ArrayDeque<>(discard);
         eventDiscard = new ArrayList<>();

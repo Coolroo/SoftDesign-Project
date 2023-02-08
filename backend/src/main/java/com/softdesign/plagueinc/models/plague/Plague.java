@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.Event;
+import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
@@ -53,7 +54,7 @@ public class Plague {
     private List<TraitCard> hand;
 
     @JsonIgnore
-    private List<Event> eventCards;
+    private List<EventCard> eventCards;
 
     private Set<Country> killedCountries;
 
@@ -94,7 +95,7 @@ public class Plague {
         hand.add(card);
     }
 
-    public void addEventCard(Event event){
+    public void addEventCard(EventCard event){
         if(eventCards.size() >= 3){
             throw new IllegalStateException("Cannot add a new event card to this players hand as they already have 3 cards");
         }
@@ -209,14 +210,14 @@ public class Plague {
         return card;        
     }
 
-    public void useEventCard(int eventCardIndex){
+    public void useEventCard(int eventCardIndex, GameState gameState){
         if(eventCardIndex < 0 || eventCardIndex >= getEventCards().size()){
             throw new IllegalArgumentException("Cannot play event card which has an index which is out of bounds (eventCardIndex=" + eventCardIndex + ", eventCard Size=" + getEventCards().size() + ")");
         }
-        Event event = getEventCards().get(eventCardIndex);
+        EventCard event = getEventCards().get(eventCardIndex);
         
         try{
-            event.resolveEffect(this);
+            event.resolveEffect(this, gameState);
             getEventCards().remove(eventCardIndex);
         }
         //TODO: Implement error checking
