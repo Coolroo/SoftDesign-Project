@@ -152,7 +152,6 @@ public class GameState {
         this.votesToStart = new HashMap<>();
         this.actions = new Stack<>();
         this.readyToProceed = false;
-        //TODO: Implement sudden death logic
         this.suddenDeath = false;
         
         this.infectChoice = Optional.empty();

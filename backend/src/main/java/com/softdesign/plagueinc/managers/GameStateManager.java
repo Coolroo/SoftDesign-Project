@@ -160,6 +160,16 @@ public class GameStateManager {
         games.get(gameStateId).rollDeathDice();
     }
 
+    public void playEventCard(String gameStateId, UUID plagueId, int eventCardIndex){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
+        games.get(gameStateId).playEventCard(eventCardIndex, plagueId);
+    }
+
     public GameState getGameState(String gameStateId){
         if(gameStateId == null){
             throw new IllegalArgumentException("Must provide gameStateId");

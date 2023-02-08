@@ -45,7 +45,6 @@ public class TraitSlot {
         @Override
         public void serialize(Ability value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException {
-            // TODO Auto-generated method stub
             gen.writeString(value.getName());
             
         }
