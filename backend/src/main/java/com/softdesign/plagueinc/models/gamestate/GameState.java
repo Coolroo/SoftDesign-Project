@@ -29,6 +29,7 @@ import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
 import com.softdesign.plagueinc.models.action_log.CountryAction;
 import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
+import com.softdesign.plagueinc.models.action_log.DrawEventCard;
 import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
 import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
 import com.softdesign.plagueinc.models.action_log.KillCountryAction;
@@ -580,12 +581,7 @@ public class GameState {
 
         validateState(PlayState.INFECT);
 
-        Country country = this.board
-        .values()
-        .stream()
-        .flatMap(continent -> continent.stream())
-        .filter(thisCountry -> thisCountry.getCountryName().equals(countryName))
-        .findFirst().orElseThrow(IllegalArgumentException::new);
+        Country country = getCountry(countryName);
 
         logger.info("[INFECT] Received request to infect country {}", country.getCountryName());
         this.infectChoice.get().complete(country);
@@ -693,7 +689,11 @@ public class GameState {
         this.currTurn.killCountry(country);
         board.get(country.getContinent()).remove(country);
         //give everyone who was present an event card, and log the kill
-        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(drawEventCard()));
+        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> {
+            EventCard drawnCard = drawEventCard();
+            plague.addEventCard(drawnCard);
+            this.logAction(new DrawEventCard(this.playState, plague, drawnCard));
+        });
         logger.info("[DEATH] Player {} successfully killed {}", this.currTurn.getColor(), country.getCountryName());
         logAction(new KillCountryAction(country, roll, true));
     }
@@ -981,7 +981,7 @@ public class GameState {
         }
     }
 
-    private Plague getPlague(UUID playerId){
+    public Plague getPlague(UUID playerId){
         return this.plagues
         .stream()
         .filter(pla -> pla.getPlayerId().equals(playerId))
@@ -989,19 +989,125 @@ public class GameState {
         .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
     }
 
-    //EVENT CARDS
-
-    public void playEventCard(int eventCardIndex, UUID playerId){
-        Plague plague = getPlague(playerId);
-        EventCard eventCard = plague.getEventCards().get(eventCardIndex);
-        eventCard.condition(plague, this);
-        eventCard.resolveEffect(plague, this);
+    public Country getCountry(String countryName){
+        return this.board.values()
+        .stream()
+        .flatMap(continent -> continent.stream())
+        .filter(country -> country.getCountryName().equals(countryName))
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
     }
 
     public void verifyTurn(UUID playerId){
         if(!this.currTurn.getPlayerId().equals(playerId)){
             throw new IllegalAccessError();
         }
+    }
+
+    //EVENT CARDS
+
+    public void playEventCard(int eventCardIndex, UUID playerId){
+        List<DrawEventCard> drawnThisTurn = actions.stream()
+        .filter(action -> action instanceof DrawEventCard)
+        .map(action -> (DrawEventCard)action)
+        .filter(action -> action.getPlague().getPlayerId().equals(playerId))
+        .toList();
+
+        Plague plague = getPlague(playerId);
+        EventCard eventCard = plague.getEventCards().get(eventCardIndex);
+        if(drawnThisTurn.stream().anyMatch(action -> action.getCard().equals(eventCard))){
+            logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.name());
+            throw new IllegalAccessError();
+        }
+        eventCard.condition(plague, this);
+        eventCard.resolveEffect(plague, this);
+    }
+
+    public void makeCitySelection(UUID playerId, String countryName, int cityIndex){
+        validateState(PlayState.EVENT_CHOICE);
+        
+        if(!eventPlayer.get().getPlayerId().equals(playerId)){
+            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
+            throw new IllegalAccessError();
+        }
+        
+        if(this.citySelectionFuture.isEmpty()){
+            logger.warn("Player attempted to make a city selection, but there is no future to make a selection");
+            throw new IllegalStateException();
+        }
+
+        Country country = getCountry(countryName);
+
+        this.citySelectionFuture.get().complete(new CitySelection(country, cityIndex));
+    }
+
+    public void makeCountrySelection(UUID playerId, String countryName){
+        validateState(PlayState.EVENT_CHOICE);
+        
+        if(!eventPlayer.get().getPlayerId().equals(playerId)){
+            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
+            throw new IllegalAccessError();
+        }
+        
+        if(this.countrySelectionFuture.isEmpty()){
+            logger.warn("Player attempted to make a country selection, but there is no future to make a selection");
+            throw new IllegalStateException();
+        }
+        
+        Country country = getCountry(countryName);
+
+        this.countrySelectionFuture.get().complete(country);
+    }
+
+    public void makeTraitCardSelection(UUID playerId, int traitCardSlot){
+        validateState(PlayState.EVENT_CHOICE);
+        
+        if(!eventPlayer.get().getPlayerId().equals(playerId)){
+            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
+            throw new IllegalAccessError();
+        }
+        
+        if(this.selectTraitCard.isEmpty()){
+            logger.warn("Player attempted to make a trait selection, but there is no future to make a selection");
+            throw new IllegalStateException();
+        }
+
+        TraitCard card = eventPlayer.get().getHand().get(traitCardSlot);
+        
+
+        this.selectTraitCard.get().complete(card);
+    }
+
+    public void makeContinentSelection(UUID playerId, Continent continent){
+        validateState(PlayState.EVENT_CHOICE);
+        
+        if(!eventPlayer.get().getPlayerId().equals(playerId)){
+            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
+            throw new IllegalAccessError();
+        }
+
+        if(this.selectContinent.isEmpty()){
+            logger.warn("Player attempted to make a continent selection, but there is no future to make a selection");
+            throw new IllegalStateException();
+        }
+
+        this.selectContinent.get().complete(continent);
+    }
+
+    public void makeTraitSlotSelection(UUID playerId, int slotIndex){
+        validateState(PlayState.EVENT_CHOICE);
+
+        if(!eventPlayer.get().getPlayerId().equals(playerId)){
+            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
+            throw new IllegalAccessError();
+        }
+        
+        if(this.selectTraitSlot.isEmpty()){
+            logger.warn("Player attempted to make a trait slot selection, but there is no future to make a selection");
+            throw new IllegalStateException();
+        }
+
+        this.selectTraitSlot.get().complete(slotIndex);
     }
 
 }

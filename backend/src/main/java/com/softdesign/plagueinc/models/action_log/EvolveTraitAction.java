@@ -3,6 +3,9 @@ package com.softdesign.plagueinc.models.action_log;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 
+import lombok.Getter;
+
+@Getter
 public class EvolveTraitAction extends ActionLog {
 
     private TraitCard card;
@@ -12,7 +15,4 @@ public class EvolveTraitAction extends ActionLog {
         this.card = card;
     }
 
-    public TraitCard getCard(){
-        return card;
-    }
 }

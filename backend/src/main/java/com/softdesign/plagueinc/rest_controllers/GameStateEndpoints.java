@@ -20,11 +20,16 @@ import org.springframework.web.server.ResponseStatusException;
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
+import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerInfo;
 import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
 @RestController
@@ -317,6 +322,61 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PatchMapping("/chooseCity")
+    public ResponseEntity<Void> chooseCity(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCityDTO chooseCityDTO){
+        try{
+            gameStateManager.makeCitySelection(gameStateId, chooseCityDTO.playerId(), chooseCityDTO.countryName(), chooseCityDTO.cityIndex());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseCountry")
+    public ResponseEntity<Void> chooseCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
+        try{
+            gameStateManager.makeCountrySelection(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseTraitCard")
+    public ResponseEntity<Void> chooseTraitCard(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
+        try{
+            gameStateManager.makeTraitCardSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseContinent")
+    public ResponseEntity<Void> chooseContinent(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseContinentDTO chooseContinentDTO){
+        try{
+            gameStateManager.makeContinentSelection(gameStateId, chooseContinentDTO.playerId(), chooseContinentDTO.continent());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseTraitSlot")
+    public ResponseEntity<Void> chooseTraitSlot(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
+        try{
+            gameStateManager.makeTraitSlotSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 /**
  * The Get Mapping for /gameState used to
@@ -335,30 +395,28 @@ public class GameStateEndpoints {
 
     
 /**
- * The Get Mapping for /getHand used to
- * retrieve the hand of a given player
+ * The Get Mapping for /getPlayerInfo used to
+ * retrieve the non-abstracted player info
  *
  * @param gameStateId String
  * @param playerId PlayerID
  *
- * @return A list of strings
+ * @return Info about the specified player
  *
  * @docauthor Nick Lee
  */
-    @GetMapping("/getHand")
-    public ResponseEntity<List<String>> getHand(@RequestParam("gameStateId") String gameStateId, @RequestParam("playerId") UUID playerId){
+    @GetMapping("/getPlayerInfo")
+    public ResponseEntity<PlayerInfo> getPlayerInfo(@RequestParam("gameStateId") String gameStateId, @RequestParam("playerId") UUID playerId){
         try{
-            List<String> hand = gameStateManager.getGameState(gameStateId)
-            .getPlagues()
-            .stream()
-            .filter(plague -> plague.getPlayerId().equals(playerId))
-            .findFirst()
-            .orElseThrow(IllegalArgumentException::new)
+            Plague plague = gameStateManager.getGameState(gameStateId).getPlague(playerId);
+            List<String> hand = plague
             .getHand()
             .stream()
             .map(card -> card.name())
             .toList();
-            return ResponseEntity.ok().body(hand);
+
+            List<String> eventCards = plague.getEventCards().stream().map(card -> card.name()).toList();
+            return ResponseEntity.ok().body(new PlayerInfo(hand, eventCards, plague));
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Player ID", e);

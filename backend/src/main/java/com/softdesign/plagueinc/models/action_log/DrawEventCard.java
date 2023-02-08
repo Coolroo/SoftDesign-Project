@@ -7,14 +7,16 @@ import com.softdesign.plagueinc.models.plague.Plague;
 import lombok.Getter;
 
 @Getter
-public class PlayEventCardAction extends ActionLog {
+public class DrawEventCard extends ActionLog {
+
     private Plague plague;
+    private EventCard card;
 
-    private EventCard event;
-
-    public PlayEventCardAction(PlayState playState, Plague plague, EventCard event){
-        super(playState);
+    public DrawEventCard(PlayState state, Plague plague, EventCard card) {
+        super(state);
+        //TODO Auto-generated constructor stub
         this.plague = plague;
-        this.event = event;
+        this.card = card;
     }
+    
 }
