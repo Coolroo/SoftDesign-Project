@@ -981,7 +981,7 @@ public class GameState {
         }
     }
 
-    private Plague getPlague(UUID playerId){
+    public Plague getPlague(UUID playerId){
         return this.plagues
         .stream()
         .filter(pla -> pla.getPlayerId().equals(playerId))
