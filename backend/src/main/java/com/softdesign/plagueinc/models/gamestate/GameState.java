@@ -152,12 +152,12 @@ public class GameState {
         this.votesToStart = new HashMap<>();
         this.actions = new Stack<>();
         this.readyToProceed = false;
-        //TODO: Implement sudden death logic
         this.suddenDeath = false;
         
         this.infectChoice = Optional.empty();
         this.countryChoice = Optional.empty();
         this.deathFuture = Optional.empty();
+        this.eventPlayer = Optional.empty();
 
         initTraitDeck();
         initEventDeck();
@@ -196,17 +196,10 @@ public class GameState {
     }
 
     public void startGame(UUID playerId){
-        if(getPlayState() != PlayState.INITIALIZATION){
-            logger.warn("[INITIALIZATION] (Plague {}) voted to start the game, but the game has already started", playerId);
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.INITIALIZATION);
         
         //Find the plague with this UUID
-        Plague plague = getPlagues()
-        .stream()
-        .filter(pla -> pla.getPlayerId().equals(playerId))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
+        Plague plague = getPlague(playerId);
 
         if(votesToStart.get(plague.getColor())){
             logger.warn("[INITIALIZATION] (Plague {}) attempted to vote to start the game, but has already voted to start", plague.getPlayerId());
@@ -218,7 +211,7 @@ public class GameState {
         logger.info("[INITIALIZATION] (Plague {}) has voted to start the game", playerId);
 
         //If all players have voted to start, and there are more than 1 players in the lobby, then start the game
-        if(getVotesToStart().values().stream().allMatch(bool -> bool.booleanValue()) && getPlagues().size() > 1){
+        if(this.votesToStart.values().stream().allMatch(bool -> bool.booleanValue()) && this.plagues.size() > 1){
             logger.info("[INITIALIZATION] All players have voted to start the game, initializing game");
             
             //init starting country deck
@@ -226,13 +219,12 @@ public class GameState {
             Collections.shuffle(startingCountries);
 
             //Init turn order
-            List<Plague> players = getPlagues();
-            Collections.shuffle(players);
-            setTurnOrder(players);
+            Collections.shuffle(this.plagues);
+            setTurnOrder(this.plagues);
 
             //Go through all the players, and initialize their play states (Starting country, starting DNA, starting Traits)
-            IntStream.range(0, players.size()).forEach(index -> {
-                Plague thisPlague = players.get(index);
+            IntStream.range(0, this.plagues.size()).forEach(index -> {
+                Plague thisPlague = this.plagues.get(index);
                 //Give player default points
                 thisPlague.addDnaPoints(index);
 
@@ -264,40 +256,36 @@ public class GameState {
 
     //Join Game
     public UUID joinGame(PlagueColor plagueColor){
-        if(getPlayState() != PlayState.INITIALIZATION)
-        {
-            logger.warn("[INITIALIZATION] Player attempted to join game but game is already started");
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.INITIALIZATION);
 
-        if(getPlagues().size() >= MAX_PLAYERS){
+        if(this.plagues.size() >= MAX_PLAYERS){
             logger.warn("[INITIALIZATION]  Player attempted to join game but game is already full");
             throw new IllegalStateException();
         }
 
-        if(plagues.stream().anyMatch(plague -> plague.getColor() == plagueColor)){
+        if(this.plagues.stream().anyMatch(plague -> plague.getColor() == plagueColor)){
             logger.warn("[INITIALIZATION]  Player attempted to join game as {}, but player is already {}", plagueColor, plagueColor);
             throw new IllegalArgumentException();
         }
 
         //Create a new plague, and add it to the gameState
         Plague plague = new Plague(plagueColor);
-        plagues.add(plague);
-        getVotesToStart().put(plague.getColor(), false);
+        this.plagues.add(plague);
+        this.votesToStart.put(plague.getColor(), false);
         logger.info("[INITIALIZATION] Plague with id ({}) created, and assigned color {}", plague.getPlayerId(), plague.getColor());
         return plague.getPlayerId();
     }
 
     public void proceedState(){
-        if(!isReadyToProceed()){
-            logger.warn("Player attempted to proceed the game state before it was ready to move on (Current state: {})", getPlayState());
+        if(!this.readyToProceed){
+            logger.warn("Player attempted to proceed the game state before it was ready to move on (Current state: {})", this.playState);
             throw new IllegalStateException();
         }
 
-        logger.info("Proceeding state from {}", playState);
+        logger.info("Proceeding state from {}", this.playState);
     
         setReadyToProceed(false);
-        switch(getPlayState()){
+        switch(this.playState){
             case START_OF_TURN:
                 //Score DNA Points & Mark as ready to proceed
                 setPlayState(PlayState.DNA);
@@ -305,11 +293,11 @@ public class GameState {
                 break;
             case DNA:
                 //Move on to choose country phase
-                setPlayState(PlayState.CHOOSECOUNTRY);
+                setPlayState(this.suddenDeath ? PlayState.EVOLVE : PlayState.CHOOSECOUNTRY);
                 break;
             case CHOOSECOUNTRY:
                 //init playCountry future so player can asynchronously choose which action to take, and then proceed to the play country state
-                Country chosenCountry = getActions()
+                Country chosenCountry = this.actions
                 .stream()
                 .filter(action -> action.getClass().equals(CountryChosenAction.class))
                 .map(action -> (CountryChosenAction)action)
@@ -326,7 +314,7 @@ public class GameState {
                 break;
             case EVOLVE:
                 //Initialize the infect future, and then move onto the infect phase
-                initInfectFuture(getCurrTurn().getTraitCount(TraitType.INFECTIVITY));
+                initInfectFuture(this.currTurn.getTraitCount(TraitType.INFECTIVITY));
                 setPlayState(PlayState.INFECT);
                 break;
             case INFECT:
@@ -341,7 +329,7 @@ public class GameState {
                 break;
             case END_OF_TURN:
     
-                if(suddenDeath && checkForWin()){
+                if(this.suddenDeath && checkForWin()){
                     endGame();
                     return;
                 }
@@ -367,12 +355,12 @@ public class GameState {
     //DNA PHASE
 
     public void scoreDNAPoints(){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[DNA] Attempted to score DNA points multiple times");
             throw new IllegalStateException();
         }
         //Get all countries controlled by the player
-        List<Country> controllingCountries = getBoard()
+        List<Country> controllingCountries = this.board
         .values()
         .stream()
         .flatMap(list -> list.stream())
@@ -381,7 +369,7 @@ public class GameState {
         .toList();
 
         //Give DNA points to the player
-        getCurrTurn().addDnaPoints(controllingCountries.size());
+        this.currTurn.addDnaPoints(controllingCountries.size());
         logger.info("[DNA] Plague ({}) scored {} points", currTurn.getColor(), controllingCountries.size());
         setReadyToProceed(true);
     }
@@ -389,14 +377,11 @@ public class GameState {
     //COUNTRY PHASE
 
     public Country drawCountryAction(){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[CHOOSECOUNTRY] Attempted to draw a country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
         }
-        if(getPlayState() != PlayState.CHOOSECOUNTRY){
-            logger.error("[CHOOSECOUNTRY] Attempting to draw a country, when the play state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.CHOOSECOUNTRY);
 
         //draw country, and log the action
         Country drawnCountry = drawCountry();
@@ -407,14 +392,11 @@ public class GameState {
     }
 
     public Country selectCountryFromRevealed(String countryName){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[CHOOSECOUNTRY] Attempted to choose a revealed country card when the gamestate was ready to proceed");
             throw new IllegalStateException();
         }
-        if(getPlayState() != PlayState.CHOOSECOUNTRY){
-            logger.error("[CHOOSECOUNTRY] Attempting to choose a country, when the play state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.CHOOSECOUNTRY);
 
         //choose country, and log the action
         Country chosenCountry = takeRevealedCountry(countryName);
@@ -426,13 +408,13 @@ public class GameState {
     }
 
     private void initCountryChoiceFuture(Country drawnCountry){
-        if(countryChoice.isPresent()){
-            countryChoice.get().cancel(true);
+        if(this.countryChoice.isPresent()){
+            this.countryChoice.get().cancel(true);
         }
         
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        countryChoice = Optional.of(new CompletableFuture<>());
-        countryChoice.get().whenComplete((result, ex) -> {
+        this.countryChoice = Optional.of(new CompletableFuture<>());
+        this.countryChoice.get().whenComplete((result, ex) -> {
             if(ex != null){
                 logger.error("[COUNTRYCHOICE] Error with country choice future EX: {}", ex.getMessage());
                 initCountryChoiceFuture(drawnCountry);
@@ -446,7 +428,7 @@ public class GameState {
                     try{
                         placeCountry(drawnCountry);
                         setReadyToProceed(true);
-                        countryChoice = Optional.empty();
+                        this.countryChoice = Optional.empty();
                     }
                     catch(ContinentFullException e){
                         logger.warn("[COUNTRYCHOICE] Continent {} is full, cannot place {} there", drawnCountry.getContinent(), drawnCountry.getCountryName());
@@ -457,7 +439,7 @@ public class GameState {
                         //Discard the country
                         discardCountry(drawnCountry);
                         setReadyToProceed(true);
-                        countryChoice = Optional.empty();
+                        this.countryChoice = Optional.empty();
                     break;
                 }
             }
@@ -465,62 +447,57 @@ public class GameState {
     }
 
     public void makeCountryChoice(CountryChoice choice){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[COUNTRYCHOICE] Attempted to make a country choice, but the gamestate is ready to proceed");
             throw new IllegalStateException();
         }
-        if(countryChoice.isEmpty()){
+        if(this.countryChoice.isEmpty()){
             logger.error("[COUNTRYCHOICE] Attempted to make a country choice, but the gamestate is not waiting for a country choice");
             throw new IllegalStateException();
         }
-        if(getPlayState() != PlayState.PLAYCOUNTRY){
-            logger.error("[COUNTRYCHOICE] Attempting to play a country, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.PLAYCOUNTRY);
+        
         logger.info("[COUNTRYCHOICE] Received country choice of {}", choice.toString());
-        countryChoice.get().complete(choice);
+        this.countryChoice.get().complete(choice);
     } 
 
     public void placeCountry(Country country){
-        if(isReadyToProceed() && playState != PlayState.INITIALIZATION){
+        if(this.readyToProceed && playState != PlayState.INITIALIZATION){
             logger.warn("[COUNTRYCHOICE] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        if(getBoard().values().stream().flatMap(list -> list.stream()).anyMatch(placedCountry -> placedCountry.equals(country))){
+        if(this.board.values().stream().flatMap(list -> list.stream()).anyMatch(placedCountry -> placedCountry.equals(country))){
             logger.error("[COUNTRYCHOICE] Attempted to place a country {} that is already placed", country.getCountryName());
             throw new IllegalStateException("Country already placed");
         }
 
-        if(getBoard().get(country.getContinent()).size() == MAX_COUNTRIES.get(country.getContinent())){
+        if(this.board.get(country.getContinent()).size() == MAX_COUNTRIES.get(country.getContinent())){
             logger.warn("[COUNTRYCHOICE] Cannot place country as the continent {} is full", country.getContinent());
             throw new ContinentFullException();
         }
 
-        getBoard().get(country.getContinent()).add(country);
+        this.board.get(country.getContinent()).add(country);
         logAction(new CountryAction(CountryChoice.PLAY, country));
         logger.info("[COUNTRYCHOICE] placed {} in {}", country.getCountryName(), country.getContinent());
         setReadyToProceed(true);
     }
 
     public void discardCountryAction(Country country){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[COUNTRYCHOICE] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        if(getPlayState() != PlayState.PLAYCOUNTRY){
-            logger.error("[COUNTRYCHOICE] Attempting to discard a country, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.CHOOSECOUNTRY);
 
         discardCountry(country);
 
-        getCurrTurn().clearHand().forEach(card -> discardTraitCard(card));
+        this.currTurn.clearHand().forEach(card -> discardTraitCard(card));
 
-        drawTraitCards(5).forEach(card -> getCurrTurn().drawTraitCard(card));
+        drawTraitCards(5).forEach(card -> this.currTurn.drawTraitCard(card));
 
         logAction(new CountryAction(CountryChoice.DISCARD, country));
 
-        logger.info("[COUNTRYCHOICE] {} discarded {}, and drew a new hand", currTurn.getColor(), country.getCountryName());
+        logger.info("[COUNTRYCHOICE] {} discarded {}, and drew a new hand", this.currTurn.getColor(), country.getCountryName());
 
         setReadyToProceed(true);
     }
@@ -528,19 +505,16 @@ public class GameState {
     //EVOLVE PHASE
 
     public void evolveTrait(int traitSlot, int traitIndex){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[EVOLVE] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        if(getPlayState() != PlayState.EVOLVE){
-            logger.error("[EVOLVE] Attempting to evolve a trait, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.EVOLVE);
         try{
             //Try and evolve the card, and log it
-            TraitCard card = getCurrTurn().evolveTrait(traitIndex, traitSlot);
+            TraitCard card = this.currTurn.evolveTrait(traitIndex, traitSlot);
             logAction(new EvolveTraitAction(card));
-            logger.info("[EVOLVE] Player {} evolved {} into slot {}", currTurn.getColor(), card.name(), traitSlot);
+            logger.info("[EVOLVE] Player {} evolved {} into slot {}", this.currTurn.getColor(), card.name(), traitSlot);
             setReadyToProceed(true);
         }
         catch(Exception e){
@@ -550,29 +524,26 @@ public class GameState {
     }
 
     public void skipEvolve(){
-        if(getPlayState() != PlayState.EVOLVE){
-            logger.error("[EVOLVE] Attempting to skip evolution, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
-        logger.info("[EVOLVE] Player {} skipped evolve phase", currTurn.getColor());
+        validateState(PlayState.EVOLVE);
+        logger.info("[EVOLVE] Player {} skipped evolve phase", this.currTurn.getColor());
         setReadyToProceed(true);
     }
 
     //INFECT PHASE
 
     private void initInfectFuture(int citiesToInfect){
-        if(infectChoice.isPresent()){
-            infectChoice.get().cancel(true);
+        if(this.infectChoice.isPresent()){
+            this.infectChoice.get().cancel(true);
         }
-        if(unableToMove(getCurrTurn())){
-            logger.info("[INFECT] (Plague {}) cannot place any tokens, skipping infect phase", getCurrTurn().getPlayerId());
+        if(unableToMove(this.currTurn)){
+            logger.info("[INFECT] (Plague {}) cannot place any tokens, skipping infect phase", this.currTurn.getPlayerId());
             setReadyToProceed(true);
             return;
         }
 
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        infectChoice = Optional.of(new CompletableFuture<>());
-        infectChoice.get().whenComplete((country, ex) -> {
+        this.infectChoice = Optional.of(new CompletableFuture<>());
+        this.infectChoice.get().whenComplete((country, ex) -> {
             if(ex != null){
                 logger.warn("[INFECT] Error with infection choice future EX: {}", ex.getMessage());
                 initInfectFuture(citiesToInfect);
@@ -581,12 +552,12 @@ public class GameState {
                 //Try and infect the chosen country, then if there are any more countries that the player can infect, create another future
                 try{
                     infectCountry(country);
-                    if(citiesToInfect > 1 && getCurrTurn().getPlagueTokens() > 0){
+                    if(citiesToInfect > 1 && this.currTurn.getPlagueTokens() > 0){
                         initInfectFuture(citiesToInfect - 1);
                     }
                     else{
                         setReadyToProceed(true);
-                        infectChoice = Optional.empty();
+                        this.infectChoice = Optional.empty();
                     }
                 }
                 catch(Exception e){
@@ -598,20 +569,18 @@ public class GameState {
     }
 
     public void attemptInfect(String countryName){
-        if(getPlayState() != PlayState.INFECT){
-            logger.warn("[INFECT] Attempted to infect {}, but the game state is {}", countryName, getPlayState());
-            throw new IllegalStateException();
-        }
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[INFECT] Attempted to infect {}, but the game is ready to proceed", countryName);
             throw new IllegalStateException();
         }
-        if(infectChoice.isEmpty()){
+        if(this.infectChoice.isEmpty()){
             logger.warn("[INFECT] Attempted to infect {}, but the future is not valid", countryName);
             throw new IllegalStateException();
         }
 
-        Country country = getBoard()
+        validateState(PlayState.INFECT);
+
+        Country country = this.board
         .values()
         .stream()
         .flatMap(continent -> continent.stream())
@@ -619,25 +588,22 @@ public class GameState {
         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         logger.info("[INFECT] Received request to infect country {}", country.getCountryName());
-        infectChoice.get().complete(country);
+        this.infectChoice.get().complete(country);
     }
 
     private void infectCountry(Country country){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[INFECT] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        if(getPlayState() != PlayState.INFECT){
-            logger.error("[INFECT] Attempting to infect a country, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
-        if(!canInfectCountry(country, getCurrTurn())){
-            logger.warn("[INFECT] (Plague {}) attempted to infect {}, but is unable to", getCurrTurn().getPlayerId(), country.getCountryName());
+        validateState(PlayState.INFECT);
+        if(!canInfectCountry(country, this.currTurn)){
+            logger.warn("[INFECT] (Plague {}) attempted to infect {}, but is unable to", this.currTurn.getPlayerId(), country.getCountryName());
             throw new IllegalStateException();
         }
 
-        country.infectCountry(getCurrTurn());
-        logger.info("[INFECT] Player {} successfully infected country {}", currTurn.getColor(), country.getCountryName());
+        country.infectCountry(this.currTurn);
+        logger.info("[INFECT] Player {} successfully infected country {}", this.currTurn.getColor(), country.getCountryName());
         logAction(new InfectCountryAction(country));
 
     }
@@ -646,51 +612,52 @@ public class GameState {
 
     private void initDeathPhase(){
         //get all killable countries, then make a future from them
-       List<Country> choppingBlock = getBoard()
+       List<Country> choppingBlock = this.board
         .values()
         .stream()
         .flatMap(continent -> continent.stream())
         .filter(country -> country.isFull())
-        .filter(country -> country.getControllers().contains(getCurrTurn()))
+        .filter(country -> country.getControllers().contains(this.currTurn))
         .toList();
-        logger.info("[DEATH] Player {} will now attempt to kill countries {}", currTurn.getColor(), choppingBlock);
+        logger.info("[DEATH] Player {} will now attempt to kill countries {}", this.currTurn.getColor(), choppingBlock);
         createDeathFuture(choppingBlock);
     }
 
     public int rollDeathDice(){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.error("[DEATH] Attempted to roll the death dice when the game state is ready to proceed");
             throw new IllegalStateException();
         }
-        if(deathFuture.isEmpty()){
+        if(this.deathFuture.isEmpty()){
             logger.error("[DEATH] Attempted to roll death dice, but the future is invalid!");
             throw new IllegalStateException("Death state issue");
         }
+        validateState(PlayState.DEATH);
         int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
-        logger.info("[DEATH] Plague {} rolled a {}!", currTurn.getColor(), randomNum);
-        deathFuture.get().complete(randomNum);
+        logger.info("[DEATH] Plague {} rolled a {}!", this.currTurn.getColor(), randomNum);
+        this.deathFuture.get().complete(randomNum);
         return randomNum;
     }
 
     private void createDeathFuture(List<Country> choppingBlock){
-        if(deathFuture.isPresent()){
+        if(this.deathFuture.isPresent()){
             deathFuture.get().cancel(true);
         }
 
         if(choppingBlock.size() == 0){
-            logger.info("[DEATH] (Plague {}) has no countries to kill, skipping death phase", getCurrTurn().getPlayerId());
+            logger.info("[DEATH] (Plague {}) has no countries to kill, skipping death phase", this.currTurn.getPlayerId());
             setReadyToProceed(true);
             return;
         }
         //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        deathFuture = Optional.of(new CompletableFuture<>());
-        deathFuture.get().whenComplete((result, ex) -> {
+        this.deathFuture = Optional.of(new CompletableFuture<>());
+        this.deathFuture.get().whenComplete((result, ex) -> {
             if(ex != null){
                 logger.warn("[DEATH] Death future failed! For reason EX: {}", ex.getMessage());
             }
             else{
                 //If the players lethality is greater than or equal to the roll, then kill the country
-                if(result <= getCurrTurn().getTraitCount(TraitType.LETHALITY)){
+                if(result <= this.currTurn.getTraitCount(TraitType.LETHALITY)){
                     killCountry(choppingBlock.get(0), result);
                 }
                 else{
@@ -708,14 +675,11 @@ public class GameState {
     }
 
     private void killCountry(Country country, int roll){
-        if(isReadyToProceed()){
+        if(this.readyToProceed){
             logger.warn("[DEATH] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        if(getPlayState() != PlayState.DEATH){
-            logger.error("[DEATH] Attempting to kill a country, but the game state is {}", getPlayState());
-            throw new IllegalStateException();
-        }
+        validateState(PlayState.DEATH);
 
         //Give players points based on how many tokens they have in the country
         Map<Plague, Long> infectionCount = country.getInfectionByPlayer();
@@ -726,16 +690,16 @@ public class GameState {
 
         //Discard the country that was killed, and mark it as killed by this player
         discardCountry(country);
-        getCurrTurn().killCountry(country);
+        this.currTurn.killCountry(country);
         board.get(country.getContinent()).remove(country);
         //give everyone who was present an event card, and log the kill
         infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(drawEventCard()));
-        logger.info("[DEATH] Player {} successfully killed {}", currTurn.getColor(), country.getCountryName());
+        logger.info("[DEATH] Player {} successfully killed {}", this.currTurn.getColor(), country.getCountryName());
         logAction(new KillCountryAction(country, roll, true));
     }
 
     private void failKillCountry(Country country, int roll){
-        logger.info("[DEATH] Player {} failed to kill {}", currTurn.getColor(), country.getCountryName());
+        logger.info("[DEATH] Player {} failed to kill {}", this.currTurn.getColor(), country.getCountryName());
         logAction(new KillCountryAction(country, roll, false));
     }
 
@@ -750,26 +714,25 @@ public class GameState {
     }
 
     public TraitCard drawTraitCard(){
-        if(getTraitDeck().size() == 0){
+        if(this.traitDeck.size() == 0){
             refillTraitDeck();
         }
 
-        return getTraitDeck().pop();
+        return this.traitDeck.pop();
     }
 
     private void discardTraitCard(TraitCard card){
-        traitDiscard.add(card);
+        this.traitDiscard.add(card);
     }
 
     private void refillTraitDeck(){
 
-        if(getTraitDeck().size() > 0){
+        if(this.traitDeck.size() > 0){
             logger.warn("Attempted to refill the deck when there were cards present in it");
             throw new IllegalAccessError();
         }
-        List<TraitCard> discard = getTraitDiscard().stream().toList();
-        Collections.shuffle(discard);
-        traitDeck = new ArrayDeque<>(discard);
+        Collections.shuffle(this.traitDiscard);
+        traitDeck = new ArrayDeque<>(this.traitDiscard);
         traitDiscard = new ArrayList<>();
         logger.info("Refilled trait deck");
     }
@@ -777,24 +740,23 @@ public class GameState {
     //Event Deck
 
     private EventCard drawEventCard(){
-        if(eventDeck.size() == 0){
+        if(this.eventDeck.size() == 0){
             refillEventDeck();
         }
-        return eventDeck.pop();
+        return this.eventDeck.pop();
     }
 
-    private void discardEventCard(EventCard card){
-        eventDiscard.add(card);
+    public void discardEventCard(EventCard card){
+        this.eventDiscard.add(card);
     }
 
     private void refillEventDeck(){
-        if(eventDeck.size() > 0){
+        if(this.eventDeck.size() > 0){
             logger.warn("Attempted to refill the deck when there were cards present in it");
             throw new IllegalAccessError();
         }
-        List<EventCard> discard = eventDiscard.stream().toList();
-        Collections.shuffle(discard);
-        eventDeck = new ArrayDeque<>(discard);
+        Collections.shuffle(this.eventDiscard);
+        eventDeck = new ArrayDeque<>(this.eventDiscard);
         eventDiscard = new ArrayList<>();
         logger.info("Refilled Event Deck");
     }
@@ -802,40 +764,40 @@ public class GameState {
     //Country Deck
 
     private Country drawCountry(){
-        if(countryDeck.size() == 0){
+        if(this.countryDeck.size() == 0){
             logger.error("Attempted to draw a card from the country deck, but it is empty");
             throw new IndexOutOfBoundsException();
         }
-        return countryDeck.pop();
+        return this.countryDeck.pop();
     }
 
     private void discardCountry(Country country){
-        if(countryDiscard.contains(country)){
+        if(this.countryDiscard.contains(country)){
             logger.warn("Attempted to discard country {}, but this country has already been discarded", country.getCountryName());
             return;
         }
-        countryDiscard.add(country);
+        this.countryDiscard.add(country);
     }
 
     private Country takeRevealedCountry(String countryName){
         
-        Country takenCountry = revealedCountries.stream()
+        Country takenCountry = this.revealedCountries.stream()
         .collect(Collectors.toMap(country -> country.getCountryName(), Function.identity()))
         .get(countryName);
 
-        revealedCountries.remove(takenCountry);
+        this.revealedCountries.remove(takenCountry);
 
         refillRevealedCountries();
-        if(revealedCountries.size() == 0){
+        if(this.revealedCountries.size() == 0){
             suddenDeath = true;
         }
         return takenCountry;
     }
 
     private void refillRevealedCountries(){
-        while(revealedCountries.size() < 3 && countryDeck.size() > 0){
-            Country revealed = countryDeck.pop();
-            revealedCountries.add(revealed);
+        while(this.revealedCountries.size() < 3 && this.countryDeck.size() > 0){
+            Country revealed = this.countryDeck.pop();
+            this.revealedCountries.add(revealed);
             logger.info("Revealed {}", revealed.getCountryName());
         }
     }
@@ -843,32 +805,32 @@ public class GameState {
     //Action Logging
 
     public void logAction(ActionLog actionLog){
-        actions.push(actionLog);
+        this.actions.push(actionLog);
     }
 
     private void clearActionLog(){
-        actions = new Stack<>();
+        this.actions = new Stack<>();
     }
 
     //Turn Order
 
     private void setTurnOrder(List<Plague> order){
-        turnOrder = new LinkedList<>(order);
+        this.turnOrder = new LinkedList<>(order);
     }
 
     private Plague shiftTurnOrder(){
-        Plague oldTurn = turnOrder.poll();
-        turnOrder.add(oldTurn);
-        return turnOrder.peek();
+        Plague oldTurn = this.turnOrder.poll();
+        this.turnOrder.add(oldTurn);
+        return this.turnOrder.peek();
     }
 
-    //End of turn    
+    //End of game 
 
     private void endGame(){
         //TODO: Add logic for first to do X gets it
         
         //Give each plague points from their trait slots
-        plagues.forEach(plague -> plague.getTraitSlots()
+        this.plagues.forEach(plague -> plague.getTraitSlots()
         .stream()
         .filter(slot -> slot.hasCard()).map(slot -> slot.getCard())
         .forEach(card -> plague.addDnaPoints(card.cost())));
@@ -886,23 +848,23 @@ public class GameState {
     }
 
     private void luckyEscape(){
-        plagues.stream()
+        this.plagues.stream()
         .collect(Collectors.toMap(Function.identity(), Plague::getPlagueTokens))
         .entrySet()
         .stream()
-        .filter(entry -> entry.getValue() == plagues.stream().map(Plague::getPlagueTokens).max(Comparator.comparing(tokens -> tokens)).get())
+        .filter(entry -> entry.getValue() == this.plagues.stream().map(Plague::getPlagueTokens).max(Comparator.comparing(tokens -> tokens)).get())
         .forEach(entry -> entry.getKey().addDnaPoints(LUCKY_ESCAPE_POINTS));
     }
 
     private void continentKiller(){
         Map<Continent, Long> maxKillsPerContinent = Stream.of(Continent.values())
         .collect(Collectors
-        .toMap(Function.identity(), continent -> plagues.stream()
+        .toMap(Function.identity(), continent -> this.plagues.stream()
             .map(Plague::getKilledCountries)
             .map(set -> set.stream().filter(country -> country.getContinent() == continent)).count())); 
         
         Stream.of(Continent.values())
-        .forEach(continent -> plagues.stream()
+        .forEach(continent -> this.plagues.stream()
             .filter(plague -> plague.getKilledCountries()
                 .stream()
                 .filter(country -> country.getContinent() == continent)
@@ -911,7 +873,7 @@ public class GameState {
     }
 
     private void ultimateWipeout(){
-        final int largestNumCities = plagues.stream()
+        final int largestNumCities = this.plagues.stream()
         .map(plague -> plague.getKilledCountries())
         .flatMap(set -> set.stream())
         .max(Comparator.comparing(country -> country.getCities().size()))
@@ -919,25 +881,23 @@ public class GameState {
         .getCities()
         .size();
 
-        plagues.stream()
+        this.plagues
+        .stream()
         .filter(plague -> plague.getKilledCountries().stream().anyMatch(country -> country.getCities().size() == largestNumCities))
         .forEach(plague -> plague.addDnaPoints(ULTIMATE_WIPEOUT_POINTS));
     }
 
-    private List<Plague> getWinners(){
-        if(playState != PlayState.END_OF_GAME){
-            logger.warn("Attempted to get the game winner, but the game is still in progress");
-            throw new IllegalAccessError();
-        }
-        int maxPoints = plagues.stream().mapToInt(plague -> plague.getDnaPoints()).max().getAsInt();
-        return plagues.stream().filter(plague -> plague.getDnaPoints() == maxPoints).toList();
+    public List<Plague> getWinners(){
+        validateState(PlayState.END_OF_GAME);
+        int maxPoints = this.plagues.stream().mapToInt(plague -> plague.getDnaPoints()).max().getAsInt();
+        return this.plagues.stream().filter(plague -> plague.getDnaPoints() == maxPoints).toList();
     }
     
 
     //Util
 
     private boolean isPlagueEradicated(Plague plague){
-        return board.values()
+        return this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
         .flatMap(country -> country.getCities().stream())
@@ -947,7 +907,7 @@ public class GameState {
     }
 
     private boolean unableToMove(Plague plague){
-        return board.values()
+        return this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
         .noneMatch(country -> canInfectCountry(country, plague));
@@ -977,7 +937,7 @@ public class GameState {
         }
 
         //Get all countries that the player infects
-        List<Country> infectedCountries = board.values()
+        List<Country> infectedCountries = this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
         .filter(thisCountry -> thisCountry.getCities().stream().filter(Optional::isPresent).map(Optional::get).anyMatch(thisPlague -> thisPlague.equals(plague)))
@@ -1007,17 +967,39 @@ public class GameState {
 
     private boolean checkForWin(){
 
-        return getPlagues().stream().anyMatch(plague -> isPlagueEradicated(plague) || unableToMove(plague));
+        return this.plagues.stream().anyMatch(plague -> isPlagueEradicated(plague) || unableToMove(plague));
+    }
+
+    private void validateState(PlayState state){
+        if(state != this.playState){
+            logger.warn("Attempted to verify game state, but discrepency found {} != {}", state, this.playState);
+            throw new IllegalStateException("State Invalid");
+        }
+        if(this.eventPlayer.isPresent()){
+            logger.warn("Attempted to validate state, but there is an event player present ({})", this.eventPlayer.get().getColor());
+            throw new IllegalStateException("Event Player Present");
+        }
+    }
+
+    private Plague getPlague(UUID playerId){
+        return this.plagues
+        .stream()
+        .filter(pla -> pla.getPlayerId().equals(playerId))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
     }
 
     //EVENT CARDS
 
-    private void playEventCard(EventCard eventCard){
-        //TODO: Implement this method
+    public void playEventCard(int eventCardIndex, UUID playerId){
+        Plague plague = getPlague(playerId);
+        EventCard eventCard = plague.getEventCards().get(eventCardIndex);
+        eventCard.condition(plague, this);
+        eventCard.resolveEffect(plague, this);
     }
 
     public void verifyTurn(UUID playerId){
-        if(!getCurrTurn().getPlayerId().equals(playerId)){
+        if(!this.currTurn.getPlayerId().equals(playerId)){
             throw new IllegalAccessError();
         }
     }

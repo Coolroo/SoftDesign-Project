@@ -62,7 +62,6 @@ public class TraitReference {
     }};
 
     public static List<TraitCard> getDefaultTraitDeck(){
-        //TODO: Implement default trait deck
         List<TraitCard> deck = new ArrayList<>();
             idToCount.keySet().forEach(id -> {
                 IntStream.range(0, idToCount.get(id)).forEach(val -> {

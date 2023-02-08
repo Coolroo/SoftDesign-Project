@@ -23,6 +23,7 @@ import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
@@ -298,6 +299,17 @@ public class GameStateEndpoints {
     public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.rollDeathDice(gameStateId, playerId.playerId());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/playEventCard")
+    public ResponseEntity<Void> playEventCard(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayEventCardDTO playEventCardDTO){
+        try{
+            gameStateManager.playEventCard(gameStateId, playEventCardDTO.playerId(), playEventCardDTO.eventCardIndex());
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);

@@ -1,21 +1,19 @@
 package com.softdesign.plagueinc.models.countries;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.softdesign.plagueinc.exceptions.CityFullException;
 import com.softdesign.plagueinc.exceptions.CountryFullException;
 import com.softdesign.plagueinc.models.plague.Plague;
-import com.softdesign.plagueinc.models.plague.PlagueColor;
 import com.softdesign.plagueinc.models.serializers.CountrySerializers.CitySerializer;
 import com.softdesign.plagueinc.models.traits.restriction.RestrictionTrait;
 import com.softdesign.plagueinc.models.traits.travel.TravelTrait;
@@ -25,6 +23,7 @@ import lombok.Getter;
 @Getter
 public class Country {
 
+    Logger logger = LoggerFactory.getLogger(Country.class);
     private String countryName;
 
     @JsonIgnore
@@ -77,6 +76,7 @@ public class Country {
         }
 
         if(plague.getPlagueTokens() == 0){
+            logger.warn("(Plague {}) cannot infect this city as they have no tokens left!", plague.getColor());
             throw new IllegalStateException("Plague " + plague.getPlayerId() + " cannot infect this city as they don't have any plague tokens left!");
         }
 
