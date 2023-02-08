@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
@@ -53,7 +54,7 @@ public class GameStateEndpoints {
             return ResponseEntity.ok().body(gameStateManager.createGame());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 
@@ -74,7 +75,7 @@ public class GameStateEndpoints {
             return ResponseEntity.ok().body(gameStateManager.joinGame(gameStateId, joinGameDTO.plagueColor()));
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, e.getMessage(), e);
         }
     }
 
@@ -95,7 +96,7 @@ public class GameStateEndpoints {
             gameStateManager.voteToStart(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
             //logger.error(e.toString());
             //return ResponseEntity.badRequest().eTag(e.getMessage()).build();
         }
@@ -120,7 +121,7 @@ public class GameStateEndpoints {
             gameStateManager.proceedState(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -144,7 +145,7 @@ public class GameStateEndpoints {
             return ResponseEntity.ok().body(country.getCountryName());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 
@@ -167,7 +168,7 @@ public class GameStateEndpoints {
             return ResponseEntity.ok().body(country.getCountryName());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 
@@ -188,7 +189,7 @@ public class GameStateEndpoints {
             gameStateManager.playCountry(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -210,7 +211,7 @@ public class GameStateEndpoints {
             gameStateManager.discardCountry(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -233,7 +234,7 @@ public class GameStateEndpoints {
             gameStateManager.evolveTrait(gameStateId, evolveDTO.playerId(),evolveDTO.traitSlot(), evolveDTO.traitIndex());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -255,7 +256,7 @@ public class GameStateEndpoints {
             gameStateManager.skipEvolve(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -277,7 +278,7 @@ public class GameStateEndpoints {
             gameStateManager.attemptInfect(gameStateId, infectDTO.playerId(),infectDTO.countryName());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -299,7 +300,7 @@ public class GameStateEndpoints {
             gameStateManager.rollDeathDice(gameStateId, playerId.playerId());
         }
         catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -348,7 +349,7 @@ public class GameStateEndpoints {
             return ResponseEntity.ok().body(hand);
         }
         catch(Exception e){
-            return ResponseEntity.badRequest().eTag("Invalid player ID").build();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Player ID", e);
         }
         
         
