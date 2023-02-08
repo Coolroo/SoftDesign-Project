@@ -26,7 +26,6 @@ public class EventReference {
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
             if(!gameState.getCurrTurn().equals(plague)){
-                "test";
                 throw new IllegalStateException("It is not this players turn");
             }
         };
