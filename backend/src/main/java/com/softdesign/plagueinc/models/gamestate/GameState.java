@@ -29,6 +29,7 @@ import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
 import com.softdesign.plagueinc.models.action_log.CountryAction;
 import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
+import com.softdesign.plagueinc.models.action_log.DrawEventCard;
 import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
 import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
 import com.softdesign.plagueinc.models.action_log.KillCountryAction;
@@ -693,7 +694,11 @@ public class GameState {
         this.currTurn.killCountry(country);
         board.get(country.getContinent()).remove(country);
         //give everyone who was present an event card, and log the kill
-        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> plague.addEventCard(drawEventCard()));
+        infectionCount.keySet().stream().filter(plague -> plague.getEventCards().size() < 3).forEach(plague -> {
+            EventCard drawnCard = drawEventCard();
+            plague.addEventCard(drawnCard);
+            this.logAction(new DrawEventCard(this.playState, plague, drawnCard));
+        });
         logger.info("[DEATH] Player {} successfully killed {}", this.currTurn.getColor(), country.getCountryName());
         logAction(new KillCountryAction(country, roll, true));
     }
@@ -992,8 +997,18 @@ public class GameState {
     //EVENT CARDS
 
     public void playEventCard(int eventCardIndex, UUID playerId){
+        List<DrawEventCard> drawnThisTurn = actions.stream()
+        .filter(action -> action instanceof DrawEventCard)
+        .map(action -> (DrawEventCard)action)
+        .filter(action -> action.getPlague().getPlayerId().equals(playerId))
+        .toList();
+
         Plague plague = getPlague(playerId);
         EventCard eventCard = plague.getEventCards().get(eventCardIndex);
+        if(drawnThisTurn.stream().anyMatch(action -> action.getCard().equals(eventCard))){
+            logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.name());
+            throw new IllegalAccessError();
+        }
         eventCard.condition(plague, this);
         eventCard.resolveEffect(plague, this);
     }
