@@ -34,7 +34,6 @@ import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
 import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
-import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.Plague;
@@ -1013,7 +1012,7 @@ public class GameState {
 
     //EVENT CARDS
 
-    private void playEventCard(Event eventCard){
+    private void playEventCard(EventCard eventCard){
         //TODO: Implement this method
     }
 

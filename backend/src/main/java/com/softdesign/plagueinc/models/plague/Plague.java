@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
-import com.softdesign.plagueinc.models.events.Event;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
