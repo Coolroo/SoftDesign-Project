@@ -21,7 +21,10 @@ import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
@@ -312,6 +315,61 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> playEventCard(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayEventCardDTO playEventCardDTO){
         try{
             gameStateManager.playEventCard(gameStateId, playEventCardDTO.playerId(), playEventCardDTO.eventCardIndex());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseCity")
+    public ResponseEntity<Void> chooseCity(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCityDTO chooseCityDTO){
+        try{
+            gameStateManager.makeCitySelection(gameStateId, chooseCityDTO.playerId(), chooseCityDTO.countryName(), chooseCityDTO.cityIndex());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseCountry")
+    public ResponseEntity<Void> chooseCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
+        try{
+            gameStateManager.makeCountrySelection(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseTraitCard")
+    public ResponseEntity<Void> chooseTraitCard(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
+        try{
+            gameStateManager.makeTraitCardSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseContinent")
+    public ResponseEntity<Void> chooseContinent(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseContinentDTO chooseContinentDTO){
+        try{
+            gameStateManager.makeContinentSelection(gameStateId, chooseContinentDTO.playerId(), chooseContinentDTO.continent());
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/chooseTraitSlot")
+    public ResponseEntity<Void> chooseTraitSlot(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
+        try{
+            gameStateManager.makeTraitSlotSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
