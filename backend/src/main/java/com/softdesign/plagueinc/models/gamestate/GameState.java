@@ -994,6 +994,12 @@ public class GameState {
         .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
     }
 
+    public void verifyTurn(UUID playerId){
+        if(!this.currTurn.getPlayerId().equals(playerId)){
+            throw new IllegalAccessError();
+        }
+    }
+
     //EVENT CARDS
 
     public void playEventCard(int eventCardIndex, UUID playerId){
@@ -1011,12 +1017,6 @@ public class GameState {
         }
         eventCard.condition(plague, this);
         eventCard.resolveEffect(plague, this);
-    }
-
-    public void verifyTurn(UUID playerId){
-        if(!this.currTurn.getPlayerId().equals(playerId)){
-            throw new IllegalAccessError();
-        }
     }
 
 }
