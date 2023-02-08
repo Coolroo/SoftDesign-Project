@@ -32,7 +32,6 @@ public class EventReference {
 
         GameStateAction event = (plague, gameState) -> {
             plague.addDnaPoints(4);
-            return;
         };
         return new EventCard("dna_flow", condition, event);
     }
