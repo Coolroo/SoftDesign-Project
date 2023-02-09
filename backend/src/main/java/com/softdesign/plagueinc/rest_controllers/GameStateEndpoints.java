@@ -8,9 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -78,7 +81,10 @@ public class GameStateEndpoints {
     @PatchMapping("/joinGame")
     public ResponseEntity<UUID> joinGame(@RequestParam("gameStateId") String gameStateId, @RequestBody JoinGameDTO joinGameDTO){
         try{
-            return ResponseEntity.ok().body(gameStateManager.joinGame(gameStateId, joinGameDTO.plagueColor()));
+            UUID plagueId = gameStateManager.joinGame(gameStateId, joinGameDTO.plagueColor());
+            broadcastGameState(gameStateId);
+            return ResponseEntity.ok().body(plagueId);
+            
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, e.getMessage(), e);
@@ -100,6 +106,8 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> voteToStart(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.voteToStart(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
+
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -125,6 +133,8 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> proceedState(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.proceedState(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
+
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -148,6 +158,7 @@ public class GameStateEndpoints {
     public ResponseEntity<String> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             Country country = gameStateManager.drawCountryAction(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
             return ResponseEntity.ok().body(country.getCountryName());
         }
         catch(Exception e){
@@ -171,7 +182,9 @@ public class GameStateEndpoints {
         //First ensure that the player calling is the right one
         try{
             Country country = gameStateManager.selectCountryFromRevealed(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
+            broadcastGameState(gameStateId);
             return ResponseEntity.ok().body(country.getCountryName());
+            
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -193,6 +206,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> playCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.playCountry(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -215,6 +229,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> discardCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.discardCountry(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -238,6 +253,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> evolve(@RequestParam("gameStateId") String gameStateId, @RequestBody EvolveDTO evolveDTO){
         try{
             gameStateManager.evolveTrait(gameStateId, evolveDTO.playerId(),evolveDTO.traitSlot(), evolveDTO.traitIndex());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -260,6 +276,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> skipEvolution(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.skipEvolve(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -282,6 +299,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> infect(@RequestParam("gameStateId") String gameStateId, @RequestBody InfectDTO infectDTO){
         try{
             gameStateManager.attemptInfect(gameStateId, infectDTO.playerId(),infectDTO.countryName());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -304,6 +322,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
         try{
             gameStateManager.rollDeathDice(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -315,6 +334,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> playEventCard(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayEventCardDTO playEventCardDTO){
         try{
             gameStateManager.playEventCard(gameStateId, playEventCardDTO.playerId(), playEventCardDTO.eventCardIndex());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -326,6 +346,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> chooseCity(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCityDTO chooseCityDTO){
         try{
             gameStateManager.makeCitySelection(gameStateId, chooseCityDTO.playerId(), chooseCityDTO.countryName(), chooseCityDTO.cityIndex());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -337,6 +358,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> chooseCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
         try{
             gameStateManager.makeCountrySelection(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -359,6 +381,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> chooseContinent(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseContinentDTO chooseContinentDTO){
         try{
             gameStateManager.makeContinentSelection(gameStateId, chooseContinentDTO.playerId(), chooseContinentDTO.continent());
+            broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -370,6 +393,7 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> chooseTraitSlot(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
         try{
             gameStateManager.makeTraitSlotSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
+            
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
@@ -424,6 +448,11 @@ public class GameStateEndpoints {
         
         
         
+    }
+
+    @SendTo("/topic/gameState/{gameStateId}")
+    private GameState broadcastGameState(@PathVariable("gameStateId") String gameStateId){
+        return gameStateManager.getGameState(gameStateId);
     }
     
 }
