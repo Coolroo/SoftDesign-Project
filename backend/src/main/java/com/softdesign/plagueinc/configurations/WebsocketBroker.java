@@ -1,4 +1,4 @@
-package com.softdesign.plagueinc.rest_controllers;
+package com.softdesign.plagueinc.configurations;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

@@ -453,7 +453,7 @@ public class GameStateEndpoints {
         
     }
 
-    @SendTo("/games/gameState/{gameStateId}")
+    @SendTo("/topic/gameState/{gameStateId}")
     private GameState broadcastGameState(@PathVariable("gameStateId") String gameStateId){
         return gameStateManager.getGameState(gameStateId);
     }
