@@ -887,6 +887,7 @@ public class GameState {
         .forEach(plague -> plague.addDnaPoints(ULTIMATE_WIPEOUT_POINTS));
     }
 
+    @JsonIgnore
     public List<Plague> getWinners(){
         validateState(PlayState.END_OF_GAME);
         int maxPoints = this.plagues.stream().mapToInt(plague -> plague.getDnaPoints()).max().getAsInt();
@@ -896,6 +897,7 @@ public class GameState {
 
     //Util
 
+    @JsonIgnore
     private boolean isPlagueEradicated(Plague plague){
         return this.board.values()
         .stream()
@@ -981,6 +983,7 @@ public class GameState {
         }
     }
 
+    @JsonIgnore
     public Plague getPlague(UUID playerId){
         return this.plagues
         .stream()
@@ -989,6 +992,7 @@ public class GameState {
         .orElseThrow(() -> new IllegalArgumentException("Couldn't find player with this ID"));
     }
 
+    @JsonIgnore
     public Country getCountry(String countryName){
         return this.board.values()
         .stream()
