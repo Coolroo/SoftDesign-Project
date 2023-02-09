@@ -45,9 +45,6 @@ public class GameStateEndpoints {
     @Autowired
     private GameStateManager gameStateManager;
 
-    @Autowired
-    private SimpMessagingTemplate template;
-
     //POST Endpoints
 
 /**
