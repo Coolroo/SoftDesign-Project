@@ -5,48 +5,65 @@ import BoardDNASlot from "./BoardDNASlot";
 class Board extends Component{
 
     render() {
+        const NA_SLOTS = [
+                        {top:'11.3%', left:'18.2%'},
+                        {top:'29.7%', left:'8.5%'},
+                        {top:'29.6%', left:'18.2%'}
+        ]
+        const EUROPE_SLOTS = [
+                        {top:'11.3%', left:'40.9%'},
+                        {top:'11.2%', left:'50.4%'},
+                        {top:'29.6%', left:'31.2%'},
+                        {top:'29.5%', left:'40.75%'},
+                        {top:'29.5%', left:'50.3%'}
+        ]
+        
+        const ASIA_SLOTS = [
+                        {top:'11.2%', left:'63.5%'},
+                        {top:'11.1%', left:'73.3%'},
+                        {top:'29.4%', left:'63.4%'},
+                        {top:'29.3%', left:'73.1%'},
+                        {top:'29.2%', left:'82.9%'}
+        ]
+
+        const SA_SLOTS = [
+                        {top:'52.6%', left:'14.5%'},
+                        {top:'52.55%', left:'24.05%'},
+                        {top:'70.9%', left:'14.3%'},
+                        {top:'70.8%', left:'23.9%'}
+        ]
+
+        const AFRICA_SLOTS = [
+                        {top:'52.4%', left:'37.1%'},
+                        {top:'52.2%', left:'46.6%'},
+                        {top:'70.5%', left:'37.0%'},
+                        {top:'70.5%', left:'46.5%'},
+                        {top:'70.5%', left:'56.1%'}
+        ]
+
+        const OCEANIA_SLOTS = [
+                        {top:'52.4%', left:'69.45%'},
+                        {top:'52.35%', left:'79.2%'},
+                        {top:'70.7%', left:'79.1%'}
+        ]
+
+        const SLOTS = [OCEANIA_SLOTS, NA_SLOTS, SA_SLOTS, ASIA_SLOTS, AFRICA_SLOTS, EUROPE_SLOTS];
+        var countries = [];
+        const board = this.props.state.board;
+        console.log(JSON.stringify(board))
+        Object.keys(board).forEach((continent, index) => {
+            console.log("Continent = " + continent)
+            board[continent].forEach((country, countryIndex) => {
+                countries.push(<div style={SLOTS[index][countryIndex]} className="boardCountrySlot"><BoardCountrySlot name={country.countryName}/></div>)
+            })
+        })
         return(
             <React.Fragment>{
                     <div className="board">
                         <img src={`/Board.jpg`} alt="img"/>
                         
-                        {/* North America slots*/}
-                        <div style={{top:'11.3%', left:'18.2%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.7%', left:'8.5%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.6%', left:'18.2%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-
-                        {/* Europe slots*/}
-                        <div style={{top:'11.3%', left:'40.9%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'11.2%', left:'50.4%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.6%', left:'31.2%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.5%', left:'40.75%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.5%', left:'50.3%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-
-
-                        {/* Asia slots*/}
-                        <div style={{top:'11.2%', left:'63.5%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'11.1%', left:'73.3%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.4%', left:'63.4%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.3%', left:'73.1%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'29.2%', left:'82.9%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-
-                        {/* South America slots*/}
-                        <div style={{top:'52.6%', left:'14.5%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'52.55%', left:'24.05%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.9%', left:'14.3%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.8%', left:'23.9%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-
-                        {/* Africa slots*/}
-                        <div style={{top:'52.4%', left:'37.1%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'52.2%', left:'46.6%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.5%', left:'37.0%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.5%', left:'46.5%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.5%', left:'56.1%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-
-                        {/* Oceania slots*/}
-                        <div style={{top:'52.4%', left:'69.45%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'52.35%', left:'79.2%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
-                        <div style={{top:'70.7%', left:'79.1%'}} className="boardCountrySlot"><BoardCountrySlot/></div>
+                        {countries}
+                        
                    
                         {/*DNA Score slots*/}
                         <div style={{top:'10.1%', left:'94.3%'}} className="boardDNASlot"><BoardDNASlot score={0}/></div>
