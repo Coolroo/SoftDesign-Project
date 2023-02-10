@@ -119,6 +119,7 @@ class GameController extends Component{
         var stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
             stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
+                console.log("Websocket updated state: " + body.body);
                 const jsonBody = JSON.parse(body.body);
                 this.setState((prevState) => {
                     return {...prevState,
@@ -141,7 +142,7 @@ class GameController extends Component{
                                     player: JSON.parse(playerInfo)
                                 }
                             }, () => {
-                                console.log("Player loaded: " + JSON.stringify(this.state));
+                                console.log("Player loaded: " + playerInfo);
                             });
                             
                         });
