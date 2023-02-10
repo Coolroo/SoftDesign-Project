@@ -5,6 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  background: url(/public/background.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 img{
@@ -19,7 +24,6 @@ code {
 
 .gameView{
   max-width: 100%;
-  background-image: url(/public/background.png);
 }
 
 .countryDraftZone{
@@ -128,3 +132,118 @@ code {
   position: absolute;
   z-index: 10;
 }
+
+.joinGameLobby{
+  max-width: 100%;
+}
+
+.joinGameLobby::after{
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.lobbyButton{
+  box-sizing: border-box;
+  position: absolute;
+  width: 19.2%;
+  height: 8%;
+  background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.lobbyButton p{
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  text-size-adjust: auto;
+  font-size: 2vw;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
+
+  color: #FFFFFF;
+}
+
+.lobbyInput{
+  box-sizing: border-box;
+  position: absolute;
+  width: 19.2%;
+  height: 5.6%;
+  background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
+  border: 3px solid rgba(0, 0, 0, 0.3);
+}
+
+.lobbyInput input{
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 1.5vw;
+  text-align: center;
+
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 2vw;
+  line-height: auto;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 0.05em;
+
+  color: #FFFFFF;
+  }
+
+  .plagueIncTitle {
+    position: absolute;
+    font-family: 'Corbel';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 4vw;
+    line-height: auto;
+    /* identical to box height */
+
+    display: flex;
+    line-height: auto;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    user-select: none;
+
+    color: #FFFFFF;
+
+  }
+
+  .plagueIncSubTitle{
+    position: absolute;
+
+
+    font-family: 'Cambria';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 4vw;
+    line-height: auto;
+    display: flex;
+    line-height: auto;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    user-select: none;
+
+    color: #000000;
+
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }

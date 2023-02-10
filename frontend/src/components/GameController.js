@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
+import JoinGamePage from "./JoinGamePage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
@@ -50,8 +51,9 @@ class GameController extends Component{
         this.gameID = await fetch(SERVER_URL + `/createGame`, postRequestOptions)
             .then(function(response) {
                 return response.text();
-            }).then(function(data) {
-                console.log(data);
+            }).then((data) => {
+                console.log(data); // this will be a string
+                this.loadLobby(data);
             });
     }
 
@@ -89,15 +91,18 @@ class GameController extends Component{
         () => {});
     }
 
-    async joinGame(id){
-        this.patchRequest("/joinGame", id, JSON.stringify({plagueColor: this.state.dropdownText}))
+    async joinGame(){
+        if(this.state.lobbyId == null){
+            console.log("No lobby ID");
+            return;
+        }
+        this.patchRequest("/joinGame", this.state.lobbyId, JSON.stringify({plagueColor: this.state.dropdownText}))
         .then(response => {
             if(response.ok) {
                 response.text().then(text => {
                     this.setState((prevState) => {
                         return {...prevState,
                         playerId: text.replace(/['"]+/g, ''),
-                        lobbyId: id
                 }}, () => {
                         console.log("Player ID = " + text);
                         console.log("State = " + JSON.stringify(this.state));
@@ -120,21 +125,50 @@ class GameController extends Component{
         return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
+    async loadLobby(id){
+        if(this.state.socket != null){
+            console.log("Cannot join another lobby if you are already in one");
+        }
+        fetch(SERVER_URL + "/gameState?gameStateId=" + id)
+        .then(resp => {
+            if(resp.ok){
+                resp.json().then(gameState => {
+                    this.setState((prevState) => {
+                        return {
+                            ...prevState,
+                            game: gameState,
+                            lobbyId: id
+                        }
+                    }, () => {
+                        console.log("Game loaded: " + JSON.stringify(gameState));
+                        this.initWebSocket();
+                    });
+                });
+            }
+        });
+    }
+
     initWebSocket(){
         var socket = new SockJS(SOCKET_URL);
         var stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
-            stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
-                console.log("Websocket updated state: " + body.body);
-                const jsonBody = JSON.parse(body.body);
                 this.setState((prevState) => {
-                    return {...prevState,
-                    game: jsonBody
+                    return {
+                        ...prevState,
+                        socket: stompClient
                     }
-                });
-                this.getPlayerInfo();
-            });
-        })
+                }, () => {
+                    stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
+                    console.log("Websocket updated state: " + body.body);
+                    const jsonBody = JSON.parse(body.body);
+                    this.setState((prevState) => {
+                        return {...prevState,
+                        game: jsonBody,
+                        socket: stompClient,
+                        }
+                    });
+                    this.getPlayerInfo();
+            })})})
     }
 
     async getPlayerInfo(){
@@ -171,10 +205,15 @@ class GameController extends Component{
        
        
     render() {
+        const joinGamePage = () => {
+            if(this.state.lobbyId == null){
+                return <JoinGamePage joinGame={(id) => this.loadLobby(id)} createGame={() => this.createGame()}/>
+            }
+        }
         return(
             <React.Fragment>{
                 <div>
-                    <button onClick={()=>this.createGame()}>Create Game</button>
+                    {/*<button onClick={()=>this.createGame()}>Create Game</button>
 
                     <form><input type="text" id="joinID" name="joinID"/></form>
                     <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>
@@ -188,7 +227,8 @@ class GameController extends Component{
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
                     <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>
                 
-                    <GameView state={this.state.game} player={this.state.player}/>
+                    <GameView state={this.state.game} player={this.state.player}/>*/}
+                    {joinGamePage()}
                 </div>   
             }       
             </React.Fragment>
