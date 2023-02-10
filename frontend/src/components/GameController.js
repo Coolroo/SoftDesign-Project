@@ -32,7 +32,11 @@ class GameController extends Component{
             EUROPE: []
             }
         },
-        player: {},
+        player: {
+            hand: [],
+            eventCards: [],
+            plague: null
+        },
        dropdownText: "Please select color",
        playerId: null,
        socket: null,
@@ -176,7 +180,7 @@ class GameController extends Component{
                     </DropdownButton>
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
                 
-                    <GameView state={this.state.game}/>
+                    <GameView state={this.state.game} player={this.state.player}/>
                 </div>   
             }       
             </React.Fragment>

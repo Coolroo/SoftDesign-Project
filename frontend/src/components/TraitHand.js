@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import TraitCard from "./TraitCard";
-
-const hand = [];
-for(let i = 0; i < 5; i++){
-    hand.push(<span className="cardInHand"><TraitCard cardName={'coma'}/></span>)
-} 
-
 class TraitHand extends Component{
     
     render() {
+        var hand = [];
+        this.props.hand.forEach(card => {
+            hand.push(<span className="cardInHand"><TraitCard cardName={card}/></span>)
+        });
         return(
             <React.Fragment>{
                 <div>
