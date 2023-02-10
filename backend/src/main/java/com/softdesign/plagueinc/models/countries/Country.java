@@ -25,10 +25,9 @@ public class Country {
 
     @JsonIgnore
     Logger logger = LoggerFactory.getLogger(Country.class);
-    
+
     private String countryName;
 
-    @JsonIgnore
     private Continent continent;
 
     @JsonIgnore
