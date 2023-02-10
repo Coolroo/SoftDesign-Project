@@ -18,7 +18,7 @@ public class WebsocketBroker implements WebSocketMessageBrokerConfigurer {
   
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-      registry.addEndpoint("/plague-socket").withSockJS();
+      registry.addEndpoint("/plague-socket").setAllowedOriginPatterns("*").withSockJS();
     }
     
 }

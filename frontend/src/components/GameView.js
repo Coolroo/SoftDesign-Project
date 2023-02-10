@@ -11,6 +11,10 @@ var h = window.innerHeight;
 class GameView extends Component{
 
     render() {
+        var board = "orangebacteria";
+        if(this.props.player.plague){
+            board = this.props.player.plague.color.toLowerCase() + this.props.player.plague.diseaseType.toLowerCase();
+        }
         return(
             <React.Fragment>{
                 <div className="gameView" height={h} width={w}>
@@ -21,7 +25,7 @@ class GameView extends Component{
                         <Board/>
                     </div>
                     <div className="bottomBar">
-                        <span className="plagueCard"><PlagueCard cardName="orangebacteria"/></span><span className="hand"><TraitHand/></span>    
+                        <span className="plagueCard"><PlagueCard cardName={board}/></span><span className="hand"><TraitHand hand={this.props.player.hand}/></span>    
                     </div>
                 </div> 
                 }
