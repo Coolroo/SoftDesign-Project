@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import CountryCard from "./CountryCard";
 
-class BoardCountrySlot extends Component{
+class DraftCountrySlot extends Component{
 
     render() {
         return(
@@ -14,4 +14,4 @@ class BoardCountrySlot extends Component{
     }
 }
 
-export default BoardCountrySlot;
+export default DraftCountrySlot;

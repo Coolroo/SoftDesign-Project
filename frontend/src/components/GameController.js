@@ -25,12 +25,12 @@ class GameController extends Component{
     state = {
         game: {
             board: {
-            AFRICA: [],
-            NORTH_AMERICA: [],
-            SOUTH_AMERICA: [],
-            OCEANIA: [],
-            ASIA: [],
-            EUROPE: []
+                OCEANIA: [],
+                NORTH_AMERICA: [],
+                SOUTH_AMERICA: [],
+                ASIA: [],
+                AFRICA: [],
+                EUROPE: []
             }
         },
         player: {
@@ -196,6 +196,13 @@ class GameController extends Component{
             dropdownText: color};
         });
     }
+
+    voteToStart(id){
+        this.patchRequest("/voteToStart", id, JSON.stringify({playerId: this.state.playerId}))
+        console.log("Voted to start")
+    };
+    
+       
        
     render() {
         const joinGamePage = () => {
@@ -218,6 +225,7 @@ class GameController extends Component{
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
                     </DropdownButton>
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
+                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>
                 
                     <GameView state={this.state.game} player={this.state.player}/>*/}
                     {joinGamePage()}
