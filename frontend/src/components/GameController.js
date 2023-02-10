@@ -17,6 +17,8 @@ const patchRequestOptions = {
 
 const SOCKET_URL = 'http://localhost:8080/plague-socket';
 
+const SERVER_URL = "http://localhost:8080";
+
 class GameController extends Component{
 
     state = {
@@ -41,7 +43,7 @@ class GameController extends Component{
     
 
     async createGame(){
-        this.gameID = await fetch(`http://localhost:8080/createGame`, postRequestOptions)
+        this.gameID = await fetch(SERVER_URL + `/createGame`, postRequestOptions)
             .then(function(response) {
                 return response.text();
             }).then(function(data) {
@@ -50,7 +52,7 @@ class GameController extends Component{
     }
 
     async getState(id){
-        await fetch('http://localhost:8080/gameState?gameStateId=' + id)
+        await fetch(SERVER_URL + '/gameState?gameStateId=' + id)
             .then(function(response) {
                 return response.json();
             }).then(data => {
@@ -111,7 +113,7 @@ class GameController extends Component{
             body
             };
             console.log(JSON.stringify(patchBody));
-        return fetch("http://localhost:8080" + endpoint + "?gameStateId=" + lobbyId, patchBody);
+        return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
     initWebSocket(){
@@ -132,7 +134,7 @@ class GameController extends Component{
     }
 
     async getPlayerInfo(){
-        fetch("http://localhost:8080/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
+        fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
                 .then(resp => {
                     if(resp.ok){
                         resp.text().then(playerInfo => {
@@ -158,7 +160,6 @@ class GameController extends Component{
     }
        
     render() {
-        console.log(this.state.game.board.AFRICA)
         return(
             <React.Fragment>{
                 <div>
