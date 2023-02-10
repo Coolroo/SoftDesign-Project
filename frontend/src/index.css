@@ -5,6 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  background: url(/public/background.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 img{
@@ -19,7 +24,6 @@ code {
 
 .gameView{
   max-width: 100%;
-  background-image: url(/public/background.png);
 }
 
 .countryDraftZone{
@@ -128,4 +132,46 @@ code {
   float: left;
   position: absolute;
   z-index: 10;
+}
+
+.joinGameLobby{
+  max-width: 100%;
+}
+
+.joinGameLobby::after{
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.lobbyButton{
+  box-sizing: border-box;
+  position: absolute;
+  width: 19.2%;
+  height: 11%;
+  background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+
+  
+}
+
+.lobbyButton p{
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  text-size-adjust: auto;
+  font-size: 2vw;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
+
+  color: #FFFFFF;
 }

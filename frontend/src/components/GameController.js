@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
+import JoinGamePage from "./JoinGamePage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
@@ -167,7 +168,7 @@ class GameController extends Component{
         return(
             <React.Fragment>{
                 <div>
-                    <button onClick={()=>this.createGame()}>Create Game</button>
+                    {/*<button onClick={()=>this.createGame()}>Create Game</button>
 
                     <form><input type="text" id="joinID" name="joinID"/></form>
                     <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>
@@ -180,7 +181,8 @@ class GameController extends Component{
                     </DropdownButton>
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
                 
-                    <GameView state={this.state.game} player={this.state.player}/>
+                    <GameView state={this.state.game} player={this.state.player}/>*/}
+                    <JoinGamePage/>
                 </div>   
             }       
             </React.Fragment>
