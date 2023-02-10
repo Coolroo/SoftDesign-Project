@@ -51,7 +51,7 @@ class GameController extends Component{
             .then(function(response) {
                 return response.text();
             }).then(function(data) {
-                console.log(data); // this will be a string
+                console.log(data);
             });
     }
 
@@ -162,6 +162,13 @@ class GameController extends Component{
             dropdownText: color};
         });
     }
+
+    voteToStart(id){
+        this.patchRequest("/voteToStart", id, JSON.stringify({playerId: this.state.playerId}))
+        console.log("Voted to start")
+    };
+    
+       
        
     render() {
         return(
@@ -179,6 +186,7 @@ class GameController extends Component{
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
                     </DropdownButton>
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
+                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>
                 
                     <GameView state={this.state.game} player={this.state.player}/>
                 </div>   

@@ -19,10 +19,10 @@ class GameView extends Component{
             <React.Fragment>{
                 <div className="gameView" height={h} width={w}>
                     <div>
-                        <CountryDraftZone/>
+                        <CountryDraftZone state={this.props.state}/>
                     </div>
                     <div>
-                        <Board/>
+                        <Board state={this.props.state}/>
                     </div>
                     <div className="bottomBar">
                         <span className="plagueCard"><PlagueCard cardName={board}/></span><span className="hand"><TraitHand hand={this.props.player.hand}/></span>    
