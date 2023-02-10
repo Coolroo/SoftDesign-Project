@@ -30,9 +30,11 @@ class GameController extends Component{
             EUROPE: []
             }
         },
+        player: {},
        dropdownText: "Please select color",
        playerId: null,
-       socket: null
+       socket: null,
+       lobbyId: null
         
     };
 
@@ -84,16 +86,22 @@ class GameController extends Component{
     async joinGame(id){
         this.patchRequest("/joinGame", id, JSON.stringify({plagueColor: this.state.dropdownText}))
         .then(response => {
-            if(response.status === 200) {
+            if(response.ok) {
                 response.text().then(text => {
-                    this.setState({...this.state,
-                        playerId: text});
+                    this.setState((prevState) => {
+                        return {...prevState,
+                        playerId: text.replace(/['"]+/g, ''),
+                        lobbyId: id
+                }}, () => {
                         console.log("Player ID = " + text);
-                        this.initWebSocket(id);
+                        console.log("State = " + JSON.stringify(this.state));
+                        this.initWebSocket();
+                        this.getPlayerInfo();
+                });        
                 });
-                
                 }
         });
+        
         
     }
 
@@ -106,20 +114,46 @@ class GameController extends Component{
         return fetch("http://localhost:8080" + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
-    initWebSocket(lobbyId){
-
+    initWebSocket(){
         var socket = new SockJS(SOCKET_URL);
         var stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
-            stompClient.subscribe("/games/gameState/"+lobbyId, (body) => {
-                console.log(body);
-            })
+            stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
+                const jsonBody = JSON.parse(body.body);
+                this.setState((prevState) => {
+                    return {...prevState,
+                    game: jsonBody
+                    }
+                });
+                this.getPlayerInfo();
+            });
         })
     }
 
+    async getPlayerInfo(){
+        fetch("http://localhost:8080/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
+                .then(resp => {
+                    if(resp.ok){
+                        resp.text().then(playerInfo => {
+                            this.setState((prevState) => {
+                                return {
+                                    ...prevState,
+                                    player: JSON.parse(playerInfo)
+                                }
+                            }, () => {
+                                console.log("Player loaded: " + JSON.stringify(this.state));
+                            });
+                            
+                        });
+                    }
+                });
+    }
+
     changeColor(color){
-        this.setState({...this.state,
-            dropdownText: color});
+        this.setState((prevState) => { 
+            return {...prevState,
+            dropdownText: color};
+        });
     }
        
     render() {
@@ -140,7 +174,7 @@ class GameController extends Component{
                     </DropdownButton>
                     <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
                 
-                    <GameView state={this.gameState}/>
+                    <GameView state={this.state.game}/>
                 </div>   
             }       
             </React.Fragment>
