@@ -45,6 +45,9 @@ public class GameStateEndpoints {
     @Autowired
     private GameStateManager gameStateManager;
 
+    @Autowired
+    private SimpMessagingTemplate template;
+
     //POST Endpoints
 
 /**
@@ -450,9 +453,9 @@ public class GameStateEndpoints {
         
     }
 
-    @SendTo("/topic/gameState/{gameStateId}")
-    private GameState broadcastGameState(@PathVariable("gameStateId") String gameStateId){
-        return gameStateManager.getGameState(gameStateId);
+    private void broadcastGameState(String gameStateId){
+        logger.info("Websocket sending gamestate to lobby ({})", gameStateId);
+        this.template.convertAndSend("/games/gameState/" + gameStateId, gameStateManager.getGameState(gameStateId));
     }
     
 }

@@ -1,25 +1,42 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
+import Dropdown from 'react-bootstrap/Dropdown';
+import { DropdownButton } from "react-bootstrap";
+import * as SockJS from 'sockjs-client';
+import { Stomp } from "@stomp/stompjs";
 
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
 }; 
 
+const patchRequestOptions = {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' }
+};
+
+const SOCKET_URL = 'http://localhost:8080/plague-socket';
+
 class GameController extends Component{
 
     state = {
-        board: {
+        game: {
+            board: {
             AFRICA: [],
             NORTH_AMERICA: [],
             SOUTH_AMERICA: [],
             OCEANIA: [],
             ASIA: [],
             EUROPE: []
-        }
-        
+            }
+        },
+       dropdownText: "Please select color",
+       playerId: null,
+       socket: null
         
     };
+
+    
 
     async createGame(){
         this.gameID = await fetch(`http://localhost:8080/createGame`, postRequestOptions)
@@ -36,9 +53,15 @@ class GameController extends Component{
                 return response.json();
             }).then(data => {
                 console.log(data);
-                this.setState((prevState) => {
-                    return {
-                        ...prevState,
+                this.updateGameState(data);
+            })
+    }
+
+    updateGameState(data){
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                game: {
                     board: data.board,
                     countryDiscard: data.countryDiscard,
                     currTurn: data.currTurn,
@@ -52,14 +75,55 @@ class GameController extends Component{
                     traitDiscard: data.traitDiscard,
                     turnOrder: data.turnOrder,
                     votesToStart: data.votesToStart
-                    };
-                },
-                () => {});
+                }
+            };
+        },
+        () => {});
+    }
+
+    async joinGame(id){
+        this.patchRequest("/joinGame", id, JSON.stringify({plagueColor: this.state.dropdownText}))
+        .then(response => {
+            if(response.status === 200) {
+                response.text().then(text => {
+                    this.setState({...this.state,
+                        playerId: text});
+                        console.log("Player ID = " + text);
+                        this.initWebSocket(id);
+                });
+                
+                }
+        });
+        
+    }
+
+    async patchRequest(endpoint, lobbyId, body){
+        var patchBody = {
+            ...patchRequestOptions,
+            body
+            };
+            console.log(JSON.stringify(patchBody));
+        return fetch("http://localhost:8080" + endpoint + "?gameStateId=" + lobbyId, patchBody);
+    }
+
+    initWebSocket(lobbyId){
+
+        var socket = new SockJS(SOCKET_URL);
+        var stompClient = Stomp.over(socket);
+        stompClient.connect({}, frame => {
+            stompClient.subscribe("/games/gameState/"+lobbyId, (body) => {
+                console.log(body);
             })
+        })
+    }
+
+    changeColor(color){
+        this.setState({...this.state,
+            dropdownText: color});
     }
        
     render() {
-        console.log(this.state.board.AFRICA)
+        console.log(this.state.game.board.AFRICA)
         return(
             <React.Fragment>{
                 <div>
@@ -67,7 +131,15 @@ class GameController extends Component{
 
                     <form><input type="text" id="joinID" name="joinID"/></form>
                     <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>
-
+                    <DropdownButton id="dropdown-item-button" title={this.state.dropdownText} className="format">
+                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>RED</div></Dropdown.Item>
+                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>ORANGE</div></Dropdown.Item>
+                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>YELLOW</div></Dropdown.Item>
+                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>BLUE</div></Dropdown.Item>
+                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
+                    </DropdownButton>
+                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
+                
                     <GameView state={this.gameState}/>
                 </div>   
             }       
