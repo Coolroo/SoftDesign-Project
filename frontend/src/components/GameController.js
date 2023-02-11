@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
-import JoinGamePage from "./JoinGamePage";
+import JoinGamePage from "./lobby/JoinGamePage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
+import Lobby from "./lobby/Lobby";
 
 const postRequestOptions = {
     method: 'POST',
@@ -31,6 +32,12 @@ class GameController extends Component{
                 ASIA: [],
                 AFRICA: [],
                 EUROPE: []
+            },
+            plagues: {
+                RED: null,
+                BLUE: null,
+                YELLOW: null,
+                PURPLE: null
             }
         },
         player: {
@@ -210,25 +217,30 @@ class GameController extends Component{
                 return <JoinGamePage joinGame={(id) => this.loadLobby(id)} createGame={() => this.createGame()}/>
             }
         }
-        return(
-            <React.Fragment>{
-                <div>
-                    {/*<button onClick={()=>this.createGame()}>Create Game</button>
-
-                    <form><input type="text" id="joinID" name="joinID"/></form>
-                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>
+        
+        
+        const gamePage = () => {
+            return [<button onClick={()=>this.createGame()}>Create Game</button>,
+                    <form><input type="text" id="joinID" name="joinID"/></form>,
+                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>,
                     <DropdownButton id="dropdown-item-button" title={this.state.dropdownText} className="format">
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>RED</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>ORANGE</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>YELLOW</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>BLUE</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
-                    </DropdownButton>
-                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
-                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>
-                
-                    <GameView state={this.state.game} player={this.state.player}/>*/}
-                    {joinGamePage()}
+                    </DropdownButton>,
+                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>,
+                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>,
+                    <GameView state={this.state.game} player={this.state.player}/>]
+        }
+        
+        return(
+            <React.Fragment>{
+                <div>
+                    {/*gamePage()*/}
+                    {/*joinGamePage()*/}
+                    <Lobby game={this.state.game}/>
                 </div>   
             }       
             </React.Fragment>
