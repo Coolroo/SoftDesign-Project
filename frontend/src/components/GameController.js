@@ -26,10 +26,10 @@ class GameController extends Component{
     state = {
         game: {
             board: {
-                OCEANIA: [],
                 NORTH_AMERICA: [],
-                SOUTH_AMERICA: [],
+                EUROPE: [],
                 ASIA: [],
+                SOUTH_AMERICA: [],
                 AFRICA: [],
                 EUROPE: []
             },
@@ -39,6 +39,7 @@ class GameController extends Component{
                 YELLOW: null,
                 PURPLE: null
             }
+
         },
         player: {
             hand: [],
