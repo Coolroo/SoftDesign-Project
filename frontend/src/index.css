@@ -148,8 +148,8 @@ code {
   width: 19.2%;
   height: 8%;
   background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
+  border: 0.1vw solid rgba(0, 0, 0, 0.3);
+  border-radius: 1vw;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,7 +178,7 @@ code {
   width: 19.2%;
   height: 5.6%;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
-  border: 3px solid rgba(0, 0, 0, 0.3);
+  border: 0.1vw solid rgba(0, 0, 0, 0.3);
 }
 
 .lobbyInput input{
@@ -244,7 +244,7 @@ code {
 
     color: #000000;
 
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 0.2vw 0.2vw rgba(0, 0, 0, 0.25);
   }
 
   .playerBox{
@@ -266,6 +266,7 @@ code {
     font-weight: 400;
     font-size: 2vw;
     line-height: auto;
+    
     /* identical to box height */
 
     display: flex;
@@ -286,8 +287,8 @@ code {
   width: 9%;
   height: 5.6%;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
-  border: 3px solid rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
+  border: 0.1vw solid rgba(0, 0, 0, 0.3);
+  border-radius: 1vw;
   justify-content: center;
   align-items: center;
 }
@@ -297,13 +298,12 @@ code {
   font-style: normal;
   font-weight: 400;
   text-size-adjust: auto;
-  font-size: 2vw;
-  line-height: auto;
+  font-size: 1.5vw;
+  line-height: 2.5vw;
   text-align: center;
   white-space: nowrap;
   letter-spacing: 0.05em;
   vertical-align: middle;
-  user-select: none;
 
   color: #FFFFFF;
 }
@@ -314,10 +314,24 @@ code {
   width: 10vw;
   height: 4vw;
   background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
+  border: 0.1vw solid rgba(0, 0, 0, 0.3);
+  border-radius: 1vw;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  text-size-adjust: auto;
+  font-size: 1vw;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
+
+  color: #FFFFFF;
 
 }

@@ -6,6 +6,7 @@ import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
+import Cookies from 'universal-cookie';
 
 const postRequestOptions = {
     method: 'POST',
@@ -21,6 +22,7 @@ const SOCKET_URL = 'http://localhost:8080/plague-socket';
 
 const SERVER_URL = "http://localhost:8080";
 
+const cookies = new Cookies();
 class GameController extends Component{
 
     state = {
@@ -60,6 +62,30 @@ class GameController extends Component{
         
     };
 
+    componentDidMount(){
+        console.log("Loading cookies");
+        if(cookies.get("lobbyId") != null){
+            console.log("Found lobbyId cookie: " + cookies.get("lobbyId"));
+            var playerId = null;
+            if(cookies.get("playerId") != null){
+                playerId = cookies.get("playerId");
+                console.log("Found playerId cookie: " + cookies.get("playerId"));
+            }
+            this.setState((prevState) => {
+                return {
+                    ...prevState,
+                    lobbyId: cookies.get("lobbyId"),
+                    playerId: playerId
+                }
+            }, () => {
+                if(this.state.playerId != null){
+                    this.getPlayerInfo();
+                }
+                this.loadLobby(this.state.lobbyId)
+            });
+        }
+        
+    }
     
 
     async createGame(){
@@ -118,6 +144,7 @@ class GameController extends Component{
                         return {...prevState,
                         playerId: text.replace(/['"]+/g, ''),
                 }}, () => {
+                        cookies.set("playerId", this.state.playerId, { path: '/' });
                         console.log("Player ID = " + text);
                         this.initWebSocket();
                         this.getPlayerInfo();
@@ -152,6 +179,7 @@ class GameController extends Component{
                             lobbyId: id
                         }
                     }, () => {
+                        cookies.set("lobbyId", id, { path: '/' });
                         console.log(gameState);
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
@@ -205,6 +233,7 @@ class GameController extends Component{
                                 }
                             }, () => {
                                 console.log("Player loaded: " + playerInfo);
+                                this.forceUpdate();
                             });
                             
                         });
@@ -237,7 +266,7 @@ class GameController extends Component{
             console.log("lobbyId = " + this.state.lobbyId + " playState = " + JSON.stringify(this.state.game.playState));
             if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
                 console.log("Lobby Page")
-                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={() => this.voteToStart()} player={this.state.player}/>
+                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} voteToStart={() => this.voteToStart()} />
             }
         }
         
