@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
-import Board from './Board';
+import Board from './board/Board';
 import TraitHand from './TraitHand';
 import PlagueCard from './PlagueCard';
-import CountryDraftZone from './CountryDraftZone';
+import CountryDraftZone from './countries/CountryDraftZone';
 
 var w = window.innerWidth;
 var h = window.innerHeight;

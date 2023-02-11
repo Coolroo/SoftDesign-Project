@@ -120,16 +120,15 @@ code {
 }
 
 .hexagon {
-  --color: rgb(229, 149, 44);
   rotate: 30deg;
   display: flex;
   width: 20%;
   height: 15%;
-  background-color: var(--color);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   float: left;
   position: absolute;
   z-index: 10;
+  background-size: cover;
 }
 
 .joinGameLobby{
@@ -334,4 +333,8 @@ code {
 
   color: #FFFFFF;
 
+}
+
+.boardPicture{
+  border-radius: 1vw;
 }

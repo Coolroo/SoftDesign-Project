@@ -47,21 +47,26 @@ class Board extends Component{
                         {top:'70.7%', left:'79.1%'}
         ]
 
-        const SLOTS = [ASIA_SLOTS, AFRICA_SLOTS, SA_SLOTS, NA_SLOTS, EUROPE_SLOTS, OCEANIA_SLOTS];
+        const SLOTS = {
+            ASIA: ASIA_SLOTS, 
+            AFRICA: AFRICA_SLOTS, 
+            SOUTH_AMERICA: SA_SLOTS, 
+            NORTH_AMERICA: NA_SLOTS, 
+            EUROPE: EUROPE_SLOTS, 
+            OCEANIA: OCEANIA_SLOTS};
         var countries = [];
         const board = this.props.state.game.board;
         console.log(JSON.stringify(board))
-        Object.keys(board).forEach((continent, index) => {
-            console.log("Continent = " + continent)
+        Object.keys(board).forEach((continent) => {
             board[continent].forEach((country, countryIndex) => {
-                countries.push(<div style={SLOTS[index][countryIndex]} className="boardCountrySlot"><BoardCountrySlot name={country.countryName}/></div>)
+                countries.push(<div style={SLOTS[continent][countryIndex]} className="boardCountrySlot"><BoardCountrySlot country={country}/></div>)
             })
         })
 
         return(
             <React.Fragment>{
                     <div className="board">
-                        <img src={`/Board.jpg`} alt="img"/>
+                        <img src={`/Board.jpg`} alt="img" className="boardPicture"/>
                         
                         {countries}
                         

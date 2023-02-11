@@ -417,7 +417,12 @@ public class GameStateEndpoints {
  */
     @GetMapping("/gameState")
     public ResponseEntity<GameState> getGameState(@RequestParam("gameStateId") String gameStateId){
-        return ResponseEntity.ok().body(gameStateManager.getGameState(gameStateId));
+        GameState game = gameStateManager.getGameState(gameStateId);
+        if(game != null){
+            return ResponseEntity.ok().body(gameStateManager.getGameState(gameStateId));
+        }
+        return ResponseEntity.badRequest().build();
+        
     }
 
     

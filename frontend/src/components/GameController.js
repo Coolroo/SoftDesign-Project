@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
 import JoinGamePage from "./lobby/JoinGamePage";
-import Dropdown from 'react-bootstrap/Dropdown';
-import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
@@ -202,7 +200,6 @@ class GameController extends Component{
                         }
                     }, () => {
                         cookies.set("lobbyId", id, { path: '/' });
-                        console.log(gameState);
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
                             this.initWebSocket();
