@@ -225,7 +225,7 @@ class GameController extends Component{
 
         const lobbyPage = () => {
             if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
-                return <Lobby game={this.state.game} voteToStart={(id) => this.voteToStart(id)}/>
+                return <Lobby lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={(id) => this.voteToStart(id)}/>
             }
         }
         

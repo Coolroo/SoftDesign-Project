@@ -253,9 +253,57 @@ code {
     position: absolute;
     width: 10vw;
     height: 10vw;
-    
+
     background-size: cover;
     
     border-radius: 1vw;
   }
 
+.lobbyIdTag{
+  position: absolute;
+  font-family: 'Cambria';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 2vw;
+    line-height: auto;
+    /* identical to box height */
+
+    display: flex;
+    line-height: auto;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    user-select: none;
+
+    color: #FFFFFF;
+
+}
+
+.lobbyIdBox{
+  box-sizing: border-box;
+  position: absolute;
+  width: 9%;
+  height: 5.6%;
+  background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.lobbyIdBox p{
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  text-size-adjust: auto;
+  font-size: 2vw;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
+
+  color: #FFFFFF;
+}

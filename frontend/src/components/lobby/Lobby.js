@@ -63,6 +63,8 @@ class Lobby extends Component{
                 return "red";
             }
         }
+
+
         return(<React.Fragment>
             <div className="playerBox" style={{top: "20%", 
                                            left: "15%", 
@@ -82,6 +84,8 @@ class Lobby extends Component{
                                            left: "75%", 
                                            border: "0.2vw solid " + readyColors["PURPLE"](), 
                                            backgroundImage: backgrounds["PURPLE"] + playerIcons["PURPLE"](),}}/>
+            <div className="lobbyIdTag" style={{left: "45%", top: "85%", transform: "transform: translate(-50%, -50%)"}}>Lobby ID</div>
+            <div className="lobbyIdBox" style={{left: "45%", top: "90%", transform: "transform: translate(-50%, -50%)"}}><p>{this.props.lobbyId}</p></div>
         </React.Fragment>);
     }
 }
