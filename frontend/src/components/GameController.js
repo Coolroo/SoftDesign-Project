@@ -23,8 +23,9 @@ const SOCKET_URL = 'http://localhost:8080/plague-socket';
 const SERVER_URL = "http://localhost:8080";
 
 const cookies = new Cookies();
-class GameController extends Component{
 
+class GameController extends Component{
+    socket = null;
     state = {
         game: {
             board: {
@@ -57,7 +58,6 @@ class GameController extends Component{
         },
        dropdownText: "Please select color",
        playerId: null,
-       socket: null,
        lobbyId: null
         
     };
@@ -71,18 +71,32 @@ class GameController extends Component{
                 playerId = cookies.get("playerId");
                 console.log("Found playerId cookie: " + cookies.get("playerId"));
             }
-            this.setState((prevState) => {
-                return {
-                    ...prevState,
-                    lobbyId: cookies.get("lobbyId"),
-                    playerId: playerId
+            var lobbyId = cookies.get("lobbyId");
+            this.getGameState(lobbyId).then(resp => {
+                return resp.json();
+            }).then(resp => {
+                if(resp != null){
+                    this.setState((prevState) => {
+                        return {
+                            ...prevState,
+                            lobbyId: lobbyId,
+                            playerId: playerId
+                        }
+                    }, () => {
+                        this.loadLobby(cookies.get("lobbyId")).then(() => {
+                            if(this.state.playerId != null){
+                                this.getPlayerInfo()
+                            }
+                        })
+                    })
+                    
                 }
-            }, () => {
-                if(this.state.playerId != null){
-                    this.getPlayerInfo();
+                else{
+                    cookies.remove("lobbyId");
+                    cookies.remove("playerId");
                 }
-                this.loadLobby(this.state.lobbyId)
-            });
+            })
+
         }
         
     }
@@ -165,11 +179,15 @@ class GameController extends Component{
         return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
+    async getGameState(id){
+        return fetch(SERVER_URL + '/gameState?gameStateId=' + id);
+    }
+
     async loadLobby(id){
-        if(this.state.socket != null){
+        if(this.socket != null){
             console.log("Cannot join another lobby if you are already in one");
         }
-        fetch(SERVER_URL + "/gameState?gameStateId=" + id)
+        return this.getGameState(id)
         .then(resp => {
             if(resp.ok){
                 resp.text().then(gameState => {
@@ -193,15 +211,11 @@ class GameController extends Component{
     }
 
     initWebSocket(){
-        var socket = new SockJS(SOCKET_URL);
-        var stompClient = Stomp.over(socket);
+        var sock = new SockJS(SOCKET_URL);
+        var stompClient = Stomp.over(sock);
+        this.socket = stompClient;
         stompClient.connect({}, frame => {
-                this.setState((prevState) => {
-                    return {
-                        ...prevState,
-                        socket: stompClient
-                    }
-                }, () => {
+                
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
                     console.log("Websocket updated state: " + body.body);
                     const jsonBody = JSON.parse(body.body);
@@ -209,7 +223,8 @@ class GameController extends Component{
                         this.getPlayerInfo();
                     })
                     
-            })})})
+            })
+        })
     }
 
     async getPlayerInfo(){
@@ -217,7 +232,7 @@ class GameController extends Component{
             console.log("No player ID");
             return;
         }
-        fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
+        return fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
                 .then(resp => {
                     if(resp.ok){
                         resp.text().then(playerInfo => {
@@ -233,7 +248,7 @@ class GameController extends Component{
                                 }
                             }, () => {
                                 console.log("Player loaded: " + playerInfo);
-                                this.forceUpdate();
+                                
                             });
                             
                         });
@@ -263,9 +278,7 @@ class GameController extends Component{
         }
 
         const lobbyPage = () => {
-            console.log("lobbyId = " + this.state.lobbyId + " playState = " + JSON.stringify(this.state.game.playState));
             if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
-                console.log("Lobby Page")
                 return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} voteToStart={() => this.voteToStart()} />
             }
         }
