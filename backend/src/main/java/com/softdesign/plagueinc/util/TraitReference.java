@@ -247,7 +247,7 @@ public class TraitReference {
     }
 
     public static TraitCard skinLesions(){
-        return new TraitCard("skin_legions", 12, List.of(new InfectivityTrait(), new InfectivityTrait()));
+        return new TraitCard("skin_lesions", 12, List.of(new InfectivityTrait(), new InfectivityTrait()));
     }
 
     public static TraitCard diarrhoea(){

@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
 import JoinGamePage from "./lobby/JoinGamePage";
-import Dropdown from 'react-bootstrap/Dropdown';
-import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
+import Cookies from 'universal-cookie';
 
 const postRequestOptions = {
     method: 'POST',
@@ -21,8 +20,10 @@ const SOCKET_URL = 'http://localhost:8080/plague-socket';
 
 const SERVER_URL = "http://localhost:8080";
 
-class GameController extends Component{
+const cookies = new Cookies();
 
+class GameController extends Component{
+    socket = null;
     state = {
         game: {
             board: {
@@ -55,13 +56,54 @@ class GameController extends Component{
         },
        dropdownText: "Please select color",
        playerId: null,
-       socket: null,
        lobbyId: null
         
     };
+    /**
+     * This function is called when the component is first mounted.
+     * It checks if the user has a cookie for a lobbyId and playerId.
+     * If they do, it will load the lobby and player info.
+     * If they don't, it will do nothing.
+     */
+    componentDidMount(){
+        console.log("Loading cookies");
+        if(cookies.get("lobbyId") != null){
+            console.log("Found lobbyId cookie: " + cookies.get("lobbyId"));
+            var playerId = null;
+            if(cookies.get("playerId") != null){
+                playerId = cookies.get("playerId");
+                console.log("Found playerId cookie: " + cookies.get("playerId"));
+            }
+            var lobbyId = cookies.get("lobbyId");
+            this.getGameState(lobbyId).then(resp => {
+                return resp.json();
+            }).then(resp => {
+                if(resp != null){
+                    this.setState((prevState) => {
+                        return {
+                            ...prevState,
+                            lobbyId: lobbyId,
+                            playerId: playerId
+                        }
+                    }, () => {
+                        this.loadLobby(cookies.get("lobbyId")).then(() => {
+                            if(this.state.playerId != null){
+                                this.getPlayerInfo()
+                            }
+                        })
+                    })
+                    
+                }
+                else{
+                    cookies.remove("lobbyId");
+                    cookies.remove("playerId");
+                }
+            })
 
+        }
+        
+    }
     
-
     async createGame(){
         this.gameID = await fetch(SERVER_URL + `/createGame`, postRequestOptions)
             .then(function(response) {
@@ -118,6 +160,7 @@ class GameController extends Component{
                         return {...prevState,
                         playerId: text.replace(/['"]+/g, ''),
                 }}, () => {
+                        cookies.set("playerId", this.state.playerId, { path: '/' });
                         console.log("Player ID = " + text);
                         this.initWebSocket();
                         this.getPlayerInfo();
@@ -138,11 +181,15 @@ class GameController extends Component{
         return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
+    async getGameState(id){
+        return fetch(SERVER_URL + '/gameState?gameStateId=' + id);
+    }
+
     async loadLobby(id){
-        if(this.state.socket != null){
+        if(this.socket != null){
             console.log("Cannot join another lobby if you are already in one");
         }
-        fetch(SERVER_URL + "/gameState?gameStateId=" + id)
+        return this.getGameState(id)
         .then(resp => {
             if(resp.ok){
                 resp.text().then(gameState => {
@@ -152,7 +199,7 @@ class GameController extends Component{
                             lobbyId: id
                         }
                     }, () => {
-                        console.log(gameState);
+                        cookies.set("lobbyId", id, { path: '/' });
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
                             this.initWebSocket();
@@ -165,15 +212,11 @@ class GameController extends Component{
     }
 
     initWebSocket(){
-        var socket = new SockJS(SOCKET_URL);
-        var stompClient = Stomp.over(socket);
+        var sock = new SockJS(SOCKET_URL);
+        var stompClient = Stomp.over(sock);
+        this.socket = stompClient;
         stompClient.connect({}, frame => {
-                this.setState((prevState) => {
-                    return {
-                        ...prevState,
-                        socket: stompClient
-                    }
-                }, () => {
+                
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
                     console.log("Websocket updated state: " + body.body);
                     const jsonBody = JSON.parse(body.body);
@@ -181,7 +224,8 @@ class GameController extends Component{
                         this.getPlayerInfo();
                     })
                     
-            })})})
+            })
+        })
     }
 
     async getPlayerInfo(){
@@ -189,7 +233,7 @@ class GameController extends Component{
             console.log("No player ID");
             return;
         }
-        fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
+        return fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
                 .then(resp => {
                     if(resp.ok){
                         resp.text().then(playerInfo => {
@@ -205,6 +249,7 @@ class GameController extends Component{
                                 }
                             }, () => {
                                 console.log("Player loaded: " + playerInfo);
+                                
                             });
                             
                         });
@@ -233,35 +278,28 @@ class GameController extends Component{
             }
         }
 
+        if(this.state.game.playState != undefined){
+            
+        }
         const lobbyPage = () => {
-            console.log("lobbyId = " + this.state.lobbyId + " playState = " + JSON.stringify(this.state.game.playState));
-            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
-                console.log("Lobby Page")
-                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={() => this.voteToStart()} player={this.state.player}/>
+            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != undefined){
+                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} voteToStart={() => this.voteToStart()} />
             }
         }
         
         // eslint-disable-next-line
         const gamePage = () => {
-            return [<button onClick={()=>this.createGame()}>Create Game</button>,
-                    <form><input type="text" id="joinID" name="joinID"/></form>,
-                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>,
-                    <DropdownButton id="dropdown-item-button" title={this.state.dropdownText} className="format">
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>RED</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>ORANGE</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>YELLOW</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>BLUE</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
-                    </DropdownButton>,
-                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>,
-                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>,
-                    <GameView state={this.state.game} player={this.state.player}/>]
+            if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
+                console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
+                return <GameView state={this.state}/>
+            }
+            
         }
         
         return(
             <React.Fragment>{
                 <div>
-                    {/*gamePage()*/}
+                    {gamePage()}
                     {joinGamePage()}
                     {lobbyPage()}
                 </div>   
