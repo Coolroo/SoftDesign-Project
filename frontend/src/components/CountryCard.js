@@ -59,7 +59,7 @@ class CountryCard extends Component{
                   this.props.cardName === 'iran' ||
                   this.props.cardName === 'iraq' ||
                   this.props.cardName === 'poland' ||
-                  this.props.cardName === 'saudiarabia' ||
+                  this.props.cardName === 'saudi_arabia' ||
                   this.props.cardName === 'spain' ||
                   this.props.cardName === 'sudan' ||
                   this.props.cardName === 'uk' ||
@@ -87,8 +87,8 @@ class CountryCard extends Component{
                   this.props.cardName === 'germany' ||
                   this.props.cardName === 'kenya' ||
                   this.props.cardName === 'philippines' ||    
-                  this.props.cardName === 'southafrica' ||
-                  this.props.cardName === 'southkorea' ||
+                  this.props.cardName === 'south_africa' ||
+                  this.props.cardName === 'south_korea' ||
                   this.props.cardName === 'turkey'){
             return(
                 <React.Fragment>{

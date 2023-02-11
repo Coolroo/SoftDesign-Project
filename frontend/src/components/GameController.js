@@ -24,13 +24,14 @@ class GameController extends Component{
     state = {
         game: {
             board: {
-                OCEANIA: [],
                 NORTH_AMERICA: [],
-                SOUTH_AMERICA: [],
+                EUROPE: [],
                 ASIA: [],
+                SOUTH_AMERICA: [],
                 AFRICA: [],
-                EUROPE: []
-            }
+                OCEANIA: []
+            },
+            plagues:[]
         },
         player: {
             hand: [],
