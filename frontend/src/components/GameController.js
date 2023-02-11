@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import GameView from "./GameView";
-import JoinGamePage from "./JoinGamePage";
+import JoinGamePage from "./lobby/JoinGamePage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DropdownButton } from "react-bootstrap";
 import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
+import Lobby from "./lobby/Lobby";
 
 const postRequestOptions = {
     method: 'POST',
@@ -25,19 +26,32 @@ class GameController extends Component{
     state = {
         game: {
             board: {
-                NORTH_AMERICA: [],
+                OCEANIA: [],
                 EUROPE: [],
                 ASIA: [],
+                NORTH_AMERICA: [],
                 SOUTH_AMERICA: [],
-                AFRICA: [],
-                OCEANIA: []
+                AFRICA: []
             },
-            plagues:[]
+            plagues: {
+                RED: null,
+                BLUE: null,
+                YELLOW: null,
+                PURPLE: null
+            }
+
         },
         player: {
             hand: [],
             eventCards: [],
-            plague: null
+            plague: {
+                color: null,
+                diseaseType: null,
+                dnaPoints: null,
+                plagueTokens: null,
+                traitSlots: null,
+                killedCountries: null
+            }
         },
        dropdownText: "Please select color",
        playerId: null,
@@ -68,7 +82,7 @@ class GameController extends Component{
             })
     }
 
-    updateGameState(data){
+    async updateGameState(data){
         this.setState((prevState) => {
             return {
                 ...prevState,
@@ -79,7 +93,7 @@ class GameController extends Component{
                     eventDiscard:data.eventDiscard,
                     eventPlayer:data.eventPlayer,
                     plagues: data.plagues,
-                    playState: data.plagues,
+                    playState: data.playState,
                     readyToProceed: data.readyToProceed,
                     revealedCountries: data.revealedCountries,
                     suddenDeath: data.suddenDeath,
@@ -88,16 +102,15 @@ class GameController extends Component{
                     votesToStart: data.votesToStart
                 }
             };
-        },
-        () => {});
+        });
     }
 
-    async joinGame(){
+    async joinGame(color){
         if(this.state.lobbyId == null){
             console.log("No lobby ID");
             return;
         }
-        this.patchRequest("/joinGame", this.state.lobbyId, JSON.stringify({plagueColor: this.state.dropdownText}))
+        this.patchRequest("/joinGame", this.state.lobbyId, JSON.stringify({plagueColor: color}))
         .then(response => {
             if(response.ok) {
                 response.text().then(text => {
@@ -106,7 +119,6 @@ class GameController extends Component{
                         playerId: text.replace(/['"]+/g, ''),
                 }}, () => {
                         console.log("Player ID = " + text);
-                        console.log("State = " + JSON.stringify(this.state));
                         this.initWebSocket();
                         this.getPlayerInfo();
                 });        
@@ -122,7 +134,7 @@ class GameController extends Component{
             ...patchRequestOptions,
             body
             };
-            console.log(JSON.stringify(patchBody));
+            console.log("new PATCH request to endpoint" + endpoint + " with body " + JSON.stringify(patchBody));
         return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
@@ -133,16 +145,19 @@ class GameController extends Component{
         fetch(SERVER_URL + "/gameState?gameStateId=" + id)
         .then(resp => {
             if(resp.ok){
-                resp.json().then(gameState => {
+                resp.text().then(gameState => {
                     this.setState((prevState) => {
                         return {
                             ...prevState,
-                            game: gameState,
                             lobbyId: id
                         }
                     }, () => {
-                        console.log("Game loaded: " + JSON.stringify(gameState));
-                        this.initWebSocket();
+                        console.log(gameState);
+                        this.updateGameState(JSON.parse(gameState)).then(() => {
+                            console.log("Game loaded: " + JSON.stringify(gameState));
+                            this.initWebSocket();
+                        });
+                        
                     });
                 });
             }
@@ -162,25 +177,31 @@ class GameController extends Component{
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
                     console.log("Websocket updated state: " + body.body);
                     const jsonBody = JSON.parse(body.body);
-                    this.setState((prevState) => {
-                        return {...prevState,
-                        game: jsonBody,
-                        socket: stompClient,
-                        }
-                    });
-                    this.getPlayerInfo();
+                    this.updateGameState(jsonBody).then(() => {
+                        this.getPlayerInfo();
+                    })
+                    
             })})})
     }
 
     async getPlayerInfo(){
+        if(this.state.playerId == null){
+            console.log("No player ID");
+            return;
+        }
         fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
                 .then(resp => {
                     if(resp.ok){
                         resp.text().then(playerInfo => {
+                            const playerJson = JSON.parse(playerInfo);
                             this.setState((prevState) => {
                                 return {
                                     ...prevState,
-                                    player: JSON.parse(playerInfo)
+                                    player: {
+                                        hand: playerJson.hand,
+                                        eventCards: playerJson.eventCards,
+                                        plague: playerJson.plague
+                                    }
                                 }
                             }, () => {
                                 console.log("Player loaded: " + playerInfo);
@@ -198,8 +219,8 @@ class GameController extends Component{
         });
     }
 
-    voteToStart(id){
-        this.patchRequest("/voteToStart", id, JSON.stringify({playerId: this.state.playerId}))
+    voteToStart(){
+        this.patchRequest("/voteToStart", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}))
         console.log("Voted to start")
     };
     
@@ -211,25 +232,38 @@ class GameController extends Component{
                 return <JoinGamePage joinGame={(id) => this.loadLobby(id)} createGame={() => this.createGame()}/>
             }
         }
-        return(
-            <React.Fragment>{
-                <div>
-                    {/*<button onClick={()=>this.createGame()}>Create Game</button>
 
-                    <form><input type="text" id="joinID" name="joinID"/></form>
-                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>
+        const lobbyPage = () => {
+            console.log("lobbyId = " + this.state.lobbyId + " playState = " + JSON.stringify(this.state.game.playState));
+            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
+                console.log("Lobby Page")
+                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={() => this.voteToStart()} player={this.state.player}/>
+            }
+        }
+        
+        // eslint-disable-next-line
+        const gamePage = () => {
+            return [<button onClick={()=>this.createGame()}>Create Game</button>,
+                    <form><input type="text" id="joinID" name="joinID"/></form>,
+                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>,
                     <DropdownButton id="dropdown-item-button" title={this.state.dropdownText} className="format">
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>RED</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>ORANGE</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>YELLOW</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>BLUE</div></Dropdown.Item>
                         <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
-                    </DropdownButton>
-                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>
-                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>
-                
-                    <GameView state={this.state.game} player={this.state.player}/>*/}
+                    </DropdownButton>,
+                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>,
+                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>,
+                    <GameView state={this.state.game} player={this.state.player}/>]
+        }
+        
+        return(
+            <React.Fragment>{
+                <div>
+                    {/*gamePage()*/}
                     {joinGamePage()}
+                    {lobbyPage()}
                 </div>   
             }       
             </React.Fragment>

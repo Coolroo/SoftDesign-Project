@@ -40,6 +40,7 @@ import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
 import com.softdesign.plagueinc.models.serializers.CountrySerializers.CountryNameSerializer;
+import com.softdesign.plagueinc.models.serializers.PlagueSerializers.PlagueColorMapSerializer;
 import com.softdesign.plagueinc.models.serializers.PlagueSerializers.PlagueListToColorSerializer;
 import com.softdesign.plagueinc.models.serializers.PlagueSerializers.PlagueToColorSerializer;
 import com.softdesign.plagueinc.models.traits.TraitCard;
@@ -60,6 +61,7 @@ public class GameState {
     @JsonIgnore
     Logger logger = LoggerFactory.getLogger(GameState.class);
 
+    @JsonSerialize(using = PlagueColorMapSerializer.class)
     private List<Plague> plagues;
     
     @JsonSerialize(using = PlagueToColorSerializer.class)
