@@ -307,3 +307,17 @@ code {
 
   color: #FFFFFF;
 }
+
+.joinGameButton{
+  box-sizing: border-box;
+  position: absolute;
+  width: 10vw;
+  height: 4vw;
+  background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}

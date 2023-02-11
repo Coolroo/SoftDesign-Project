@@ -26,12 +26,12 @@ class GameController extends Component{
     state = {
         game: {
             board: {
-                NORTH_AMERICA: [],
+                OCEANIA: [],
                 EUROPE: [],
                 ASIA: [],
+                NORTH_AMERICA: [],
                 SOUTH_AMERICA: [],
-                AFRICA: [],
-                EUROPE: []
+                AFRICA: []
             },
             plagues: {
                 RED: null,
@@ -44,7 +44,14 @@ class GameController extends Component{
         player: {
             hand: [],
             eventCards: [],
-            plague: null
+            plague: {
+                color: null,
+                diseaseType: null,
+                dnaPoints: null,
+                plagueTokens: null,
+                traitSlots: null,
+                killedCountries: null
+            }
         },
        dropdownText: "Please select color",
        playerId: null,
@@ -75,7 +82,7 @@ class GameController extends Component{
             })
     }
 
-    updateGameState(data){
+    async updateGameState(data){
         this.setState((prevState) => {
             return {
                 ...prevState,
@@ -86,7 +93,7 @@ class GameController extends Component{
                     eventDiscard:data.eventDiscard,
                     eventPlayer:data.eventPlayer,
                     plagues: data.plagues,
-                    playState: data.plagues,
+                    playState: data.playState,
                     readyToProceed: data.readyToProceed,
                     revealedCountries: data.revealedCountries,
                     suddenDeath: data.suddenDeath,
@@ -95,16 +102,15 @@ class GameController extends Component{
                     votesToStart: data.votesToStart
                 }
             };
-        },
-        () => {});
+        });
     }
 
-    async joinGame(){
+    async joinGame(color){
         if(this.state.lobbyId == null){
             console.log("No lobby ID");
             return;
         }
-        this.patchRequest("/joinGame", this.state.lobbyId, JSON.stringify({plagueColor: this.state.dropdownText}))
+        this.patchRequest("/joinGame", this.state.lobbyId, JSON.stringify({plagueColor: color}))
         .then(response => {
             if(response.ok) {
                 response.text().then(text => {
@@ -113,7 +119,6 @@ class GameController extends Component{
                         playerId: text.replace(/['"]+/g, ''),
                 }}, () => {
                         console.log("Player ID = " + text);
-                        console.log("State = " + JSON.stringify(this.state));
                         this.initWebSocket();
                         this.getPlayerInfo();
                 });        
@@ -129,7 +134,7 @@ class GameController extends Component{
             ...patchRequestOptions,
             body
             };
-            console.log(JSON.stringify(patchBody));
+            console.log("new PATCH request to endpoint" + endpoint + " with body " + JSON.stringify(patchBody));
         return fetch(SERVER_URL + endpoint + "?gameStateId=" + lobbyId, patchBody);
     }
 
@@ -140,16 +145,19 @@ class GameController extends Component{
         fetch(SERVER_URL + "/gameState?gameStateId=" + id)
         .then(resp => {
             if(resp.ok){
-                resp.json().then(gameState => {
+                resp.text().then(gameState => {
                     this.setState((prevState) => {
                         return {
                             ...prevState,
-                            game: gameState,
                             lobbyId: id
                         }
                     }, () => {
-                        console.log("Game loaded: " + JSON.stringify(gameState));
-                        this.initWebSocket();
+                        console.log(gameState);
+                        this.updateGameState(JSON.parse(gameState)).then(() => {
+                            console.log("Game loaded: " + JSON.stringify(gameState));
+                            this.initWebSocket();
+                        });
+                        
                     });
                 });
             }
@@ -169,13 +177,10 @@ class GameController extends Component{
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
                     console.log("Websocket updated state: " + body.body);
                     const jsonBody = JSON.parse(body.body);
-                    this.setState((prevState) => {
-                        return {...prevState,
-                        game: jsonBody,
-                        socket: stompClient,
-                        }
-                    });
-                    this.getPlayerInfo();
+                    this.updateGameState(jsonBody).then(() => {
+                        this.getPlayerInfo();
+                    })
+                    
             })})})
     }
 
@@ -188,10 +193,15 @@ class GameController extends Component{
                 .then(resp => {
                     if(resp.ok){
                         resp.text().then(playerInfo => {
+                            const playerJson = JSON.parse(playerInfo);
                             this.setState((prevState) => {
                                 return {
                                     ...prevState,
-                                    player: JSON.parse(playerInfo)
+                                    player: {
+                                        hand: playerJson.hand,
+                                        eventCards: playerJson.eventCards,
+                                        plague: playerJson.plague
+                                    }
                                 }
                             }, () => {
                                 console.log("Player loaded: " + playerInfo);
@@ -209,8 +219,8 @@ class GameController extends Component{
         });
     }
 
-    voteToStart(id){
-        this.patchRequest("/voteToStart", id, JSON.stringify({playerId: this.state.playerId}))
+    voteToStart(){
+        this.patchRequest("/voteToStart", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}))
         console.log("Voted to start")
     };
     
@@ -224,12 +234,14 @@ class GameController extends Component{
         }
 
         const lobbyPage = () => {
+            console.log("lobbyId = " + this.state.lobbyId + " playState = " + JSON.stringify(this.state.game.playState));
             if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
-                return <Lobby lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={(id) => this.voteToStart(id)}/>
+                console.log("Lobby Page")
+                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} lobbyId={this.state.lobbyId} game={this.state.game} voteToStart={() => this.voteToStart()} player={this.state.player}/>
             }
         }
         
-        
+        // eslint-disable-next-line
         const gamePage = () => {
             return [<button onClick={()=>this.createGame()}>Create Game</button>,
                     <form><input type="text" id="joinID" name="joinID"/></form>,
