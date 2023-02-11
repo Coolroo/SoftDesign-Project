@@ -61,7 +61,12 @@ class GameController extends Component{
        lobbyId: null
         
     };
-
+    /**
+     * This function is called when the component is first mounted.
+     * It checks if the user has a cookie for a lobbyId and playerId.
+     * If they do, it will load the lobby and player info.
+     * If they don't, it will do nothing.
+     */
     componentDidMount(){
         console.log("Loading cookies");
         if(cookies.get("lobbyId") != null){
@@ -101,7 +106,6 @@ class GameController extends Component{
         
     }
     
-
     async createGame(){
         this.gameID = await fetch(SERVER_URL + `/createGame`, postRequestOptions)
             .then(function(response) {
