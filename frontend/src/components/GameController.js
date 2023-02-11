@@ -281,33 +281,28 @@ class GameController extends Component{
             }
         }
 
+        if(this.state.game.playState != undefined){
+            
+        }
         const lobbyPage = () => {
-            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
+            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != undefined){
                 return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} voteToStart={() => this.voteToStart()} />
             }
         }
         
         // eslint-disable-next-line
         const gamePage = () => {
-            return [<button onClick={()=>this.createGame()}>Create Game</button>,
-                    <form><input type="text" id="joinID" name="joinID"/></form>,
-                    <button onClick={()=>this.getState(document.getElementById('joinID').value)}>Get State</button>,
-                    <DropdownButton id="dropdown-item-button" title={this.state.dropdownText} className="format">
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>RED</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>ORANGE</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>YELLOW</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>BLUE</div></Dropdown.Item>
-                        <Dropdown.Item as="button"><div onClick={(e) => this.changeColor(e.target.textContent)}>PURPLE</div></Dropdown.Item>
-                    </DropdownButton>,
-                    <button onClick={()=>this.joinGame(document.getElementById('joinID').value).title}>Join Game</button>,
-                    <button onClick={()=>this.voteToStart(document.getElementById('joinID').value)}>Vote Start</button>,
-                    <GameView state={this.state.game} player={this.state.player}/>]
+            if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
+                console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
+                return <GameView state={this.state}/>
+            }
+            
         }
         
         return(
             <React.Fragment>{
                 <div>
-                    {/*gamePage()*/}
+                    {gamePage()}
                     {joinGamePage()}
                     {lobbyPage()}
                 </div>   

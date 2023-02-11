@@ -49,7 +49,7 @@ class Board extends Component{
 
         const SLOTS = [ASIA_SLOTS, AFRICA_SLOTS, SA_SLOTS, NA_SLOTS, EUROPE_SLOTS, OCEANIA_SLOTS];
         var countries = [];
-        const board = this.props.state.board;
+        const board = this.props.state.game.board;
         console.log(JSON.stringify(board))
         Object.keys(board).forEach((continent, index) => {
             console.log("Continent = " + continent)
