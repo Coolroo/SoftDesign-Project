@@ -6,6 +6,12 @@ class PlayerBox extends Component{
         buttonText: this.props.state.playerId == null ? "Join Game" : "Vote to Start"
     }
     render(){
+        const backgrounds = {
+            "RED": "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(255, 0, 0, 0.4) 100%)",
+            "BLUE": "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 255, 0.36) 100%)",
+            "YELLOW": "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 0, 0.36) 100%)",
+            "PURPLE": "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(255, 0, 199, 0.4) 100%)"
+            };
         let buttonClick = () => {
             if(this.props.state.playerId == null){
                 this.props.joinGame(this.props.color);
@@ -23,7 +29,7 @@ class PlayerBox extends Component{
             <React.Fragment>
                 <div className="playerBox" style={{...this.props.pos, 
                                            border: "0.2vw solid " + this.props.readyColor, 
-                                           backgroundImage: this.props.background + this.props.playerIcon,
+                                           backgroundImage: backgrounds[this.props.color] + this.props.playerIcon,
                                            }}/>
 
                 {lobbyButton()}
