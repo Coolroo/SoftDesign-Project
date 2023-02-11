@@ -180,6 +180,10 @@ class GameController extends Component{
     }
 
     async getPlayerInfo(){
+        if(this.state.playerId == null){
+            console.log("No player ID");
+            return;
+        }
         fetch(SERVER_URL + "/getPlayerInfo?gameStateId=" + this.state.lobbyId + "&playerId=" + this.state.playerId)
                 .then(resp => {
                     if(resp.ok){
@@ -218,6 +222,12 @@ class GameController extends Component{
                 return <JoinGamePage joinGame={(id) => this.loadLobby(id)} createGame={() => this.createGame()}/>
             }
         }
+
+        const lobbyPage = () => {
+            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION"){
+                return <Lobby game={this.state.game} voteToStart={(id) => this.voteToStart(id)}/>
+            }
+        }
         
         
         const gamePage = () => {
@@ -240,8 +250,8 @@ class GameController extends Component{
             <React.Fragment>{
                 <div>
                     {/*gamePage()*/}
-                    {/*joinGamePage()*/}
-                    <Lobby game={this.state.game}/>
+                    {joinGamePage()}
+                    {lobbyPage()}
                 </div>   
             }       
             </React.Fragment>

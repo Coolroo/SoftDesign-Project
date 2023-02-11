@@ -254,6 +254,8 @@ code {
     width: 10vw;
     height: 10vw;
     
+    background-size: cover;
+    
     border-radius: 1vw;
   }
 
