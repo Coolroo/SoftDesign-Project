@@ -11,6 +11,8 @@ var h = window.innerHeight;
 class GameView extends Component{
 
     render() {
+        console.log(this.props.state.player)
+
         var board = "orangebacteria";
         if(this.props.state.player.plague.color && this.props.state.player.plague.diseaseType){
             board = this.props.state.player.plague.color.toLowerCase() + this.props.state.player.plague.diseaseType.toLowerCase();
