@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DraftCountrySlot from "./DraftCountrySlot";
 
-class PlagueCard extends Component{
+class CountryDraftZone extends Component{
 
     render() {
         if(this.props.state.revealedCountries != null){
@@ -19,4 +19,4 @@ class PlagueCard extends Component{
     }}
 }
 
-export default PlagueCard;
+export default CountryDraftZone;
