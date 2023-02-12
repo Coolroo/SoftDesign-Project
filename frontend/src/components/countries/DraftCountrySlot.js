@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import CountryCard from "./CountryCard";
+import DraftCountryCard from "./DraftCountryCard";
 
 class DraftCountrySlot extends Component{
 
@@ -7,9 +7,10 @@ class DraftCountrySlot extends Component{
         return(
             <React.Fragment>{
                 <div>
-                    <CountryCard cardName={this.props.name}/>
+                    <DraftCountryCard cardName={this.props.name}/>
                 </div>   
-    }       </React.Fragment>
+            }       
+            </React.Fragment>
         )
     }
 }
