@@ -35,10 +35,10 @@ class Lobby extends Component{
 
         return(<React.Fragment>
             {/*Player Boxes*/}
-            <PlayerBox joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="RED" readyColor={getReadyColor("RED")} pos={{top: "20%", left: "15%"}} playerIcon={getPlayerIcon("RED")}/>
-            <PlayerBox joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="BLUE" readyColor={getReadyColor("BLUE")} pos={{top: "20%", left: "35%"}} playerIcon={getPlayerIcon("BLUE")}/>
-            <PlayerBox joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="YELLOW" readyColor={getReadyColor("YELLOW")} pos={{top: "20%", left: "55%"}} playerIcon={getPlayerIcon("YELLOW")}/>
-            <PlayerBox joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="PURPLE" readyColor={getReadyColor("PURPLE")} pos={{top: "20%", left: "75%"}} playerIcon={getPlayerIcon("PURPLE")}/>
+            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="RED" readyColor={getReadyColor("RED")} pos={{top: "20%", left: "15%"}} playerIcon={getPlayerIcon("RED")}/>
+            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="BLUE" readyColor={getReadyColor("BLUE")} pos={{top: "20%", left: "35%"}} playerIcon={getPlayerIcon("BLUE")}/>
+            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="YELLOW" readyColor={getReadyColor("YELLOW")} pos={{top: "20%", left: "55%"}} playerIcon={getPlayerIcon("YELLOW")}/>
+            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="PURPLE" readyColor={getReadyColor("PURPLE")} pos={{top: "20%", left: "75%"}} playerIcon={getPlayerIcon("PURPLE")}/>
             {/*Lobby ID*/}
             <div className="lobbyIdTag" style={{left: "45%", top: "85%", transform: "transform: translate(-50%, -50%)"}}>Lobby ID</div>
             <div className="lobbyIdBox" style={{left: "45%", top: "90%", transform: "transform: translate(-50%, -50%)"}}><p>{this.state.state.lobbyId}</p></div>

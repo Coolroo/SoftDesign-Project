@@ -404,6 +404,8 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //TODO: Implement endpoint to handle player changing disease type (ONLY IF GAMES PLAY STATE IS INITIALIZATION)
+
 
 /**
  * The Get Mapping for /gameState used to
