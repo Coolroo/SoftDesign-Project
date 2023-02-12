@@ -1,22 +1,34 @@
 import React, { Component } from "react";
 import DraftCountrySlot from "./DraftCountrySlot";
 
-class PlagueCard extends Component{
+class CountryDraftZone extends Component{
 
     render() {
-        if(this.props.state.revealedCountries != null){
+        const DRAFT_SLOTS = [
+            {top:'9.0%', left:'29.4%'},
+            {top:'9.4%', left:'51.3%'},
+            {top:'9.8%', left:'74.7%'}
+        ]
+
+        let revealedCountries = [];
+        for(let i = 0; i < this.props.state.game.plagues.length; i++) {
+            if(this.props.state.plagues[i].dnaPoints === this.props.score){
+                revealedCountries.push (<div style={DRAFT_SLOTS[i]} className="draftZoneCountrySlot"><DraftCountrySlot name={this.props.state.revealedCountries[i]}/></div>)
+            }
+        }
+
+
         return(
             <React.Fragment>{
                     <div className="countryDraftZone">
                         <img src={`/CountryDraftZone.png`} alt="img"/>
-                        <div style={{top:'9.0%', left:'29.4%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={this.props.state.revealedCountries[0]}/></div>
-                        <div style={{top:'9.4%', left:'51.3%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={this.props.state.revealedCountries[1]}/></div>
-                        <div style={{top:'9.8%', left:'74.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={this.props.state.revealedCountries[2]}/></div>
+                        <div>{revealedCountries}</div>
                     </div>   
                 }
             </React.Fragment>
         )
-    }}
+        
+    }
 }
 
-export default PlagueCard;
+export default CountryDraftZone;
