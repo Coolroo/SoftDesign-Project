@@ -34,13 +34,19 @@ class PlayerBox extends Component{
             if((this.state.state.playerId == null && this.state.state.game.plagues[this.props.color] == null) || (this.state.state.player.plague != null && this.props.color === this.state.state.player.plague.color)){
                 return <div className="joinGameButton" id={this.props.color} style={{left: this.props.pos.left, top: "40%"}} onClick={buttonClick}>{this.state.buttonText}</div>
             }
-    }
+        }
+
+        let whenClicked = () => {
+            //TODO: add check for player color, then call change color
+            console.log("clicked");
+            this.props.changeType();
+        }
         return(
             <React.Fragment>
                 <div className="playerBox" style={{...this.props.pos, 
                                            border: "0.2vw solid " + this.props.readyColor, 
                                            backgroundImage: backgrounds[this.props.color] + this.props.playerIcon,
-                                           }}/>
+                                           }} onClick={whenClicked}/>
 
                 {lobbyButton()}
             </React.Fragment>
