@@ -130,7 +130,7 @@ public class TraitReference {
                         deck.add(hypothermia());
                         break;
                         case "respiratory_failure":
-                        deck.add(respitoryFailure());
+                        deck.add(respiratoryFailure());
                         break;
                         case "rash":
                         deck.add(rash());
@@ -334,8 +334,8 @@ public class TraitReference {
         return new TraitCard("total_organ_failure", 21, List.of(new LethalityTrait(), new LethalityTrait(), new LethalityTrait()));
     }
 
-    public static TraitCard respitoryFailure(){
-        return new TraitCard("respitory_failure", 2, List.of(new LethalityTrait()));
+    public static TraitCard respiratoryFailure(){
+        return new TraitCard("respiratory_failure", 2, List.of(new LethalityTrait()));
     }
 
     public static TraitCard buboes(){

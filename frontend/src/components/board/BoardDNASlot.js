@@ -4,7 +4,6 @@ class BoardDNASlot extends Component{
 
    
     render() {
-        console.log(this.props.state.game.plagues.length)
         let tokens = [];
     
         if (this.props.state.game.plagues.RED != null){
@@ -30,8 +29,6 @@ class BoardDNASlot extends Component{
                 tokens.push (<img src={`/dnaTokens/PURPLE${this.props.state.game.plagues.PURPLE.diseaseType}.jpg`} className="card"alt="img"/>)
             }
         }
-        
-
     
         return(
             <React.Fragment>{
@@ -39,8 +36,6 @@ class BoardDNASlot extends Component{
             }       
             </React.Fragment>
         )
-
-        
     }
 }
 
