@@ -36,15 +36,20 @@ class GameView extends Component{
 
         let playerBoard = () => {
             if(this.props.state.playerId != null){
-                return [<span className="plagueCard"><PlagueCard cardName={board}/></span>,
+                return [<span className="plagueCard"></span>,
                 <span className="hand"><TraitHand hand={this.props.state.player.hand}/></span>]
             }
         }
         return(
             <React.Fragment>{
-                <div className="gameView" height={h} width={w}>
+                <div className="gameView" height={h} width={w} style={{display:"flex", margin: "auto"}}>
                     
-                    <div>
+                    <Board state={this.props.state}/>
+                    <div style={{marginTop:"10%", verticalAlign:"middle", marginRight: "5vw"}}>
+                        <CountryDraftZone state={this.props.state}/>
+                        <PlagueCard cardName={board}/>
+                    </div>
+                    {/*<div>
                         <CountryDraftZone state={this.props.state}/>
                     </div>
             
@@ -56,7 +61,7 @@ class GameView extends Component{
         
                     <div className="bottomBar">
                         {playerBoard()}  
-                    </div>
+            </div>*/}
                 </div> 
                 }
             </React.Fragment>

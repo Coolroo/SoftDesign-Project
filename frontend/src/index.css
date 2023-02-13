@@ -37,9 +37,10 @@ code {
 }
 
 .countryDraftZone{
-  max-width: 25%;
-  margin: auto;
   position: relative;
+  border-radius: 1vw;
+  height: 20vh;
+  width: auto;
 }
 
 .draftZoneCountrySlot{
@@ -56,23 +57,17 @@ code {
 }
 
 .board{
-  max-width: 42%;
   position: relative;
-  margin: auto;
+  height: 60vh;
+  width: auto;
+  margin-left: 5vw;
+  margin-right: auto;
+  margin-top: 10%;
 }
 
 .card{
   max-width: 100%;
   position: relative;
-}
-
-
-.plagueCard{
-  width: 28%;
-  height: auto;
-  float: left;
-  position:relative;
-  margin-left: 5%;
 }
 
 .cardInHand{
@@ -104,11 +99,29 @@ code {
   background-color: yellow;
 }
 
+.plagueCard{
+  float: left;
+  position:relative;
+  width: 35vw;
+  height: 30vh;
+  margin-top: 9vh;
+}
+
 .plagueCardTraitSlot{
   background-color: hotpink;
   position: absolute;
   width: 16.0%;
   height: 37%;
+  width: "16.0%";
+  min-height: "37%";
+  z-index: 9;
+}
+
+.plagueCardTraitSlot{
+  background-color: hotpink;
+  position: absolute;
+  width: "16.0%";
+  min-height: "37%";
   z-index: 9;
 }
 
@@ -123,11 +136,6 @@ code {
   margin-left: 2%;
 }
 
-.bottomBar{
-    max-width: 100%;
-    margin-top: 10px;
-    display: inline-block;
-}
 
 .hexagon {
   rotate: 30deg;
@@ -325,7 +333,7 @@ code {
 
 }
 
-.boardPicture{
+.curvedBorder{
   border-radius: 1vw;
 }
 
