@@ -6,6 +6,9 @@ import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
 import Cookies from 'universal-cookie';
 
+var w = window.innerWidth;
+var h = window.innerHeight;
+
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -54,7 +57,6 @@ class GameController extends Component{
                 killedCountries: null
             }
         },
-       dropdownText: "Please select color",
        playerId: null,
        lobbyId: null
         
@@ -66,6 +68,10 @@ class GameController extends Component{
      * If they don't, it will do nothing.
      */
     componentDidMount(){
+        if(cookies.get("preserveState")  === "false"){
+            console.log("Cookies disabled. Not loading cookies");
+            return;
+        }
         console.log("Loading cookies");
         if(cookies.get("lobbyId") != null){
             console.log("Found lobbyId cookie: " + cookies.get("lobbyId"));
@@ -257,19 +263,19 @@ class GameController extends Component{
                 });
     }
 
-    changeColor(color){
-        this.setState((prevState) => { 
-            return {...prevState,
-            dropdownText: color};
-        });
-    }
-
     voteToStart(){
         this.patchRequest("/voteToStart", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}))
         console.log("Voted to start")
     };
     
-       
+    changePlagueType(){
+        const cycle = {
+            BACTERIA: "VIRUS",
+            VIRUS: "BACTERIA"
+        }
+        console.log("Changing plague type");
+        //TODO: Make Patch request to change plague type
+    };
        
     render() {
         const joinGamePage = () => {
@@ -278,12 +284,9 @@ class GameController extends Component{
             }
         }
 
-        if(this.state.game.playState != undefined){
-            
-        }
         const lobbyPage = () => {
             if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != undefined){
-                return <Lobby joinGame={(color) => this.joinGame(color)}  state={this.state} voteToStart={() => this.voteToStart()} />
+                return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state}  />
             }
         }
         
