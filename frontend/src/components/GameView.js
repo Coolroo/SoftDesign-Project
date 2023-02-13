@@ -18,7 +18,7 @@ class GameView extends Component{
             this.props.proceed();
         }    
 
-        if (this.props.state.game.readyToProceed)
+        if (this.props.state.game.readyToProceed && this.props.state.game.currTurn == this.props.state.player.plague.color)
         {
             proceedButton.push(<div className="proceedButton" onClick={proceed}>PROCEED</div>)
         }
