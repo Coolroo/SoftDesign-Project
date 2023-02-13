@@ -20,22 +20,21 @@ class GameView extends Component{
 
         let playerBoard = () => {
             if(this.props.state.playerId != null){
-                return [<span className="plagueCard"><PlagueCard cardName={board}/></span>,
-                <span className="hand"><TraitHand hand={this.props.state.player.hand}/></span>]
+                return [<PlagueCard cardName={board}/>,
+                    <span className="hand"><TraitHand hand={this.props.state.player.hand}/></span>]
             }
         }
         return(
             <React.Fragment>{
-                <div className="gameView" height={h} width={w}>
-                    <div>
-                        <CountryDraftZone state={this.props.state}/>
+                <div className="gameView" >
+                    <div style={{verticalAlign:"middle", position:"absolute", bottom:"0"}}>
+                            {playerBoard()}  
                     </div>
-                    <div>
+                    <div style={{verticalAlign:"middle", position:"absolute", right:"0"}}>
+                        <CountryDraftZone state={this.props.state}/>
                         <Board state={this.props.state}/>
                     </div>
-                    <div className="bottomBar">
-                        {playerBoard()}  
-                    </div>
+                    
                 </div> 
                 }
             </React.Fragment>

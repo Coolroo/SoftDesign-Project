@@ -65,7 +65,6 @@ class PlayerBox extends Component{
                     <div className="playerBox" style={{ position: "relative",
                                            border: "0.2vw solid " + getReadyColor(), 
                                            backgroundImage: backgrounds[this.props.color] + getPlayerIcon(),
-                                           
                                            }} onClick={whenClicked}/>
 
                 {lobbyButton()}

@@ -301,7 +301,7 @@ class GameController extends Component{
         
         return(
             <React.Fragment>{
-                <div>
+                <div style={{minHeight:"100%", height:"100%"}}>
                     {gamePage()}
                     {joinGamePage()}
                     {lobbyPage()}
