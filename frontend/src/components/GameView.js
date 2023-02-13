@@ -18,15 +18,6 @@ class GameView extends Component{
             this.props.proceed();
         }    
 
-        if (this.props.state.game.readyToProceed && this.props.state.game.currTurn == this.props.state.player.plague.color)
-        {
-            proceedButton.push(<div className="proceedButton" onClick={proceed}>PROCEED</div>)
-        }
-        else
-        {
-            proceedButton.push(<div className="disabledProceedButton">PROCEED</div>)
-        }
-
         console.log(this.props.state.player)
 
         var board = "";
@@ -49,7 +40,7 @@ class GameView extends Component{
                         <div style={{width:"50vw"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
                         </div>
-                        <div className="joinGameButton" style={{position:"relative", marginLeft: "5vw"}}>Proceed State</div>
+                        <div className="joinGameButton" style={{position:"relative", marginLeft: "5vw"}} onClick={proceed}>Proceed State</div>
                     </div>
                 </div>
                 }
