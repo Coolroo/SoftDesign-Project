@@ -173,9 +173,7 @@ class GameController extends Component{
                 });        
                 });
                 }
-        });
-        
-        
+        });  
     }
 
     async patchRequest(endpoint, lobbyId, body){
@@ -267,7 +265,15 @@ class GameController extends Component{
         this.patchRequest("/voteToStart", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}))
         console.log("Voted to start")
     };
-    
+
+    proceed(){
+        if(this.state.lobbyId == null){
+            console.log("No lobby ID");
+            return;
+        }
+        this.patchRequest("/proceedState", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}))
+    }
+
     changePlagueType(){
         const cycle = {
             BACTERIA: "VIRUS",
@@ -294,7 +300,7 @@ class GameController extends Component{
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView state={this.state}/>
+                return <GameView proceed={() => this.proceed()} state={this.state}/>
             }
             
         }

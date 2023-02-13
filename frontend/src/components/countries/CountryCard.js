@@ -78,7 +78,6 @@ class CountryCard extends Component{
         for(let i = 0; i < this.props.country.cities.length; i++){
             var color = this.props.country.cities[i];
             var background = color == "EMPTY" ? {} : {backgroundImage: "url(/plague_tokens/token_" + colors[color] + ".png)"};
-            console.log(background);
             hexagons.push(<div style={{...countrySlots[this.props.country.cities.length][i], ...background}}  className="hexagon"/>)
         }
         return(
