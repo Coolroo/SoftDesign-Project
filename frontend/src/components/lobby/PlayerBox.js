@@ -32,7 +32,8 @@ class PlayerBox extends Component{
         }
         const lobbyButton = () => {
             if((this.state.state.playerId == null && this.state.state.game.plagues[this.props.color] == null) || (this.state.state.player.plague != null && this.props.color === this.state.state.player.plague.color)){
-                return <div className="joinGameButton" id={this.props.color}  onClick={buttonClick}>{this.state.buttonText}</div>
+                const className = "joinGameButton " + (this.state.state.game.votesToStart[this.props.color] ? " disabled" : "");
+                return <div className={className} id={this.props.color}  onClick={buttonClick}>{this.state.buttonText}</div>
             }
         }
 
@@ -41,12 +42,29 @@ class PlayerBox extends Component{
             console.log("clicked");
             this.props.changeType();
         }
+
+        const plagues = this.state.state.game.plagues;
+
+        const getPlayerIcon = () => {
+            if(plagues[this.props.color] != null){
+                return ", url(/dnaTokens/" + this.props.color + plagues[this.props.color].diseaseType + ".jpg)";
+            }
+            return "";
+        }
+
+        const getReadyColor = () => {
+            if(plagues[this.props.color] != null){
+                return this.state.state.game.votesToStart[this.props.color] ? "green" : "red";
+            }
+            return "red";
+        }
+
         return(
             <React.Fragment>
                 <div style={{verticalAlign: "middle", paddingLeft:"8vw", paddingRight:"8vw"}}>
                     <div className="playerBox" style={{ position: "relative",
-                                           border: "0.2vw solid " + this.props.readyColor, 
-                                           backgroundImage: backgrounds[this.props.color] + this.props.playerIcon,
+                                           border: "0.2vw solid " + getReadyColor(), 
+                                           backgroundImage: backgrounds[this.props.color] + getPlayerIcon(),
                                            
                                            }} onClick={whenClicked}/>
 
