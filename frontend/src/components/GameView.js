@@ -28,7 +28,7 @@ class GameView extends Component{
         return(
             <React.Fragment>{
                 <div style={{verticalAlign:"middle", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", marginTop: "2vh"}}>
-                    <div className="joinGameButton" style={{marginBottom: "2vh", position:"relative", width:"15vw"}}>{this.props.state.game.playState}</div>
+                    <div className="joinGameButton" style={{marginBottom: "2vh", position:"relative", width:"15vw", "--color": this.props.state.game.currTurn.toLowerCase()}}>{this.props.state.game.playState}</div>
                     <div className="gameView"> 
                         <Board state={this.props.state}/>
                         <div style={{verticalAlign:"middle", marginRight: "5vw", marginLeft:"1vw", position:"relative"}}>
@@ -40,7 +40,7 @@ class GameView extends Component{
                         <div style={{width:"50vw"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
                         </div>
-                        <div className="joinGameButton" style={{position:"relative", marginLeft: "5vw"}} onClick={proceed}>Proceed State</div>
+                        <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "5vw"}} onClick={proceed}>Proceed State</div>
                     </div>
                 </div>
                 }
