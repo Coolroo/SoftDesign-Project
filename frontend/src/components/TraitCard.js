@@ -5,7 +5,7 @@ class TraitCard extends Component{
     render() {
         return(
             <React.Fragment>{
-                    <div>
+                    <div className="traitCard">
                         <img src={`/traitcards/${this.props.cardName}.png`} className="card" alt="img"/>
                     </div>   
                 }
