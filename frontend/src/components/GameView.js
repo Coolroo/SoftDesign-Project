@@ -11,6 +11,22 @@ var h = window.innerHeight;
 class GameView extends Component{
 
     render() {
+        console.log(this.props.state)
+        let proceedButton = [];
+        
+        let proceed = () => {
+            this.props.proceed();
+        }    
+
+        if (this.props.state.game.readyToProceed)
+        {
+            proceedButton.push(<div className="proceedButton" onClick={proceed}>PROCEED</div>)
+        }
+        else
+        {
+            proceedButton.push(<div className="disabledProceedButton">PROCEED</div>)
+        }
+
         console.log(this.props.state.player)
 
         var board = "orangebacteria";
@@ -27,12 +43,17 @@ class GameView extends Component{
         return(
             <React.Fragment>{
                 <div className="gameView" height={h} width={w}>
+                    
                     <div>
                         <CountryDraftZone state={this.props.state}/>
                     </div>
+            
                     <div>
                         <Board state={this.props.state}/>
                     </div>
+
+                    <div>{proceedButton}</div>
+        
                     <div className="bottomBar">
                         {playerBoard()}  
                     </div>

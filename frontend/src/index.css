@@ -26,6 +26,16 @@ code {
   max-width: 100%;
 }
 
+.proceedButton{
+  background-color: rgb(0, 255, 102);
+  width: fit-content;
+}
+
+.disabledProceedButton{
+  background-color: rgb(110, 130, 118);
+  width: fit-content;
+}
+
 .countryDraftZone{
   max-width: 25%;
   margin: auto;
