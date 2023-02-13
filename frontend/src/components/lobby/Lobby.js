@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PlayerBox from "./PlayerBox";
 
+var w = window.innerWidth;
+var h = window.innerHeight
 class Lobby extends Component{
     state = {
         state: this.props.state
@@ -33,16 +35,22 @@ class Lobby extends Component{
 
 
 
-        return(<React.Fragment>
+        return(<React.Fragment>{
+            <div height={h} width={w} style={{marginLeft: "auto", marginRight: "auto"}}>
             {/*Player Boxes*/}
-            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="RED" readyColor={getReadyColor("RED")} pos={{top: "20%", left: "15%"}} playerIcon={getPlayerIcon("RED")}/>
-            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="BLUE" readyColor={getReadyColor("BLUE")} pos={{top: "20%", left: "35%"}} playerIcon={getPlayerIcon("BLUE")}/>
-            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="YELLOW" readyColor={getReadyColor("YELLOW")} pos={{top: "20%", left: "55%"}} playerIcon={getPlayerIcon("YELLOW")}/>
-            <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="PURPLE" readyColor={getReadyColor("PURPLE")} pos={{top: "20%", left: "75%"}} playerIcon={getPlayerIcon("PURPLE")}/>
-            {/*Lobby ID*/}
-            <div className="lobbyIdTag" style={{left: "45%", top: "85%", transform: "transform: translate(-50%, -50%)"}}>Lobby ID</div>
-            <div className="lobbyIdBox" style={{left: "45%", top: "90%", transform: "transform: translate(-50%, -50%)"}}><p>{this.state.state.lobbyId}</p></div>
-        </React.Fragment>);
+                <div style={{display: "flex", justifyContent: "center", marginTop:"15vh"}}>
+                    <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="RED" readyColor={getReadyColor("RED")} pos={{top: "20%", left: "15%"}} playerIcon={getPlayerIcon("RED")}/>
+                    <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="BLUE" readyColor={getReadyColor("BLUE")} pos={{top: "20%", left: "35%"}} playerIcon={getPlayerIcon("BLUE")}/>
+                    <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="YELLOW" readyColor={getReadyColor("YELLOW")} pos={{top: "20%", left: "55%"}} playerIcon={getPlayerIcon("YELLOW")}/>
+                    <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="PURPLE" readyColor={getReadyColor("PURPLE")} pos={{top: "20%", left: "75%"}} playerIcon={getPlayerIcon("PURPLE")}/>
+                </div>
+                {/*Lobby ID*/}
+                <div style={{verticalAlign: "middle", marginLeft:"45%", marginRight:"45%", position:"absolute", bottom:"0"}}>
+                    <div className="lobbyIdTag">Lobby ID</div>
+                    <div className="lobbyIdBox" >{this.state.state.lobbyId}</div>
+                </div>
+            </div>
+            }</React.Fragment>);
     }
 }
 
