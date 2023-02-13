@@ -143,9 +143,6 @@ code {
 
 .lobbyButton{
   box-sizing: border-box;
-  position: absolute;
-  width: 19.2%;
-  height: 8%;
   background: linear-gradient(180deg, rgba(219, 163, 54, 0.6) 0%, rgba(146, 103, 20, 0) 100%);
   border: 0.1vw solid rgba(0, 0, 0, 0.3);
   border-radius: 1vw;
@@ -153,9 +150,6 @@ code {
   align-items: center;
   justify-content: center;
 
-}
-
-.lobbyButton p{
   font-family: 'Cambria';
   font-style: normal;
   font-weight: 400;
@@ -169,20 +163,19 @@ code {
   user-select: none;
 
   color: #FFFFFF;
+
 }
 
 .lobbyInput{
   box-sizing: border-box;
-  position: absolute;
-  width: 19.2%;
-  height: 5.6%;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
   border: 0.1vw solid rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lobbyInput input{
-  width: 100%;
-  height: 100%;
   background: transparent;
   border: none;
   outline: none;
@@ -195,7 +188,6 @@ code {
   font-weight: 400;
   font-size: 2vw;
   line-height: auto;
-  display: flex;
   align-items: center;
   text-align: center;
   letter-spacing: 0.05em;
@@ -204,7 +196,6 @@ code {
   }
 
   .plagueIncTitle {
-    position: absolute;
     font-family: 'Corbel';
     font-style: normal;
     font-weight: 400;
@@ -212,7 +203,6 @@ code {
     line-height: auto;
     /* identical to box height */
 
-    display: flex;
     line-height: auto;
     text-align: center;
     white-space: nowrap;
@@ -225,7 +215,6 @@ code {
   }
 
   .plagueIncSubTitle{
-    position: absolute;
 
 
     font-family: 'Cambria';
@@ -233,7 +222,6 @@ code {
     font-weight: 400;
     font-size: 4vw;
     line-height: auto;
-    display: flex;
     line-height: auto;
     text-align: center;
     white-space: nowrap;
@@ -259,16 +247,15 @@ code {
   }
 
 .lobbyIdTag{
-  position: absolute;
   font-family: 'Cambria';
     font-style: normal;
     font-weight: 400;
     font-size: 2vw;
     line-height: auto;
     
+    
     /* identical to box height */
 
-    display: flex;
     line-height: auto;
     text-align: center;
     white-space: nowrap;
@@ -282,17 +269,11 @@ code {
 
 .lobbyIdBox{
   box-sizing: border-box;
-  position: absolute;
-  width: 9%;
-  height: 5.6%;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
   border: 0.1vw solid rgba(0, 0, 0, 0.3);
   border-radius: 1vw;
-  justify-content: center;
   align-items: center;
-}
 
-.lobbyIdBox p{
   font-family: 'Cambria';
   font-style: normal;
   font-weight: 400;
@@ -300,9 +281,7 @@ code {
   font-size: 1.5vw;
   line-height: 2.5vw;
   text-align: center;
-  white-space: nowrap;
   letter-spacing: 0.05em;
-  vertical-align: middle;
 
   color: #FFFFFF;
 }

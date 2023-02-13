@@ -6,6 +6,9 @@ import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
 import Cookies from 'universal-cookie';
 
+var w = window.innerWidth;
+var h = window.innerHeight;
+
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
