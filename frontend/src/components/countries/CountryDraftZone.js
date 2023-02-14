@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import DraftCountrySlot from "./DraftCountrySlot";
+import CountryDiscardPile from "./CountryDiscardPile";
 
 class CountryDraftZone extends Component {
 
@@ -23,6 +24,7 @@ class CountryDraftZone extends Component {
                         <img src={`/CountryDraftZone.png`} className="curvedBorder" alt="img"/>
                         <div style={{top:'9.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
                         <div>{revealedCountries}</div>
+                        <div style={{top:'9.0%',left:'102.0%'}} className="countryDiscardPile"><CountryDiscardPile/></div>
                     </div>   
                 }
             </React.Fragment>
