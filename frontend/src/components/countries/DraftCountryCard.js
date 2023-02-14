@@ -7,7 +7,7 @@ class DraftCountryCard extends Component{
     console.log(cardName);
 
         return(
-              <Draggable type="country" data={this.props.cardName}>
+              <Draggable type='country' data={this.props.cardName}>
                 <div>
                     <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
                 </div>

@@ -65,11 +65,11 @@ class Board extends Component{
         })
 
         const handleDrop = (data) => {
-            this.props.placeCountry(data);
+            this.props.placeCountry(data.country);
         };
 
         return(
-            <Droppable types={['country']}>
+            <Droppable types={['country']} onDrop={handleDrop}>
                 <div className="board">
                     
                     <img src={`/Board.JPG`} alt="boardimg" className="curvedBorder fullSize"/>

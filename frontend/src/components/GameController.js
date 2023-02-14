@@ -290,7 +290,7 @@ class GameController extends Component{
             return;
         }
         console.log("Placing country: " + JSON.stringify(countryName));
-        this.patchRequest("/countryChoice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName.cardName, choice: "PLAY"}));
+        this.patchRequest("/countryChoice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName, choice: "PLAY"}));
     }
        
     render() {
