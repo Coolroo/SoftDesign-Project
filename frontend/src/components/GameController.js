@@ -281,6 +281,7 @@ class GameController extends Component{
         }
         console.log("Changing plague type");
         //TODO: Make Patch request to change plague type
+        this.patchRequest("/changePlagueType", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, diseaseType: cycle[this.state.player.plague.diseaseType]}))
     };
 
     placeCountry(countryName){
