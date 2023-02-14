@@ -12,7 +12,7 @@ class PlagueCard extends Component{
                         <div style={{top:'52.0%', left:'42.5%'}} className="plagueCardTraitSlot"><PlagueCardTraitSlot/></div>
                         <div style={{top:'52.0%', left:'62.5%'}} className="plagueCardTraitSlot"><PlagueCardTraitSlot/></div>
                         <div style={{top:'4.0%', left:'62.5%'}} className="plagueCardTraitSlot"><PlagueCardTraitSlot/></div>
-                        <img src={`/plaguecards/${this.props.cardName}.png`} alt="img"/>
+                        <img src={`/plaguecards/${this.props.cardName}.png`} alt="img" className="fullSize"/>
                         
                     </div>   
                 }
