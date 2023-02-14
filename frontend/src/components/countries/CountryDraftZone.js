@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import DraftCountrySlot from "./DraftCountrySlot";
 
-class CountryDraftZone extends Component{
+class CountryDraftZone extends Component {
 
-    render() {
+    render(){
+        console.log("rendering");
         const DRAFT_SLOTS = [
             {top:'9.0%', left:'29.4%'},
             {top:'9.4%', left:'51.3%'},
@@ -26,7 +27,7 @@ class CountryDraftZone extends Component{
                 }
             </React.Fragment>
         )
-    }
+            }
 }
 
 export default CountryDraftZone;

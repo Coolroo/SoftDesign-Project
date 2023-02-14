@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Continent;
-import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
 
@@ -67,51 +66,21 @@ public class GameStateManager {
         games.get(gameStateId).proceedState();
     }
 
-    public Country drawCountryAction(String gameStateId, UUID plagueId){
-        if(plagueId == null){
+    public void makeCountryChoice(String gameStateId, UUID playerId, String countryName, CountryChoice choice){
+        if(playerId == null){
             throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(countryName == null){
+            throw new IllegalArgumentException("must provide Country ID");
+        }
+        if(choice == null){
+            throw new IllegalArgumentException("must provide Country choice");
         }
         if(gameStateId == null){
             throw new IllegalArgumentException("Must provide gameStateId");
         }
-        games.get(gameStateId).verifyTurn(plagueId);
-        return games.get(gameStateId).drawCountryAction();
-    }
-
-    public Country selectCountryFromRevealed(String gameStateId, UUID plagueId, String name){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        if(name == null){
-            throw new IllegalArgumentException("Must provide name");
-        }
-        games.get(gameStateId).verifyTurn(plagueId);
-        return games.get(gameStateId).selectCountryFromRevealed(name);
-    }
-
-    public void playCountry(String gameStateId, UUID plagueId){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        games.get(gameStateId).verifyTurn(plagueId);
-        games.get(gameStateId).makeCountryChoice(CountryChoice.PLAY);
-    }
-
-    public void discardCountry(String gameStateId, UUID plagueId){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        games.get(gameStateId).verifyTurn(plagueId);
-        games.get(gameStateId).makeCountryChoice(CountryChoice.DISCARD);
+        games.get(gameStateId).verifyTurn(playerId);
+        games.get(gameStateId).makeCountryChoice(countryName, choice);
     }
 
     public void evolveTrait(String gameStateId, UUID plagueId, int traitSlot, int traitIndex){

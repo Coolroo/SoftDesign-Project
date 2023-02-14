@@ -88,13 +88,10 @@ public class GameStateManagerTest {
         Map<Continent, List<Country>> board = Stream.of(Continent.values()).collect(Collectors.toMap(Function.identity(), continent -> new ArrayList<>()));
         gameState.setBoard(board);
 
-        gameState.setPlayState(PlayState.CHOOSECOUNTRY);
-
-        gameStateManager.drawCountryAction(gameStateId, plague.getPlayerId());
-        gameState.proceedState();
+        gameState.setPlayState(PlayState.COUNTRY);
 
         //Now play the country
-        gameState.makeCountryChoice(CountryChoice.PLAY);
+        gameState.makeCountryChoice("countrycardback", CountryChoice.PLAY);
 
         Assertions.assertThat(gameState.getBoard().get(Continent.AFRICA).size()).isGreaterThan(0);
     }

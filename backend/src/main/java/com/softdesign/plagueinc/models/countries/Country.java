@@ -52,12 +52,20 @@ public class Country {
     }
 
     @JsonIgnore
+    public boolean isEmpty(){
+        return !cities.stream().anyMatch(Optional::isPresent);
+    }
+
+    @JsonIgnore
     public boolean isFull(){
         return cities.stream().allMatch(optional -> optional.isPresent());
     }
 
     @JsonIgnore
     public Map<Plague, Long> getInfectionByPlayer(){
+        if(isEmpty()){
+            return Map.of();
+        }
         return getCities().stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
@@ -87,6 +95,9 @@ public class Country {
 
     @JsonIgnore
     public List<Plague> getControllers(){
+        if(isEmpty()){
+            return List.of();
+        }
         Map<Plague, Long> infectionCount = getInfectionByPlayer();
         long max = infectionCount.values().stream().mapToLong(val -> val).max().getAsLong();
         return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague).longValue() == max).toList();

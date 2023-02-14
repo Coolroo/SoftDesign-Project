@@ -3,8 +3,9 @@ import { useDrag } from 'react-dnd'
 import { ItemTypes } from '../../util/ItemTypes.js'
 
 export default function DraftCountryCard(props) {
-    const cardName = props.cardName;
-    const [{ opacity }, dragRef] = useDrag(
+    let cardName = props.cardName;
+    console.log(cardName);
+    let [{ opacity }, dragRef] = useDrag(
         () => ({
           type: ItemTypes.COUNTRY,
           item: { cardName },
@@ -12,7 +13,8 @@ export default function DraftCountryCard(props) {
             opacity: monitor.isDragging() ? 0.5 : 1
           })
         }),
-        []
+        //Dependency array (IMPORTANT)
+        [props.cardName]
       )
         return(
                 <div ref={dragRef} style={{opacity}}>

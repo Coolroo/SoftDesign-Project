@@ -8,12 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.softdesign.plagueinc.managers.GameStateManager;
-import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
@@ -146,55 +144,6 @@ public class GameStateEndpoints {
     }
 
 /**
- * The Patch Mapping for /drawCountry used to:
- *  - Draws a country from the GameState's deck of countries.
- *  - Returns the name of the drawn Country object to the caller.
- *
- * @param gameStateId String
- * @param playerId PlayerID
- *
- * @return Country name
- *
- * @docauthor Nick Lee
- */
-    @PatchMapping("/drawCountry")
-    public ResponseEntity<String> drawCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
-        try{
-            Country country = gameStateManager.drawCountryAction(gameStateId, playerId.playerId());
-            broadcastGameState(gameStateId);
-            return ResponseEntity.ok().body(country.getCountryName());
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-    }
-
-/**
- * The Patch Mapping for /takeCountry used to
- * take a revealed country card
- *
- * @param gameStateId String
- * @param takeCountryDTO TakeCountryDTO
- *
- * @return name of Country
- *
- * @docauthor Nick Lee
- */
-    @PatchMapping("/takeCountry")
-    public ResponseEntity<String> takeCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
-        //First ensure that the player calling is the right one
-        try{
-            Country country = gameStateManager.selectCountryFromRevealed(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
-            broadcastGameState(gameStateId);
-            return ResponseEntity.ok().body(country.getCountryName());
-            
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-    }
-
-/**
  * The Patch Mapping for /playCountry used to
  * play the given country card
  *
@@ -205,37 +154,15 @@ public class GameStateEndpoints {
  *
  * @docauthor Trelent
  */
-    @PatchMapping("/playCountry")
-    public ResponseEntity<Void> playCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
+    @PatchMapping("/countryChoice")
+    public ResponseEntity<Void> countryChoice(@RequestParam("gameStateId") String gameStateId, @RequestBody CountryChoiceDTO countryChoiceDTO){
+        logger.info("Country Choice: " + countryChoiceDTO.toString());
         try{
-            gameStateManager.playCountry(gameStateId, playerId.playerId());
+            gameStateManager.makeCountryChoice(gameStateId, countryChoiceDTO.playerId(), countryChoiceDTO.countryName(), countryChoiceDTO.choice());
             broadcastGameState(gameStateId);
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-/**
- * The Patch Mapping for /discardCountry used to
- * discard the revealed country card
- *
- * @param gameStateId String
- * @param playerId PlayerID
- *
- * @return void
- *
- * @docauthor Nick Lee
- */
-    @PatchMapping("/discardCountry")
-    public ResponseEntity<Void> discardCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
-        try{
-            gameStateManager.discardCountry(gameStateId, playerId.playerId());
-            broadcastGameState(gameStateId);
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

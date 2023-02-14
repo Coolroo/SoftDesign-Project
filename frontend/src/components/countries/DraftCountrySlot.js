@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import DraftCountryCard from "./DraftCountryCard";
 
+
 class DraftCountrySlot extends Component{
 
     render() {
