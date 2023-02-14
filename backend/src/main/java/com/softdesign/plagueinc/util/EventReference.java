@@ -409,7 +409,7 @@ public class EventReference {
 
 
 
-    private static FutureInterface<T>{
+    private static interface FutureInterface<T>{
         public CompletableFuture<T> op();
     }
 
