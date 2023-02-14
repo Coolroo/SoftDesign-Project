@@ -66,7 +66,7 @@ class Board extends Component{
         return(
             <React.Fragment>{
                     <div className="board">
-                        <img src={`/Board.jpg`} alt="img" className="boardPicture"/>
+                        <img src={`/Board.jpg`} alt="img" className="curvedBorder"/>
                         
                         {countries}
                         

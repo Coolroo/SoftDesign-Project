@@ -24,6 +24,9 @@ code {
 
 .gameView{
   max-width: 100%;
+  display: flex;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .proceedButton{
@@ -37,9 +40,10 @@ code {
 }
 
 .countryDraftZone{
-  max-width: 25%;
-  margin: auto;
   position: relative;
+  border-radius: 1vw;
+  height: 20vh;
+  width: auto;
 }
 
 .draftZoneCountrySlot{
@@ -56,9 +60,9 @@ code {
 }
 
 .board{
-  max-width: 42%;
   position: relative;
-  margin: auto;
+  height: 60vh;
+  width: auto;
 }
 
 .card{
@@ -66,22 +70,11 @@ code {
   position: relative;
 }
 
-
-.plagueCard{
-  width: 28%;
-  height: auto;
-  float: left;
-  position:relative;
-  margin-left: 5%;
-}
-
-.cardInHand{
-  width: 20%;
+.traitCard{
+  margin-right: 0.2vw;
+  margin-left: 0.2vw;
+  width: 8vw;
   display: inline-block;
-}
-
-.cardInHand:hover{
-  width: 23%;
 }
 
 .boardDNASlot{
@@ -104,11 +97,30 @@ code {
   background-color: yellow;
 }
 
+.plagueCard{
+  float: left;
+  position:absolute;
+  bottom: 0;
+  width: 35vw;
+  height: 30vh;
+  margin-top: 9vh;
+}
+
 .plagueCardTraitSlot{
   background-color: hotpink;
   position: absolute;
   width: 16.0%;
   height: 37%;
+  width: "16.0%";
+  min-height: "37%";
+  z-index: 9;
+}
+
+.plagueCardTraitSlot{
+  background-color: hotpink;
+  position: absolute;
+  width: "16.0%";
+  min-height: "37%";
   z-index: 9;
 }
 
@@ -118,16 +130,8 @@ code {
 
 .hand{
   white-space: nowrap;
-  max-width:30%;
-  float: left;
-  margin-left: 2%;
 }
 
-.bottomBar{
-    max-width: 100%;
-    margin-top: 10px;
-    display: inline-block;
-}
 
 .hexagon {
   rotate: 30deg;
@@ -325,8 +329,24 @@ code {
 
 }
 
-.boardPicture{
+.curvedBorder{
   border-radius: 1vw;
+}
+
+.playStateDisplay{
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  text-size-adjust: auto;
+  font-size: 1vw;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
+
+  color: #FFFFFF;
 }
 
 .disabled{

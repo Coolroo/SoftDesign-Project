@@ -19,7 +19,7 @@ class CountryDraftZone extends Component{
         return(
             <React.Fragment>{
                     <div className="countryDraftZone">
-                        <img src={`/CountryDraftZone.png`} alt="img"/>
+                        <img src={`/CountryDraftZone.png`} className="curvedBorder" alt="img"/>
                         <div style={{top:'9.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
                         <div>{revealedCountries}</div>
                     </div>   
