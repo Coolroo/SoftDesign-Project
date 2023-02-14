@@ -36,6 +36,7 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
 import com.softdesign.plagueinc.models.serializers.CountrySerializers.CountryNameSerializer;
@@ -272,6 +273,13 @@ public class GameState {
         this.votesToStart.put(plague.getColor(), false);
         logger.info("[INITIALIZATION] Plague with id ({}) created, and assigned color {}", plague.getPlayerId(), plague.getColor());
         return plague.getPlayerId();
+    }
+
+    // Change plague type in lobby
+    public void changePlagueType(UUID playerId, DiseaseType diseaseType){
+        validateState(PlayState.INITIALIZATION);
+
+        this.getPlague(playerId).setDiseaseType(diseaseType);
     }
 
     public void proceedState(){

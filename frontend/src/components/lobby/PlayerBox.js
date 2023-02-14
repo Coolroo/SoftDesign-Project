@@ -40,7 +40,10 @@ class PlayerBox extends Component{
         let whenClicked = () => {
             //TODO: add check for player color, then call change color
             console.log("clicked");
-            this.props.changeType();
+            if(this.props.color === this.state.state.player.plague.color){
+                this.props.changeType();
+            }
+            
         }
 
         const plagues = this.state.state.game.plagues;
