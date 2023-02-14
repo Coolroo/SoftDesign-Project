@@ -6,9 +6,7 @@ class DraftCountrySlot extends Component{
     render() {
         return(
             <React.Fragment>{
-                <div>
                     <DraftCountryCard cardName={this.props.name}/>
-                </div>   
             }       
             </React.Fragment>
         )
