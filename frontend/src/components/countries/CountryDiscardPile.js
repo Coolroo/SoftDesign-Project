@@ -2,21 +2,16 @@ import React, { Component } from "react";
 import { Droppable } from 'react-drag-and-drop';
 
 class DraftDiscardPile extends Component{
-    handleDrop(data, event) {
-        console.log("DISCARDED " + data); // 'bar'
-    }
-
     render() {
-        let discard = () => {
-            this.props.discard();
+        let discard = (data, event) => {
+            console.log("discard")
+            this.props.discard(data.country);
         }    
-
+    
         return(
-            <React.Fragment>{
-                <Droppable types={['countryCard']} onDrop={this.handleDrop}>
-                </Droppable>
-            }       
-            </React.Fragment>
+            <Droppable types={['country']} onDrop={discard}>
+                <div style={{top:'9.0%',left:'102.0%'}} className="countryDiscardPile"></div>
+            </Droppable>
         )
     }
 }

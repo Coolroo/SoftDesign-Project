@@ -266,6 +266,11 @@ class GameController extends Component{
         console.log("Voted to start")
     };
 
+    discard(countryName){
+        this.patchRequest("/countryChoice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName, choice:"DISCARD"}))
+        console.log("Discarded")
+    };
+
     proceed(){
         if(this.state.lobbyId == null){
             console.log("No lobby ID");
@@ -310,7 +315,7 @@ class GameController extends Component{
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView proceed={() => this.proceed()} state={this.state} placeCountry={(countryName) => this.placeCountry(countryName)}/>
+                return <GameView proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             
         }

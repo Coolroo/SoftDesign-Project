@@ -31,7 +31,7 @@ class GameView extends Component{
                             <Board state={this.props.state} placeCountry={this.props.placeCountry}/>
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "2%", marginLeft:"2%", position:"relative"}}>
-                            <CountryDraftZone state={this.props.state}/>
+                            <CountryDraftZone state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
                             <PlagueCard cardName={board}/>
                         </div>
                     </div> 

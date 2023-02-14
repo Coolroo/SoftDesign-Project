@@ -24,7 +24,7 @@ class CountryDraftZone extends Component {
                         <img src={`/CountryDraftZone.png`} className="curvedBorder fullSize" alt="img"/>
                         <div style={{top:'9.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
                         <div>{revealedCountries}</div>
-                        <div style={{top:'9.0%',left:'102.0%'}} className="countryDiscardPile"><CountryDiscardPile/></div>
+                        <CountryDiscardPile state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
                     </div>   
                 }
             </React.Fragment>
