@@ -346,3 +346,13 @@ code {
 .disabled{
   --color: grey;
 }
+
+.countryDiscardPile{
+  position: absolute;
+  border: 2px solid;
+  border-color:rgb(145, 9, 9);
+  width: 20%;
+  height: 80%;
+  z-index: 15;
+  border-radius: 5%;
+}
