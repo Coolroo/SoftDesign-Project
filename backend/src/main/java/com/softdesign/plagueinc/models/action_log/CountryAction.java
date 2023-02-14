@@ -11,7 +11,7 @@ public class CountryAction extends ActionLog {
     private Country country;
 
     public CountryAction(CountryChoice countryChoice, Country country){
-        super(PlayState.PLAYCOUNTRY);
+        super(PlayState.COUNTRY);
         this.countryChoice = countryChoice;
         this.country = country;
     }

@@ -28,7 +28,6 @@ import com.softdesign.plagueinc.exceptions.ContinentFullException;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.action_log.ActionLog;
 import com.softdesign.plagueinc.models.action_log.CountryAction;
-import com.softdesign.plagueinc.models.action_log.CountryChosenAction;
 import com.softdesign.plagueinc.models.action_log.DrawEventCard;
 import com.softdesign.plagueinc.models.action_log.EvolveTraitAction;
 import com.softdesign.plagueinc.models.action_log.InfectCountryAction;
@@ -103,9 +102,6 @@ public class GameState {
     private Queue<Plague> turnOrder;
 
     @JsonIgnore
-    private Optional<CompletableFuture<CountryChoice>> countryChoice;
-
-    @JsonIgnore
     private Optional<CompletableFuture<Country>> infectChoice;
 
     @JsonIgnore
@@ -158,7 +154,6 @@ public class GameState {
         this.suddenDeath = false;
         
         this.infectChoice = Optional.empty();
-        this.countryChoice = Optional.empty();
         this.deathFuture = Optional.empty();
         this.eventPlayer = Optional.empty();
 
@@ -296,22 +291,9 @@ public class GameState {
                 break;
             case DNA:
                 //Move on to choose country phase
-                setPlayState(this.suddenDeath ? PlayState.EVOLVE : PlayState.CHOOSECOUNTRY);
+                setPlayState(this.suddenDeath ? PlayState.EVOLVE : PlayState.COUNTRY);
                 break;
-            case CHOOSECOUNTRY:
-                //init playCountry future so player can asynchronously choose which action to take, and then proceed to the play country state
-                Country chosenCountry = this.actions
-                .stream()
-                .filter(action -> action.getClass().equals(CountryChosenAction.class))
-                .map(action -> (CountryChosenAction)action)
-                .findFirst()
-                .get()
-                .getCountry();
-    
-                initCountryChoiceFuture(chosenCountry);
-                setPlayState(PlayState.PLAYCOUNTRY);
-                break;
-            case PLAYCOUNTRY:
+            case COUNTRY:
                 //Move on to evolve phase
                 setPlayState(PlayState.EVOLVE);
                 break;
@@ -379,90 +361,45 @@ public class GameState {
 
     //COUNTRY PHASE
 
-    public Country drawCountryAction(){
-        if(this.readyToProceed){
-            logger.warn("[CHOOSECOUNTRY] Attempted to draw a country card when the gamestate was ready to proceed");
-            throw new IllegalStateException();
+    public void makeCountryChoice(String countryName, CountryChoice action){
+        //Act on which response the player wishes to take
+
+        validateState(PlayState.COUNTRY);
+
+        logger.info("In make country choice: " + countryName + " " + action);
+        Country drawnCountry;
+
+        if(countryName.equals("countrycardback")){
+            drawnCountry = drawCountry();
         }
-        validateState(PlayState.CHOOSECOUNTRY);
-
-        //draw country, and log the action
-        Country drawnCountry = drawCountry();
-        logger.info("[CHOOSECOUNTRY] {} Drew Country {}", currTurn.getColor(), drawnCountry.getCountryName());
-        logAction(new CountryChosenAction(drawnCountry));
-        setReadyToProceed(true);
-        return drawnCountry;
-    }
-
-    public Country selectCountryFromRevealed(String countryName){
-        if(this.readyToProceed){
-            logger.warn("[CHOOSECOUNTRY] Attempted to choose a revealed country card when the gamestate was ready to proceed");
-            throw new IllegalStateException();
-        }
-        validateState(PlayState.CHOOSECOUNTRY);
-
-        //choose country, and log the action
-        Country chosenCountry = takeRevealedCountry(countryName);
-        initCountryChoiceFuture(chosenCountry);
-        logAction(new CountryChosenAction(chosenCountry));
-        logger.info("[CHOOSECOUNTRY] {} chose country {}", currTurn.getColor(), chosenCountry.getCountryName());
-        setReadyToProceed(true);
-        return chosenCountry;
-    }
-
-    private void initCountryChoiceFuture(Country drawnCountry){
-        if(this.countryChoice.isPresent()){
-            this.countryChoice.get().cancel(true);
+        else{
+            drawnCountry = takeRevealedCountry(countryName);
         }
         
-        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        this.countryChoice = Optional.of(new CompletableFuture<>());
-        this.countryChoice.get().whenComplete((result, ex) -> {
-            if(ex != null){
-                logger.error("[COUNTRYCHOICE] Error with country choice future EX: {}", ex.getMessage());
-                initCountryChoiceFuture(drawnCountry);
+
+        
+        switch(action){
+            case PLAY:
+            logger.info("[COUNTRY] Attempting to place country {}", drawnCountry.getCountryName());
+            //Try to place the country, if there's an issue, we have a problem
+            try{
+                placeCountry(drawnCountry);
+                setReadyToProceed(true);
             }
-            else{
-                //Act on which response the player wishes to take
-                switch(result){
-                    case PLAY:
-                    logger.info("[COUNTRYCHOICE] Attempting to place country {}", drawnCountry.getCountryName());
-                    //Try to place the country, if there's an issue, we have a problem
-                    try{
-                        placeCountry(drawnCountry);
-                        setReadyToProceed(true);
-                        this.countryChoice = Optional.empty();
-                    }
-                    catch(ContinentFullException e){
-                        logger.warn("[COUNTRYCHOICE] Continent {} is full, cannot place {} there", drawnCountry.getContinent(), drawnCountry.getCountryName());
-                        initCountryChoiceFuture(drawnCountry);
-                    }
-                    break;
-                    case DISCARD:
-                        //Discard the country
-                        discardCountry(drawnCountry);
-                        setReadyToProceed(true);
-                        this.countryChoice = Optional.empty();
-                    break;
+            catch(ContinentFullException e){
+                logger.warn("[COUNTRY] Continent {} is full, cannot place {} there", drawnCountry.getContinent(), drawnCountry.getCountryName());
+                if(countryName.equals("countrycardback")){
+                    countryDeck.add(drawnCountry);
                 }
             }
-        });
+            break;
+            case DISCARD:
+                //Discard the country
+                discardCountry(drawnCountry);
+                setReadyToProceed(true);
+            break;
+        }
     }
-
-    public void makeCountryChoice(CountryChoice choice){
-        if(this.readyToProceed){
-            logger.warn("[COUNTRYCHOICE] Attempted to make a country choice, but the gamestate is ready to proceed");
-            throw new IllegalStateException();
-        }
-        if(this.countryChoice.isEmpty()){
-            logger.error("[COUNTRYCHOICE] Attempted to make a country choice, but the gamestate is not waiting for a country choice");
-            throw new IllegalStateException();
-        }
-        validateState(PlayState.PLAYCOUNTRY);
-        
-        logger.info("[COUNTRYCHOICE] Received country choice of {}", choice.toString());
-        this.countryChoice.get().complete(choice);
-    } 
 
     public void placeCountry(Country country){
         if(this.readyToProceed && playState != PlayState.INITIALIZATION){
@@ -490,7 +427,7 @@ public class GameState {
             logger.warn("[COUNTRYCHOICE] Cannot take an action if the gamestate is ready to proceed");
             throw new IllegalStateException("Already placed country");
         }
-        validateState(PlayState.CHOOSECOUNTRY);
+        validateState(PlayState.COUNTRY);
 
         discardCountry(country);
 
