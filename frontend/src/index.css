@@ -53,12 +53,6 @@ code {
   z-index: 9;
 }
 
-.draftZoneCountrySlot:hover{
-  width: 30%;
-  height: 120%;
-  z-index: 11;
-}
-
 .board{
   position: relative;
   height: 60vh;

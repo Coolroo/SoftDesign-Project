@@ -282,6 +282,10 @@ class GameController extends Component{
         console.log("Changing plague type");
         //TODO: Make Patch request to change plague type
     };
+
+    placeCountry(countryName){
+
+    }
        
     render() {
         const joinGamePage = () => {
@@ -300,7 +304,7 @@ class GameController extends Component{
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView proceed={() => this.proceed()} state={this.state}/>
+                return <GameView proceed={() => this.proceed()} state={this.state} placeCountry={() => this.placeCountry()}/>
             }
             
         }

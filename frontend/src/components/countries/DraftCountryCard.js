@@ -1,18 +1,22 @@
 import React, { Component } from "react";
+import { useDrag } from 'react-dnd'
+import { ItemTypes } from '../../util/ItemTypes.js'
 
-class DraftCountryCard extends Component{
-    render() {
+export default function DraftCountryCard(props) {
+    const cardName = props.cardName;
+    const [{ opacity }, dragRef] = useDrag(
+        () => ({
+          type: ItemTypes.COUNTRY,
+          item: { cardName },
+          collect: (monitor) => ({
+            opacity: monitor.isDragging() ? 0.5 : 1
+          })
+        }),
+        []
+      )
         return(
-            <React.Fragment>{
-                <div>
-                    <img src={`/countries/${this.props.cardName}.png`} className="card"alt="img"/>
+                <div ref={dragRef} style={{opacity}}>
+                    <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
                 </div>
-            }       
-            </React.Fragment>
         )
-
-
-    }
-}
-
-export default DraftCountryCard;
+        }
