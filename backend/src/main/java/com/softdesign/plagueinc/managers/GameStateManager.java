@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
 
 @Component
@@ -53,6 +54,16 @@ public class GameStateManager {
             throw new IllegalArgumentException("Must provide gameStateId");
         }
         games.get(gameStateId).startGame(plagueId);
+    }
+
+    public void changePlagueType(String gameStateId, UUID plagueId, DiseaseType diseaseType){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
+        games.get(gameStateId).changePlagueType(plagueId, diseaseType);
     }
 
     public void proceedState(String gameStateId, UUID plagueId){

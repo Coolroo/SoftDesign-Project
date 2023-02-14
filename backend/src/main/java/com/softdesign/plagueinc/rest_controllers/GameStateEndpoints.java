@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChangePlagueDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
@@ -117,6 +118,18 @@ public class GameStateEndpoints {
         }
         return new ResponseEntity<>(HttpStatus.OK);
         
+    }
+
+    @PatchMapping("/changePlagueType")
+    public ResponseEntity<Void> changePlagueType(@RequestParam("gameStateId") String gameStateId, @RequestBody ChangePlagueDTO changePlagueDTO){
+        try{
+            gameStateManager.changePlagueType(gameStateId, changePlagueDTO.playerId(), changePlagueDTO.diseaseType());
+            broadcastGameState(gameStateId);
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 /**
