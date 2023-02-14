@@ -12,14 +12,15 @@ body {
   background-attachment: fixed;
 }
 
-img{
-  width: 100%;
-  height: 100%;
-}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.fullSize{
+  width: 100%;
+  height: 100%;
 }
 
 .gameView{
@@ -55,8 +56,7 @@ code {
 
 .board{
   position: relative;
-  height: 60vh;
-  width: auto;
+  height: 10%;
 }
 
 .card{
@@ -65,9 +65,9 @@ code {
 }
 
 .traitCard{
-  margin-right: 0.2vw;
-  margin-left: 0.2vw;
-  width: 8vw;
+  margin-right: 0.5%;
+  margin-left: 0.5%;
+  width: 8%;
   display: inline-block;
 }
 
@@ -95,8 +95,8 @@ code {
   float: left;
   position:absolute;
   bottom: 0;
-  width: 35vw;
-  height: 30vh;
+  width: 150%;
+  height: 50%;
   margin-top: 9vh;
 }
 

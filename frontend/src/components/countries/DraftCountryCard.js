@@ -1,24 +1,19 @@
 import React, { Component } from "react";
-import { useDrag } from 'react-dnd'
-import { ItemTypes } from '../../util/ItemTypes.js'
+import { Draggable } from 'react-drag-and-drop';
 
-export default function DraftCountryCard(props) {
-    let cardName = props.cardName;
+class DraftCountryCard extends Component{
+  render(){
+    let cardName = this.props.cardName;
     console.log(cardName);
-    let [{ opacity }, dragRef] = useDrag(
-        () => ({
-          type: ItemTypes.COUNTRY,
-          item: { cardName },
-          collect: (monitor) => ({
-            opacity: monitor.isDragging() ? 0.5 : 1
-          })
-        }),
-        //Dependency array (IMPORTANT)
-        [props.cardName]
-      )
+
         return(
-                <div ref={dragRef} style={{opacity}}>
+              <Draggable type="country" data={this.props.cardName}>
+                <div>
                     <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
                 </div>
+              </Draggable>
         )
-        }
+  }
+}
+
+export default DraftCountryCard;

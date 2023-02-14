@@ -4,8 +4,6 @@ import Board from './board/Board';
 import TraitHand from './TraitHand';
 import PlagueCard from './PlagueCard';
 import CountryDraftZone from './countries/CountryDraftZone';
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 
 class GameView extends Component{
 
@@ -26,20 +24,22 @@ class GameView extends Component{
 
         return(
             <React.Fragment>{
-                <div style={{verticalAlign:"middle", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", marginTop: "2vh"}}>
-                    <div className="joinGameButton" style={{marginBottom: "2vh", position:"relative", width:"15vw", "--color": this.props.state.game.currTurn.toLowerCase()}}>{this.props.state.game.playState}</div>
+                <div style={{verticalAlign:"middle", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", marginTop: "0.5%"}}>
+                    <div className="joinGameButton" style={{marginBottom: "0.5%", position:"relative", width:"15%", "--color": this.props.state.game.currTurn.toLowerCase()}}>{this.props.state.game.playState}</div>
                     <div className="gameView"> 
-                        <Board state={this.props.state} placeCountry={this.props.placeCountry}/>
-                        <div style={{verticalAlign:"middle", marginRight: "5vw", marginLeft:"1vw", position:"relative"}}>
+                        <div style={{width: "40%", height: "40%", marginLeft:"10%"}}>
+                            <Board state={this.props.state} placeCountry={this.props.placeCountry}/>
+                        </div>
+                        <div style={{verticalAlign:"middle", marginRight: "2%", marginLeft:"2%", position:"relative"}}>
                             <CountryDraftZone state={this.props.state}/>
                             <PlagueCard cardName={board}/>
                         </div>
                     </div> 
-                    <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "2vh"}}>
-                        <div style={{width:"50vw"}}>
+                    <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>
+                        <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
                         </div>
-                        <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "5vw"}} onClick={proceed}>Proceed State</div>
+                        <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "2%"}} onClick={proceed}>Proceed State</div>
                     </div>
                 </div>
                 }
