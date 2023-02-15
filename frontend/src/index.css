@@ -87,10 +87,6 @@ code {
   z-index: 9;
 }
 
-.boardCountrySlot:hover {
-  background-color: yellow;
-}
-
 .plagueCard{
   float: left;
   position:absolute;
@@ -101,25 +97,12 @@ code {
 }
 
 .plagueCardTraitSlot{
-  background-color: hotpink;
   position: absolute;
   width: 16.0%;
   height: 37%;
   width: "16.0%";
   min-height: "37%";
   z-index: 9;
-}
-
-.plagueCardTraitSlot{
-  background-color: hotpink;
-  position: absolute;
-  width: "16.0%";
-  min-height: "37%";
-  z-index: 9;
-}
-
-.plagueCardTraitSlot:hover {
-  background-color: yellow;
 }
 
 .hand{

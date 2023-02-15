@@ -43,7 +43,7 @@ class GameView extends Component{
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "2%", marginLeft:"2%", position:"relative"}}>
                             <CountryDraftZone state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
-                            <PlagueCard cardName={board}/>
+                            <PlagueCard evolve={this.props.evolve} cardName={board}/>
                         </div>
                     </div> 
                     <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>

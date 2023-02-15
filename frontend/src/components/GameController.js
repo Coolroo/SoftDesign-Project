@@ -306,6 +306,15 @@ class GameController extends Component{
         console.log("Skipping evolve");
         this.patchRequest("/skipEvolution", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}));
     }
+
+    evolve(traitCard, traitSlot){
+        if(this.state.lobbyId === null){
+            console.log("No lobby ID");
+            return;
+        }
+        console.log("Evolving");
+        this.patchRequest("/evolve", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, traitIndex: traitCard, traitSlot: traitSlot}));
+    }
        
     render() {
         const joinGamePage = () => {
@@ -324,7 +333,7 @@ class GameController extends Component{
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
+                return <GameView evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             
         }
