@@ -403,7 +403,7 @@ public class GameState {
             break;
             case DISCARD:
                 //Discard the country
-                discardCountry(drawnCountry);
+                discardCountryAction(drawnCountry);
                 setReadyToProceed(true);
             break;
         }
