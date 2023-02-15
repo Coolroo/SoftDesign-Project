@@ -9,17 +9,28 @@ class GameView extends Component{
 
     render() {
         console.log(this.props.state)
-        let proceedButton = [];
         
         let proceed = () => {
             this.props.proceed();
         }    
+
+        let skipEvolve = () => {
+            this.props.skipEvolve();
+        }
 
         console.log(this.props.state.player)
 
         var board = "";
         if(this.props.state.player.plague.color && this.props.state.player.plague.diseaseType){
             board = this.props.state.player.plague.color.toLowerCase() + this.props.state.player.plague.diseaseType.toLowerCase();
+        }
+
+        let skipEvolveButton = () => {
+            if(this.props.state.game.playState === "EVOLVE" && this.props.state.game.currTurn === this.props.state.player.plague.color && !this.props.state.game.readyToProceed){
+                return(
+                    <div className="joinGameButton" style={{position:"relative", marginLeft: "2%", "--color": "red"}} onClick={skipEvolve}>Skip Evolve</div>
+                )
+            }
         }
 
         return(
@@ -39,6 +50,7 @@ class GameView extends Component{
                         <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
                         </div>
+                        {skipEvolveButton()}
                         <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "2%"}} onClick={proceed}>Proceed State</div>
                     </div>
                 </div>

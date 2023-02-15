@@ -43,7 +43,7 @@ code {
 .countryDraftZone{
   position: relative;
   border-radius: 1vw;
-  height: 20vh;
+  height: 40%;
   width: auto;
 }
 
@@ -97,7 +97,7 @@ code {
   bottom: 0;
   width: 150%;
   height: 50%;
-  margin-top: 9vh;
+  margin-top: 20%;
 }
 
 .plagueCardTraitSlot{
