@@ -7,9 +7,7 @@ class DraftCountryCard extends Component{
 
         return(
               <Draggable type='country' data={this.props.cardName}>
-                <div>
-                    <img src={`/countries/${cardName}.png`} className="card curvedBorder" style={{"--borderRadius": "10px"}} alt="img"/>
-                </div>
+                    <img src={`/countries/${cardName}.png`} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}}/>
               </Draggable>
         )
   }

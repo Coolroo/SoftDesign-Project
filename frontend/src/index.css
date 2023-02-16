@@ -44,7 +44,7 @@ code {
   position: relative;
   border-radius: 1vw;
   height: 30%;
-  width: auto;
+  width: 100%;
 }
 
 .draftZoneCountrySlot{
@@ -60,7 +60,7 @@ code {
 }
 
 .card{
-  max-width: 100%;
+  width: 100%;
   position: relative;
 }
 

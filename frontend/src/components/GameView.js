@@ -30,6 +30,14 @@ class GameView extends Component{
             }
         }
 
+        let proceedButton = () => {
+            if(this.props.state.player.plague.color === this.props.state.game.currTurn){
+                return(
+                    <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "2%"}} onClick={proceed}>Proceed State</div>
+                )
+            }
+        }
+
         return(
             <React.Fragment>{
                 <div style={{verticalAlign:"middle", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", marginTop: "0.5%"}}>
@@ -48,7 +56,7 @@ class GameView extends Component{
                             <TraitHand hand={this.props.state.player.hand}/>
                         </div>
                         {skipEvolveButton()}
-                        <div className={"joinGameButton " + (this.props.state.game.readyToProceed ? "" : "disabled")} style={{position:"relative", marginLeft: "2%"}} onClick={proceed}>Proceed State</div>
+                        {proceedButton()}
                     </div>
                 </div>
                 }
