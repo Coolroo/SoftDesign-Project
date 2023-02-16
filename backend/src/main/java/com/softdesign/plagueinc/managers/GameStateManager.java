@@ -130,7 +130,7 @@ public class GameStateManager {
         games.get(gameStateId).attemptInfect(countryName);
     }
 
-    public void rollDeathDice(String gameStateId, UUID plagueId){
+    public int rollDeathDice(String gameStateId, UUID plagueId, String countryName){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
         }
@@ -138,7 +138,7 @@ public class GameStateManager {
             throw new IllegalArgumentException("Must provide gameStateId");
         }
         games.get(gameStateId).verifyTurn(plagueId);
-        games.get(gameStateId).rollDeathDice();
+        return games.get(gameStateId).rollDeathDice(countryName);
     }
 
     public void playEventCard(String gameStateId, UUID plagueId, int eventCardIndex){

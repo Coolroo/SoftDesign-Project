@@ -105,8 +105,8 @@ public class GameState {
     @JsonIgnore
     private Optional<CompletableFuture<Country>> infectChoice;
 
-    @JsonIgnore
-    private Optional<CompletableFuture<Integer>> deathFuture;
+
+    private List<Country> choppingBlock;
 
     //Event Futures
 
@@ -155,7 +155,7 @@ public class GameState {
         this.suddenDeath = false;
         
         this.infectChoice = Optional.empty();
-        this.deathFuture = Optional.empty();
+        this.choppingBlock = List.of();
         this.eventPlayer = Optional.empty();
 
         initTraitDeck();
@@ -563,58 +563,34 @@ public class GameState {
         .filter(country -> country.getControllers().contains(this.currTurn))
         .toList();
         logger.info("[DEATH] Player {} will now attempt to kill countries {}", this.currTurn.getColor(), choppingBlock);
-        createDeathFuture(choppingBlock);
+        this.choppingBlock = new ArrayList<>(choppingBlock);
     }
 
-    public int rollDeathDice(){
+    public int rollDeathDice(String countryName){
         if(this.readyToProceed){
             logger.error("[DEATH] Attempted to roll the death dice when the game state is ready to proceed");
             throw new IllegalStateException();
         }
-        if(this.deathFuture.isEmpty()){
-            logger.error("[DEATH] Attempted to roll death dice, but the future is invalid!");
+        if(this.choppingBlock.isEmpty()){
+            logger.error("[DEATH] Attempted to roll death dice, but there are no countries to kill!");
             throw new IllegalStateException("Death state issue");
         }
         validateState(PlayState.DEATH);
+        Country country = getCountry(countryName);
         int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
         logger.info("[DEATH] Plague {} rolled a {}!", this.currTurn.getColor(), randomNum);
-        this.deathFuture.get().complete(randomNum);
+        rollDeathDice(randomNum, country);
         return randomNum;
     }
 
-    private void createDeathFuture(List<Country> choppingBlock){
-        if(this.deathFuture.isPresent()){
-            deathFuture.get().cancel(true);
+    private void rollDeathDice(int result, Country country){
+        if(result <= this.currTurn.getTraitCount(TraitType.LETHALITY)){
+            killCountry(country, result);
         }
-
-        if(choppingBlock.size() == 0){
-            logger.info("[DEATH] (Plague {}) has no countries to kill, skipping death phase", this.currTurn.getPlayerId());
-            setReadyToProceed(true);
-            return;
+        else{
+            failKillCountry(country, result);
         }
-        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        this.deathFuture = Optional.of(new CompletableFuture<>());
-        this.deathFuture.get().whenComplete((result, ex) -> {
-            if(ex != null){
-                logger.warn("[DEATH] Death future failed! For reason EX: {}", ex.getMessage());
-            }
-            else{
-                //If the players lethality is greater than or equal to the roll, then kill the country
-                if(result <= this.currTurn.getTraitCount(TraitType.LETHALITY)){
-                    killCountry(choppingBlock.get(0), result);
-                }
-                else{
-                    failKillCountry(choppingBlock.get(0), result);
-                }
-                //If there are more countries to kill, then reset the future
-                if(choppingBlock.size() > 1){
-                    createDeathFuture(choppingBlock.subList(1, choppingBlock.size()));
-                }
-                else{
-                    setReadyToProceed(true);
-                }
-            }
-        });
+        choppingBlock.remove(country);
     }
 
     private void killCountry(Country country, int roll){

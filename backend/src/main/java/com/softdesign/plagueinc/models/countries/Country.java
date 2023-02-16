@@ -2,6 +2,7 @@ package com.softdesign.plagueinc.models.countries;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -102,4 +103,22 @@ public class Country {
         long max = infectionCount.values().stream().mapToLong(val -> val).max().getAsLong();
         return infectionCount.keySet().stream().filter(plague -> infectionCount.get(plague).longValue() == max).toList();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Country)) {
+            return false;
+        }
+        Country country = (Country) o;
+        return Objects.equals(countryName, country.countryName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(logger, countryName, continent, restriction, travelTypes, cities);
+    }
+
+
 }

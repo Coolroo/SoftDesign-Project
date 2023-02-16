@@ -43,7 +43,7 @@ code {
 .countryDraftZone{
   position: relative;
   border-radius: 1vw;
-  height: 40%;
+  height: 30%;
   width: auto;
 }
 
@@ -69,6 +69,7 @@ code {
   margin-left: 0.5%;
   width: 8%;
   display: inline-block;
+  border-radius: 10px;
 }
 
 .boardDNASlot{
@@ -92,14 +93,14 @@ code {
   position:absolute;
   bottom: 0;
   width: 150%;
-  height: 50%;
+  height: 60%;
   margin-top: 20%;
 }
 
 .plagueCardTraitSlot{
   position: absolute;
-  width: 16.0%;
-  height: 37%;
+  width: 19.0%;
+  height: 47.5%;
   width: "16.0%";
   min-height: "37%";
   z-index: 9;
@@ -307,7 +308,8 @@ code {
 }
 
 .curvedBorder{
-  border-radius: 1vw;
+  --borderRadius: 1vw;
+  border-radius: var(--borderRadius);
 }
 
 .playStateDisplay{

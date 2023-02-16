@@ -1,8 +1,5 @@
 package com.softdesign.plagueinc.models.traits.travel;
 
-import java.util.Objects;
-
-import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitType;
 
 public class WaterborneTrait extends TravelTrait {

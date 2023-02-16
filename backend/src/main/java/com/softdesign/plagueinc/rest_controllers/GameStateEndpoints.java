@@ -1,7 +1,10 @@
 package com.softdesign.plagueinc.rest_controllers;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +27,7 @@ import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChangePlagueDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCountryDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
@@ -46,6 +50,8 @@ public class GameStateEndpoints {
 
     @Autowired
     private SimpMessagingTemplate template;
+
+    private AtomicBoolean deathBool = new AtomicBoolean(false);
 
     //POST Endpoints
 
@@ -262,15 +268,29 @@ public class GameStateEndpoints {
  * @docauthor Nick Lee
  */
     @PatchMapping("/rollDeathDice")
-    public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
-        try{
-            gameStateManager.rollDeathDice(gameStateId, playerId.playerId());
-            broadcastGameState(gameStateId);
+    public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCountryDTO countryChoiceDTO){
+        if(deathBool.compareAndSet(false, true)){
+            try{
+                int roll = gameStateManager.rollDeathDice(gameStateId, countryChoiceDTO.playerId(), countryChoiceDTO.countryName());
+                TimerTask task = new TimerTask() {
+                    public void run(){
+                        broadcastGameState(gameStateId);
+                    }
+                };
+
+                Timer timer = new Timer("Timer");
+                long delay = 3000L;
+                timer.schedule(task, delay);
+
+                ResponseEntity.ok().body(roll);
+                
+            }
+            catch(Exception e){
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            }
         }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.TOO_EARLY);
+        
     }
 
     @PatchMapping("/playEventCard")
