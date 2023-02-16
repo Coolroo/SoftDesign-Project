@@ -286,6 +286,7 @@ public class GameStateEndpoints {
                 
             }
             catch(Exception e){
+                deathBool.set(false);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
             }
         }

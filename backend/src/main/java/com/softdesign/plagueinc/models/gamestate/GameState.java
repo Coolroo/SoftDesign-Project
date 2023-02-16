@@ -873,24 +873,30 @@ public class GameState {
         .filter(thisCountry -> thisCountry.getCities().stream().filter(Optional::isPresent).map(Optional::get).anyMatch(thisPlague -> thisPlague.equals(plague)))
         .toList();
 
+        logger.info("Found countries player {} infects: {}", plague.getColor(), infectedCountries.stream().map(Country::getCountryName).toList());
+
         //Check what continent the player is present in
         List<Continent> continentPresence = Stream.of(Continent.values())
         .filter(continent -> infectedCountries.stream()
-        .anyMatch(thisCountry -> thisCountry.getContinent() == continent))
+        .anyMatch(thisCountry -> thisCountry.getContinent().equals(continent)))
         .toList();
 
         //If the player infects a country in the same continent, then they can infect this country
         if(continentPresence.contains(country.getContinent())){
+            logger.info("Player {} is present in the same continent as {}, so they can infect it", plague.getColor(), country.getCountryName());
             return true;
         }
 
         //If the player infects a country with an airport, and this country has an airport
         boolean airportConnected = infectedCountries.stream().anyMatch(thisCountry -> thisCountry.getTravelTypes().contains(new AirborneTrait()))
-        && country.getTravelTypes().contains(new AirborneTrait());
+        && country.getTravelTypes().contains(new AirborneTrait())
+        && plague.getTraits().contains(TraitType.AIRBORNE);
+        logger.info("Player {} traits: {}", plague.getColor(), plague.getTraits());
 
         //If the player infects a country with a seaport, and this country has a seaport
         boolean waterportConnected = infectedCountries.stream().anyMatch(thisCountry -> thisCountry.getTravelTypes().contains(new WaterborneTrait())) 
-        && country.getTravelTypes().contains(new WaterborneTrait());
+        && country.getTravelTypes().contains(new WaterborneTrait())
+        && plague.getTraits().contains(TraitType.WATERBORNE);
 
         return airportConnected || waterportConnected;
     }

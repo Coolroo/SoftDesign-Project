@@ -3,14 +3,18 @@ import Dice from 'react-dice-roll';
 
 class CountryCard extends Component{
     state = {
-        dice: null
+        rollingDice: false,
+        diceRef: null
     }
+
+    divRef = React.createRef();
 
     async afterRoll(val) {
         await new Promise(r => setTimeout(r, 2000));
         this.setState((prevState) => {
             return {
-                dice: null
+                rollingDice: false,
+                diceRef: null
             }
         })
     };
@@ -78,7 +82,14 @@ class CountryCard extends Component{
                                 {top:'61%', left:'41.5%'},
                                 {top:'61%', left:'75%'}
                             ]
-                           ];
+        ];
+        
+        let sides = ["/dice/dice_one.jpg", 
+        "/dice/dice_two.jpg", 
+        "/dice/dice_three.jpg", 
+        "/dice/dice_four.jpg", 
+        "/dice/dice_five.jpg", 
+        "/dice/dice_six.jpg"]
         
         var hexagons = [];
         const colors = {
@@ -109,10 +120,11 @@ class CountryCard extends Component{
                                 console.log("Dice rolled " + text);
                                 this.setState((prevState) => {
                                     return {
-                                        dice: <Dice cheatValue={parseInt(text)} onRoll={this.afterRoll}/>
+                                        ...prevState,
+                                        rollingDice: true
                                     };
                                 }, () => {
-                                    this.state.dice.rollDice();
+                                    this.state.diceRef.rollDice(parseInt(text));
                                 });
                             });
                         }
@@ -123,18 +135,20 @@ class CountryCard extends Component{
         }
 
         let renderDice = () => {
-            if(this.state.dice != null){
-                return this.state.dice;
+            if(this.state.rollingDice && this.divRef.current){
+                return <Dice faces={sides} size={this.divRef.current.clientHeight * 0.4} ref={(dice) => {this.state.diceRef = dice}} onRoll={(value) => this.afterRoll(value)}/>;
             }
         }
 
         return(
             <React.Fragment>{
-                <div onClick={click}>
+                <div onClick={click} ref={this.divRef}>
+                    
                     <img src={`/countries/${cardName}.png`} className="card" alt="img"/>
-                    {renderDice()}
+                    <div style={{position: "absolute", top:"25%", left:"25%", zIndex:"11"}}>{renderDice()}</div>
+                    
                     {hexagons}
-                    </div>
+                </div>
             
             }       
             </React.Fragment>
