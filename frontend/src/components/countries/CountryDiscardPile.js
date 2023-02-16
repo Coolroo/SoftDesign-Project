@@ -10,7 +10,6 @@ class DraftDiscardPile extends Component{
 
         let discard = (data, event) => {
             if (!this.props.state.game.readyToProceed){
-                console.log("discard")
                 this.props.discard(data.country);
             }
         }    
