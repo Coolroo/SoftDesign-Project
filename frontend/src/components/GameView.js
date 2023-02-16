@@ -8,7 +8,6 @@ import CountryDraftZone from './countries/CountryDraftZone';
 class GameView extends Component{
 
     render() {
-        console.log(this.props.state)
         
         let proceed = () => {
             this.props.proceed();
@@ -17,8 +16,6 @@ class GameView extends Component{
         let skipEvolve = () => {
             this.props.skipEvolve();
         }
-
-        console.log(this.props.state.player)
 
         var board = "";
         if(this.props.state.player.plague.color && this.props.state.player.plague.diseaseType){

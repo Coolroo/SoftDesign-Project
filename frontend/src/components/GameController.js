@@ -112,7 +112,6 @@ class GameController extends Component{
             .then(function(response) {
                 return response.text();
             }).then((data) => {
-                console.log(data); // this will be a string
                 this.loadLobby(data);
             });
     }
@@ -282,7 +281,6 @@ class GameController extends Component{
             VIRUS: "BACTERIA"
         }
         console.log("Changing plague type");
-        //TODO: Make Patch request to change plague type
         this.patchRequest("/changePlagueType", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, diseaseType: cycle[this.state.player.plague.diseaseType]}))
     };
 
@@ -347,7 +345,6 @@ class GameController extends Component{
         // eslint-disable-next-line
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState !== undefined){
-                console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
                 return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             

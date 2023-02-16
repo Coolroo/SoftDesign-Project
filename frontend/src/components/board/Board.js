@@ -54,10 +54,13 @@ class Board extends Component{
             SOUTH_AMERICA: SA_SLOTS, 
             NORTH_AMERICA: NA_SLOTS, 
             EUROPE: EUROPE_SLOTS, 
-            OCEANIA: OCEANIA_SLOTS};
+            OCEANIA: OCEANIA_SLOTS
+        };
+
         var countries = [];
+        
         const board = this.props.state.game.board;
-        console.log(JSON.stringify(board))
+
         Object.keys(board).forEach((continent) => {
             board[continent].forEach((country, countryIndex) => {
                 countries.push(<BoardCountrySlot kill={this.props.kill} state={this.props.state} infect={this.props.infect} country={country} loc={SLOTS[continent][countryIndex]}/>)

@@ -5,7 +5,6 @@ import CountryDiscardPile from "./CountryDiscardPile";
 class CountryDraftZone extends Component {
 
     render(){
-        console.log("rendering");
         const DRAFT_SLOTS = [
             {top:'4.0%', left:'29.4%'},
             {top:'4%', left:'51.3%'},

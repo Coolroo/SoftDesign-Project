@@ -4,7 +4,6 @@ import { Draggable } from 'react-drag-and-drop';
 class DraftCountryCard extends Component{
   render(){
     let cardName = this.props.cardName;
-    console.log(cardName);
 
         return(
               <Draggable type='country' data={this.props.cardName}>

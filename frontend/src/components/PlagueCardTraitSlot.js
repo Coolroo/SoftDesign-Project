@@ -6,11 +6,6 @@ class PlagueCardTraitSlot extends Component{
         this.props.evolve(item.trait, this.props.index);
     };
 
-    preventDefault = () => (event) => {
-        event.preventDefault();
-        console.log("prevent default")
-      }
-
     render() {
        
         let card = () => {
@@ -21,7 +16,7 @@ class PlagueCardTraitSlot extends Component{
 
         return(
             <React.Fragment>{
-                <Droppable className="plagueCardTraitSlot" onDragOver={this.preventDefault()} types={['trait']} onDrop={this.drop} style={{...this.props.loc, position:"absolute"}} >
+                <Droppable className="plagueCardTraitSlot" types={['trait']} onDrop={this.drop} style={{...this.props.loc, position:"absolute"}} >
                     {card()}
                 </Droppable> 
     }       </React.Fragment>

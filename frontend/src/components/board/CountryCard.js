@@ -115,7 +115,6 @@ class CountryCard extends Component{
                 case "DEATH":
                     this.props.kill(this.props.country.countryName).then(resp => {
                         if(resp.ok){
-                            console.log("dice is OK");
                             resp.text().then((text) => {
                                 console.log("Dice rolled " + text);
                                 this.setState((prevState) => {
