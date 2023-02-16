@@ -6,9 +6,6 @@ import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
 import Cookies from 'universal-cookie';
 
-var w = window.innerWidth;
-var h = window.innerHeight;
-
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -73,10 +70,10 @@ class GameController extends Component{
             return;
         }
         console.log("Loading cookies");
-        if(cookies.get("lobbyId") != null){
+        if(cookies.get("lobbyId") !== null){
             console.log("Found lobbyId cookie: " + cookies.get("lobbyId"));
             var playerId = null;
-            if(cookies.get("playerId") != null){
+            if(cookies.get("playerId") !== null){
                 playerId = cookies.get("playerId");
                 console.log("Found playerId cookie: " + cookies.get("playerId"));
             }
@@ -84,7 +81,7 @@ class GameController extends Component{
             this.getGameState(lobbyId).then(resp => {
                 return resp.json();
             }).then(resp => {
-                if(resp != null){
+                if(resp !== null){
                     this.setState((prevState) => {
                         return {
                             ...prevState,
@@ -324,6 +321,15 @@ class GameController extends Component{
         console.log("Infecting " + countryName);
         this.patchRequest("/infect", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
     }
+
+    kill(countryName){
+        if(this.state.lobbyId === null){
+            console.log("No lobby ID");
+            return;
+        }
+        console.log("Killing " + countryName);
+        return this.patchRequest("/rollDeathDice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
+    }
        
     render() {
         const joinGamePage = () => {
@@ -333,16 +339,16 @@ class GameController extends Component{
         }
 
         const lobbyPage = () => {
-            if(this.state.lobbyId != null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != undefined){
+            if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState !== undefined){
                 return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state}  />
             }
         }
         
         // eslint-disable-next-line
         const gamePage = () => {
-            if(this.state.lobbyId != null && this.state.game.playState != "INITIALIZATION" && this.state.game.playState != undefined){
+            if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState !== undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
+                return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             
         }

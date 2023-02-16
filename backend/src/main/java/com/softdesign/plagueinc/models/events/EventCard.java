@@ -18,4 +18,16 @@ public record EventCard(String name, GameStateAction condition, GameStateAction 
         public void op(Plague player, GameState gameState);
     
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+        if(!(o instanceof EventCard)){
+            return false;
+        }
+        EventCard other = (EventCard) o;
+        return name.equals(other.name);
+    }
 }

@@ -8,7 +8,7 @@ class TraitCard extends Component{
             <React.Fragment>{
                     <Draggable className="traitCard" type={'trait'} data={this.props.index}>
                         <div>
-                            <img src={`/traitcards/${this.props.cardName}.png`} className="fullSize" alt="img"/>
+                            <img src={`/traitcards/${this.props.cardName}.png`} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}} alt="img"/>
                         </div>
                     </Draggable>
                 }

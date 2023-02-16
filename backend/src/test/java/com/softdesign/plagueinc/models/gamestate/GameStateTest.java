@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.softdesign.plagueinc.models.countries.Continent;
@@ -18,6 +22,15 @@ import com.softdesign.plagueinc.models.plague.PlagueColor;
 
 @SpringBootTest
 public class GameStateTest {
+
+    @BeforeAll
+    static void setUp() {
+        MockedStatic<ThreadLocalRandom> randomMock = Mockito.mockStatic(ThreadLocalRandom.class);
+        randomMock.when(() -> ThreadLocalRandom.current()).thenReturn(Mockito.mock(ThreadLocalRandom.class));
+
+        Mockito.when(ThreadLocalRandom.current().nextInt(Mockito.anyInt(), Mockito.anyInt())).thenReturn(0);
+        
+    }
 
     @Test
     void testStartGame() {
@@ -393,7 +406,7 @@ public class GameStateTest {
         Assertions.assertThat(gameState.getBoard().get(Continent.AFRICA).size()).isEqualTo(1);
 
         // Call the future directly to avoid the random dice roll
-        gameState.getDeathFuture().get().complete(0);
+        gameState.rollDeathDice("name");
 
         Assertions.assertThat(plague1.getDnaPoints()).isEqualTo(4 + oldDNA1);
         Assertions.assertThat(plague1.getPlagueTokens()).isEqualTo(16);
@@ -403,7 +416,7 @@ public class GameStateTest {
 
         // Make sure we can't try to kill if the game is ready to proceed
         GameState tmp1 = gameState;
-        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> tmp1.rollDeathDice());
+        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> tmp1.rollDeathDice("name"));
 
 
         // Init Case 2 //
@@ -458,7 +471,7 @@ public class GameStateTest {
         Assertions.assertThat(gameState.getBoard().get(Continent.AFRICA).size()).isEqualTo(1);
 
         // Call the future directly to avoid the random dice roll
-        gameState.getDeathFuture().get().complete(0);
+        gameState.rollDeathDice("name");
 
         Assertions.assertThat(plague1.getDnaPoints()).isEqualTo(3 + oldDNA1);
         Assertions.assertThat(plague1.getPlagueTokens()).isEqualTo(16);
@@ -472,6 +485,6 @@ public class GameStateTest {
 
         // Make sure we can't try to kill if the game is ready to proceed
         GameState tmp2 = gameState;
-        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> tmp2.rollDeathDice());
+        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> tmp2.rollDeathDice("name"));
     }
 }

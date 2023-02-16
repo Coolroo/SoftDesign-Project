@@ -6,11 +6,11 @@ class PlagueCard extends Component{
     render() {
 
         let locs = [
-            {top:"52.0%", left:"2.6%"},
-            {top:'52.0%', left:'22.5%'},
-            {top:'52.0%', left:'42.5%'},
-            {top:'52.0%', left:'62.5%'},
-            {top:'4.0%', left:'62.5%'}
+            {top:"50.0%", left:"1.25%"},
+            {top:'50.0%', left:'21.25%'},
+            {top:'50.0%', left:'41.25%'},
+            {top:'50.0%', left:'61.25%'},
+            {top:'1.0%', left:'61.25%'}
         ];
 
         let cards = [];

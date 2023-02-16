@@ -357,7 +357,7 @@ public class CountryReference {
         return new Country("peru",
         Continent.SOUTH_AMERICA,
         Optional.empty(),
-        List.of(),
+        List.of(new AirborneTrait()),
         citiesToMap(3));
     }
 

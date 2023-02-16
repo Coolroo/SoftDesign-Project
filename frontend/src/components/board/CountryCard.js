@@ -1,6 +1,24 @@
 import React, { Component } from "react";
+import Dice from 'react-dice-roll';
 
 class CountryCard extends Component{
+    state = {
+        rollingDice: false,
+        diceRef: null
+    }
+
+    divRef = React.createRef();
+
+    async afterRoll(val) {
+        await new Promise(r => setTimeout(r, 2000));
+        this.setState((prevState) => {
+            return {
+                rollingDice: false,
+                diceRef: null
+            }
+        })
+    };
+
     render() {
         // 2 slot countries:
         // greenland, iceland, libya, panama
@@ -64,7 +82,14 @@ class CountryCard extends Component{
                                 {top:'61%', left:'41.5%'},
                                 {top:'61%', left:'75%'}
                             ]
-                           ];
+        ];
+        
+        let sides = ["/dice/dice_one.jpg", 
+        "/dice/dice_two.jpg", 
+        "/dice/dice_three.jpg", 
+        "/dice/dice_four.jpg", 
+        "/dice/dice_five.jpg", 
+        "/dice/dice_six.jpg"]
         
         var hexagons = [];
         const colors = {
@@ -77,20 +102,53 @@ class CountryCard extends Component{
 
         for(let i = 0; i < this.props.country.cities.length; i++){
             var color = this.props.country.cities[i];
-            var background = color == "EMPTY" ? {} : {backgroundImage: "url(/plague_tokens/token_" + colors[color] + ".png)"};
+            var background = color === "EMPTY" ? {} : {backgroundImage: "url(/plague_tokens/token_" + colors[color] + ".png)"};
             hexagons.push(<div style={{...countrySlots[this.props.country.cities.length][i], ...background}}  className="hexagon"/>)
         }
+        
 
-        let infect = () => {
-            this.props.infect(this.props.country.countryName);
+        let click = () => {
+            switch(this.props.state.game.playState){
+                case "INFECT":
+                    this.props.infect(this.props.country.countryName);
+                    break;
+                case "DEATH":
+                    this.props.kill(this.props.country.countryName).then(resp => {
+                        if(resp.ok){
+                            console.log("dice is OK");
+                            resp.text().then((text) => {
+                                console.log("Dice rolled " + text);
+                                this.setState((prevState) => {
+                                    return {
+                                        ...prevState,
+                                        rollingDice: true
+                                    };
+                                }, () => {
+                                    this.state.diceRef.rollDice(parseInt(text));
+                                });
+                            });
+                        }
+                    });
+                    break;
+            }
+            
+        }
+
+        let renderDice = () => {
+            if(this.state.rollingDice && this.divRef.current){
+                return <Dice faces={sides} size={this.divRef.current.clientHeight * 0.4} ref={(dice) => {this.state.diceRef = dice}} onRoll={(value) => this.afterRoll(value)}/>;
+            }
         }
 
         return(
             <React.Fragment>{
-                <div onClick={infect}>
-                    <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
+                <div onClick={click} ref={this.divRef}>
+                    
+                    <img src={`/countries/${cardName}.png`} className="card" alt="img"/>
+                    <div style={{position: "absolute", top:"25%", left:"25%", zIndex:"11"}}>{renderDice()}</div>
+                    
                     {hexagons}
-                    </div>
+                </div>
             
             }       
             </React.Fragment>

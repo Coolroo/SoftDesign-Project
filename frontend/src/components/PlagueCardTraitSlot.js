@@ -15,7 +15,7 @@ class PlagueCardTraitSlot extends Component{
        
         let card = () => {
             if(this.props.trait){
-                return <img src={`/traitcards/${this.props.trait}.png`} alt="img" className="fullSize"/>
+                return <img src={`/traitcards/${this.props.trait}.png`} alt="img" className="fullSize curvedBorder" style={{"--borderRadius": "10px"}}/>
             }
         }
 

@@ -7,9 +7,9 @@ class CountryDraftZone extends Component {
     render(){
         console.log("rendering");
         const DRAFT_SLOTS = [
-            {top:'9.0%', left:'29.4%'},
-            {top:'9.4%', left:'51.3%'},
-            {top:'9.8%', left:'74.7%'}
+            {top:'4.0%', left:'29.4%'},
+            {top:'4%', left:'51.3%'},
+            {top:'4%', left:'74.7%'}
         ]
 
         let revealedCountries = [];
@@ -22,7 +22,7 @@ class CountryDraftZone extends Component {
             <React.Fragment>{
                     <div className="countryDraftZone">
                         <img src={`/CountryDraftZone.png`} className="curvedBorder fullSize" alt="img"/>
-                        <div style={{top:'9.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
+                        <div style={{top:'4.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
                         <div>{revealedCountries}</div>
                         <CountryDiscardPile state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
                     </div>   

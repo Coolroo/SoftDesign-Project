@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -225,5 +226,29 @@ public class Plague {
         }
         
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Plague)) {
+            return false;
+        }
+        Plague plague = (Plague) o;
+        return Objects.equals(playerId, plague.playerId) 
+        && Objects.equals(color, plague.color) 
+        && Objects.equals(diseaseType, plague.diseaseType) 
+        && dnaPoints == plague.dnaPoints 
+        && plagueTokens == plague.plagueTokens 
+        && Objects.equals(traits, plague.traits) 
+        && Objects.equals(killedCountries, plague.killedCountries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerId, color, diseaseType, dnaPoints, plagueTokens, traitSlots, traits, hand, eventCards, killedCountries);
+    }
+
 
 }
