@@ -6,7 +6,7 @@ class TraitCard extends Component{
     render() {
         return(
             <React.Fragment>{
-                    <Draggable className="traitCard" type={'trait'} data={{index: this.props.index}}>
+                    <Draggable className="traitCard" type={'trait'} data={this.props.index}>
                         <div>
                             <img src={`/traitcards/${this.props.cardName}.png`} className="fullSize" alt="img"/>
                         </div>

@@ -1,5 +1,8 @@
 package com.softdesign.plagueinc.models.traits.travel;
 
+import java.util.Objects;
+
+import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitType;
 
 public class WaterborneTrait extends TravelTrait {
@@ -7,5 +10,11 @@ public class WaterborneTrait extends TravelTrait {
     public WaterborneTrait() {
         super(TraitType.WATERBORNE);
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof WaterborneTrait;
+    }
+
     
 }

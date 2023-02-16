@@ -39,11 +39,11 @@ class GameView extends Component{
                     <div className="joinGameButton" style={{marginBottom: "0.5%", position:"relative", width:"15%", "--color": this.props.state.game.currTurn.toLowerCase()}}>{this.props.state.game.playState}</div>
                     <div className="gameView"> 
                         <div style={{width: "40%", height: "40%", marginLeft:"10%"}}>
-                            <Board state={this.props.state} placeCountry={this.props.placeCountry}/>
+                            <Board infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry}/>
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "2%", marginLeft:"2%", position:"relative"}}>
                             <CountryDraftZone state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
-                            <PlagueCard evolve={this.props.evolve} cardName={board}/>
+                            <PlagueCard state={this.props.state} evolve={this.props.evolve} cardName={board}/>
                         </div>
                     </div> 
                     <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>

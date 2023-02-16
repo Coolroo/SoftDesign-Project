@@ -499,7 +499,7 @@ public class GameState {
             else{
                 //Try and infect the chosen country, then if there are any more countries that the player can infect, create another future
                 try{
-                    infectCountry(country);
+                    attemptInfect(country.getCountryName());
                     if(citiesToInfect > 1 && this.currTurn.getPlagueTokens() > 0){
                         initInfectFuture(citiesToInfect - 1);
                     }

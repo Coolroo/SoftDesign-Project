@@ -16,7 +16,7 @@ class PlagueCard extends Component{
         let cards = [];
 
         let plagueCard = (loc, index) => {
-            return <PlagueCardTraitSlot evolve={this.props.evolve} loc={loc} index={index}/>
+            return <PlagueCardTraitSlot trait={this.props.state.player.plague.traitSlots[index].card} evolve={this.props.evolve} loc={loc} index={index}/>
         }
 
         locs.forEach((loc, index) => {

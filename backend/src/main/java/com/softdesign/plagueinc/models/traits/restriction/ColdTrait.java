@@ -7,5 +7,10 @@ public class ColdTrait extends RestrictionTrait {
     public ColdTrait() {
         super(TraitType.COLD_RESISTANCE);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof ColdTrait;
+    }
     
 }

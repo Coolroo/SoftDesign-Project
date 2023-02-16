@@ -7,5 +7,10 @@ public class LethalityTrait extends DiseaseTrait {
     public LethalityTrait() {
         super(TraitType.LETHALITY);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof LethalityTrait;
+    }
     
 }

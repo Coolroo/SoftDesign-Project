@@ -7,5 +7,10 @@ public class AirborneTrait extends TravelTrait {
     public AirborneTrait() {
         super(TraitType.AIRBORNE);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof AirborneTrait;
+    }
     
 }
