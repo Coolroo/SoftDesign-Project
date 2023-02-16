@@ -60,7 +60,7 @@ class Board extends Component{
         console.log(JSON.stringify(board))
         Object.keys(board).forEach((continent) => {
             board[continent].forEach((country, countryIndex) => {
-                countries.push(<BoardCountrySlot infect={this.props.infect} country={country} loc={SLOTS[continent][countryIndex]}/>)
+                countries.push(<BoardCountrySlot kill={this.props.kill} state={this.props.state} infect={this.props.infect} country={country} loc={SLOTS[continent][countryIndex]}/>)
             })
         })
 

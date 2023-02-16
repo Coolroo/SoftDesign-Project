@@ -564,6 +564,9 @@ public class GameState {
         .toList();
         logger.info("[DEATH] Player {} will now attempt to kill countries {}", this.currTurn.getColor(), choppingBlock);
         this.choppingBlock = new ArrayList<>(choppingBlock);
+        if(this.choppingBlock.isEmpty()){
+            setReadyToProceed(true);
+        }
     }
 
     public int rollDeathDice(String countryName){

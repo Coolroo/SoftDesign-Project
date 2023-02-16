@@ -1,6 +1,20 @@
 import React, { Component } from "react";
+import Dice from 'react-dice-roll';
 
 class CountryCard extends Component{
+    state = {
+        dice: null
+    }
+
+    async afterRoll(val) {
+        await new Promise(r => setTimeout(r, 2000));
+        this.setState((prevState) => {
+            return {
+                dice: null
+            }
+        })
+    };
+
     render() {
         // 2 slot countries:
         // greenland, iceland, libya, panama
@@ -80,15 +94,43 @@ class CountryCard extends Component{
             var background = color === "EMPTY" ? {} : {backgroundImage: "url(/plague_tokens/token_" + colors[color] + ".png)"};
             hexagons.push(<div style={{...countrySlots[this.props.country.cities.length][i], ...background}}  className="hexagon"/>)
         }
+        
 
-        let infect = () => {
-            this.props.infect(this.props.country.countryName);
+        let click = () => {
+            switch(this.props.state.game.playState){
+                case "INFECT":
+                    this.props.infect(this.props.country.countryName);
+                    break;
+                case "DEATH":
+                    this.props.kill(this.props.country.countryName).then(resp => {
+                        if(resp.ok){
+                            resp.text().then((text) => {
+                                this.setState((prevState) => {
+                                    return {
+                                        dice: <Dice cheatValue={parseInt(text)} onRoll={this.afterRoll}/>
+                                    };
+                                }, () => {
+                                    this.state.dice.rollDice();
+                                });
+                            });
+                        }
+                    });
+                    break;
+            }
+            
+        }
+
+        let renderDice = () => {
+            if(this.state.dice != null){
+                return this.state.dice;
+            }
         }
 
         return(
             <React.Fragment>{
-                <div onClick={infect}>
-                    <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
+                <div onClick={click}>
+                    <img src={`/countries/${cardName}.png`} className="card" alt="img"/>
+                    {renderDice()}
                     {hexagons}
                     </div>
             

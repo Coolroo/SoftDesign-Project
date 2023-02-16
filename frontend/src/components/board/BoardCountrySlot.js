@@ -7,7 +7,7 @@ class BoardCountrySlot extends Component{
         return(
             <React.Fragment>{
                 <div className="boardCountrySlot" style={{...this.props.loc}}>
-                    <CountryCard infect={this.props.infect} country={this.props.country}/>
+                    <CountryCard kill={this.props.kill} state={this.props.state} infect={this.props.infect} country={this.props.country}/>
                 </div>   
     }       </React.Fragment>
         )

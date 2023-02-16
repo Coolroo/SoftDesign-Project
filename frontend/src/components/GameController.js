@@ -321,6 +321,15 @@ class GameController extends Component{
         console.log("Infecting " + countryName);
         this.patchRequest("/infect", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
     }
+
+    kill(countryName){
+        if(this.state.lobbyId === null){
+            console.log("No lobby ID");
+            return;
+        }
+        console.log("Killing " + countryName);
+        return this.patchRequest("/rollDeathDice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
+    }
        
     render() {
         const joinGamePage = () => {
@@ -339,7 +348,7 @@ class GameController extends Component{
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState !== undefined){
                 console.log("Lobby ID: " + this.state.lobbyId + " PlayState: " + this.state.game.playState);
-                return <GameView infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
+                return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             
         }

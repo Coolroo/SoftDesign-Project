@@ -31,7 +31,6 @@ import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCountryDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
-import com.softdesign.plagueinc.rest_controllers.DTOs.InfectDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
@@ -174,10 +173,10 @@ public class GameStateEndpoints {
  * @docauthor Trelent
  */
     @PatchMapping("/countryChoice")
-    public ResponseEntity<Void> countryChoice(@RequestParam("gameStateId") String gameStateId, @RequestBody CountryChoiceDTO countryChoiceDTO){
-        logger.info("Country Choice: " + countryChoiceDTO.toString());
+    public ResponseEntity<Void> countryChoice(@RequestParam("gameStateId") String gameStateId, @RequestBody CountryChoiceDTO chooseCountryDTO){
+        logger.info("Country Choice: " + chooseCountryDTO.toString());
         try{
-            gameStateManager.makeCountryChoice(gameStateId, countryChoiceDTO.playerId(), countryChoiceDTO.countryName(), countryChoiceDTO.choice());
+            gameStateManager.makeCountryChoice(gameStateId, chooseCountryDTO.playerId(), chooseCountryDTO.countryName(), chooseCountryDTO.choice());
             broadcastGameState(gameStateId);
         }
         catch(Exception e){
@@ -238,16 +237,16 @@ public class GameStateEndpoints {
  * infect a country on the board
  *
  * @param gameStateId String
- * @param infectDTO InfectDTO
+ * @param chooseCountryDTO InfectDTO
  *
  * @return void
  *
  * @docauthor Nick Lee
  */
     @PatchMapping("/infect")
-    public ResponseEntity<Void> infect(@RequestParam("gameStateId") String gameStateId, @RequestBody InfectDTO infectDTO){
+    public ResponseEntity<Void> infect(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCountryDTO chooseCountryDTO){
         try{
-            gameStateManager.attemptInfect(gameStateId, infectDTO.playerId(),infectDTO.countryName());
+            gameStateManager.attemptInfect(gameStateId, chooseCountryDTO.playerId(),chooseCountryDTO.countryName());
             broadcastGameState(gameStateId);
         }
         catch(Exception e){
@@ -268,10 +267,10 @@ public class GameStateEndpoints {
  * @docauthor Nick Lee
  */
     @PatchMapping("/rollDeathDice")
-    public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCountryDTO countryChoiceDTO){
+    public ResponseEntity<Integer> rollDeathDice(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCountryDTO chooseCountryDTO){
         if(deathBool.compareAndSet(false, true)){
             try{
-                int roll = gameStateManager.rollDeathDice(gameStateId, countryChoiceDTO.playerId(), countryChoiceDTO.countryName());
+                int roll = gameStateManager.rollDeathDice(gameStateId, chooseCountryDTO.playerId(), chooseCountryDTO.countryName());
                 TimerTask task = new TimerTask() {
                     public void run(){
                         broadcastGameState(gameStateId);
