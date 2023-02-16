@@ -583,6 +583,8 @@ public class GameState {
         int randomNum = ThreadLocalRandom.current().nextInt(1, 7);
         logger.info("[DEATH] Plague {} rolled a {}!", this.currTurn.getColor(), randomNum);
         rollDeathDice(randomNum, country);
+        choppingBlock.remove(country);
+        setReadyToProceed(choppingBlock.isEmpty());
         return randomNum;
     }
 
@@ -593,7 +595,7 @@ public class GameState {
         else{
             failKillCountry(country, result);
         }
-        choppingBlock.remove(country);
+        
     }
 
     private void killCountry(Country country, int roll){

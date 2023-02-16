@@ -274,6 +274,7 @@ public class GameStateEndpoints {
                 TimerTask task = new TimerTask() {
                     public void run(){
                         broadcastGameState(gameStateId);
+                        deathBool.set(false);
                     }
                 };
 
@@ -281,7 +282,7 @@ public class GameStateEndpoints {
                 long delay = 3000L;
                 timer.schedule(task, delay);
 
-                ResponseEntity.ok().body(roll);
+                return ResponseEntity.ok().body(roll);
                 
             }
             catch(Exception e){
