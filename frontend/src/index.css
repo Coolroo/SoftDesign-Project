@@ -87,10 +87,6 @@ code {
   z-index: 9;
 }
 
-.boardCountrySlot:hover {
-  background-color: yellow;
-}
-
 .plagueCard{
   float: left;
   position:absolute;
@@ -101,25 +97,12 @@ code {
 }
 
 .plagueCardTraitSlot{
-  background-color: hotpink;
   position: absolute;
   width: 16.0%;
   height: 37%;
   width: "16.0%";
   min-height: "37%";
   z-index: 9;
-}
-
-.plagueCardTraitSlot{
-  background-color: hotpink;
-  position: absolute;
-  width: "16.0%";
-  min-height: "37%";
-  z-index: 9;
-}
-
-.plagueCardTraitSlot:hover {
-  background-color: yellow;
 }
 
 .hand{
@@ -220,39 +203,39 @@ code {
 
     color: #FFFFFF;
 
-  }
+}
 
-  .plagueIncSubTitle{
+.plagueIncSubTitle{
 
 
-    font-family: 'Cambria';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 4vw;
-    line-height: auto;
-    line-height: auto;
-    text-align: center;
-    white-space: nowrap;
-    letter-spacing: 0.05em;
-    vertical-align: middle;
-    user-select: none;
+  font-family: 'Cambria';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 4vw;
+  line-height: auto;
+  line-height: auto;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  user-select: none;
 
-    color: #000000;
+  color: #000000;
 
-    text-shadow: 0px 0.2vw 0.2vw rgba(0, 0, 0, 0.25);
-  }
+  text-shadow: 0px 0.2vw 0.2vw rgba(0, 0, 0, 0.25);
+}
 
-  .playerBox{
-    box-sizing: border-box;
+.playerBox{
+  box-sizing: border-box;
 
-    position: absolute;
-    width: 10vw;
-    height: 10vw;
+  position: absolute;
+  width: 10vw;
+  height: 10vw;
 
-    background-size: cover;
-    
-    border-radius: 1vw;
-  }
+  background-size: cover;
+  
+  border-radius: 1vw;
+}
 
 .lobbyIdTag{
   font-family: 'Cambria';

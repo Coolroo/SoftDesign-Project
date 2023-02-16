@@ -7,5 +7,10 @@ public class InfectivityTrait extends DiseaseTrait {
     public InfectivityTrait() {
         super(TraitType.INFECTIVITY);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof InfectivityTrait;
+    }
     
 }

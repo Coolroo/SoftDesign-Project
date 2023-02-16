@@ -4,15 +4,13 @@ class TraitHand extends Component{
     
     render() {
         var hand = [];
-        this.props.hand.forEach(card => {
-            hand.push(<TraitCard cardName={card}/>)
+        this.props.hand.forEach((card, index) => {
+            hand.push(<TraitCard cardName={card} index={index}/>)
         });
         return(
             <React.Fragment>{
-                <div>
-                    <span style={{display:"flex", justifyContent:"center", alignItems:"center"}}>
-                        {hand}
-                    </span>
+                <div style={{display:"flex", justifyContent:"center", alignItems:"center"}}> 
+                    {hand}
                 </div>
             }
             </React.Fragment>

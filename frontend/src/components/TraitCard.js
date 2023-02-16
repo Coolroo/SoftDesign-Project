@@ -1,13 +1,16 @@
 import React, { Component } from "react";
+import { Draggable } from 'react-drag-and-drop';
 
 class TraitCard extends Component{
 
     render() {
         return(
             <React.Fragment>{
-                    <div className="traitCard">
-                        <img src={`/traitcards/${this.props.cardName}.png`} className="card" alt="img"/>
-                    </div>   
+                    <Draggable className="traitCard" type={'trait'} data={this.props.index}>
+                        <div>
+                            <img src={`/traitcards/${this.props.cardName}.png`} className="fullSize" alt="img"/>
+                        </div>
+                    </Draggable>
                 }
             </React.Fragment>
         )

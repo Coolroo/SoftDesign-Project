@@ -80,9 +80,14 @@ class CountryCard extends Component{
             var background = color == "EMPTY" ? {} : {backgroundImage: "url(/plague_tokens/token_" + colors[color] + ".png)"};
             hexagons.push(<div style={{...countrySlots[this.props.country.cities.length][i], ...background}}  className="hexagon"/>)
         }
+
+        let infect = () => {
+            this.props.infect(this.props.country.countryName);
+        }
+
         return(
             <React.Fragment>{
-                <div>
+                <div onClick={infect}>
                     <img src={`/countries/${cardName}.png`} className="card"alt="img"/>
                     {hexagons}
                     </div>
