@@ -18,7 +18,7 @@ const patchRequestOptions = {
 
 const SOCKET_URL = SERVER_URL + '/plague-socket';
 
-const SERVER_URL = "http://plagueinc.coolroo.ca/backend";
+const SERVER_URL = "https://plagueinc.coolroo.ca/backend";
 
 const cookies = new Cookies();
 
