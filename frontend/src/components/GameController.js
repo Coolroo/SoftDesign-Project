@@ -18,7 +18,7 @@ const patchRequestOptions = {
 
 const SOCKET_URL = 'http://localhost:8080/plague-socket';
 
-const SERVER_URL = "http://localhost:8080";
+const SERVER_URL = "http://156.34.212.204:8080";
 
 const cookies = new Cookies();
 
