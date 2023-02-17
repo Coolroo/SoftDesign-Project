@@ -9,16 +9,19 @@ import Cookies from 'universal-cookie';
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    port: port
 }; 
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    port: port
 };
 
 const SOCKET_URL = 'http://localhost:8080/plague-socket';
 
-const SERVER_URL = "http://156.34.212.204:8080";
+const SERVER_URL = "156.34.212.204";
+const port = 81;
 
 const cookies = new Cookies();
 
