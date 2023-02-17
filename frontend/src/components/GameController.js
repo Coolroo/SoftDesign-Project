@@ -8,20 +8,17 @@ import Cookies from 'universal-cookie';
 
 const postRequestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    port: port
+    headers: { 'Content-Type': 'application/json' }
 }; 
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    port: port
+    headers: { 'Content-Type': 'application/json' }
 };
 
-const SOCKET_URL = 'http://localhost:8080/plague-socket';
+const SOCKET_URL = SERVER_URL + '/plague-socket';
 
-const SERVER_URL = "156.34.212.204";
-const port = 81;
+const SERVER_URL = "http://plagueinc.coolroo.ca/backend";
 
 const cookies = new Cookies();
 
