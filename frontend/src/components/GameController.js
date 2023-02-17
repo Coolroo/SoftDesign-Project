@@ -198,7 +198,8 @@ class GameController extends Component{
                             ...prevState,
                             lobbyId: id
                         }
-                    }, () => {
+                    }, 
+                    () => {
                         cookies.set("lobbyId", id, { path: '/' });
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
