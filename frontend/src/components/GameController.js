@@ -28,14 +28,6 @@ const cookies = new Cookies();
 
 class GameController extends Component{
 
-    constructor(){
-        super();
-        window.addEventListener("beforeunload", (ev) => {
-            if(socket){
-                this.socket.close();
-            }
-        })
-    }
     socket = null;
     state = {
         game: {
@@ -71,6 +63,15 @@ class GameController extends Component{
        lobbyId: null
         
     };
+
+    constructor(){
+        super();
+        window.addEventListener("beforeunload", (ev) => {
+            if(socket){
+                this.socket.close();
+            }
+        })
+    }
     /**
      * This function is called when the component is first mounted.
      * It checks if the user has a cookie for a lobbyId and playerId.
