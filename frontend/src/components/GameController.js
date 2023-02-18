@@ -5,25 +5,28 @@ import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
 import Cookies from 'universal-cookie';
+import configdata from "../config.json";
 
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    mode: 'cors'
 }; 
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json',
+    mode: 'cors' }
 };
 
-const SOCKET_URL = 'http://localhost:8080/plague-socket';
+const SERVER_URL = configdata.SERVER_URL;
 
-const SERVER_URL = "http://localhost:8080";
+const SOCKET_URL = SERVER_URL + '/plague-socket';
 
 const cookies = new Cookies();
 
 class GameController extends Component{
-    socket = null;
+
     state = {
         game: {
             board: {
@@ -55,9 +58,19 @@ class GameController extends Component{
             }
         },
        playerId: null,
-       lobbyId: null
+       lobbyId: null,
+       socket: null
         
     };
+
+    constructor(){
+        super();
+        window.addEventListener("beforeunload", (ev) => {
+            if(this.state.socket){
+                this.state.socket.close();
+            }
+        })
+    }
     /**
      * This function is called when the component is first mounted.
      * It checks if the user has a cookie for a lobbyId and playerId.
@@ -186,7 +199,7 @@ class GameController extends Component{
     }
 
     async loadLobby(id){
-        if(this.socket != null){
+        if(this.state.socket != null){
             console.log("Cannot join another lobby if you are already in one");
         }
         return this.getGameState(id)
@@ -198,7 +211,8 @@ class GameController extends Component{
                             ...prevState,
                             lobbyId: id
                         }
-                    }, () => {
+                    }, 
+                    () => {
                         cookies.set("lobbyId", id, { path: '/' });
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
@@ -212,9 +226,13 @@ class GameController extends Component{
     }
 
     initWebSocket(){
-        var sock = new SockJS(SOCKET_URL);
+        var sock = new SockJS(SOCKET_URL, 'echo-protocol');
         var stompClient = Stomp.over(sock);
-        this.socket = stompClient;
+        this.setState((prevState) => {
+            return {...prevState,
+            socket: stompClient
+            }
+        });
         stompClient.connect({}, frame => {
                 
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
