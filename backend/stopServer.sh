@@ -1,2 +1,2 @@
-cd /home/coolroo/repos/SoftDesign-Project/backend
+cd "${BASH_SOURCE}"
 kill -9 `cat ./save_pid.txt`

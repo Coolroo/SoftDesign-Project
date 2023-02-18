@@ -1,4 +1,4 @@
-cd /home/coolroo/repos/SoftDesign-Project/frontend
+cd "${BASH_SOURCE}"
 npm run build &
 wait
 pm2 start npm --name "next" -- start
