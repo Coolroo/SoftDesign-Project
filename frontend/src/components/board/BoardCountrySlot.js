@@ -8,9 +8,12 @@ class BoardCountrySlot extends Component{
     }
 
     render() {
+
+        console.log(this.props.state.game);
+        const className = (this.props.state.game.choppingBlock && this.props.state.game.choppingBlock.includes(this.props.country.countryName) ? "pulseAnim" : "");
         return(
             <React.Fragment>{
-                <div className="boardCountrySlot" style={{...this.props.loc}} ref={this.state.cardRef}>
+                <div className={"boardCountrySlot " + className} style={{...this.props.loc}} ref={this.state.cardRef}>
                     <CountryCard kill={this.props.kill} state={this.props.state} infect={this.props.infect} country={this.props.country}/>
                 </div>   
     }       </React.Fragment>
