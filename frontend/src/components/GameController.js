@@ -27,6 +27,15 @@ const SOCKET_URL = SERVER_URL + '/plague-socket';
 const cookies = new Cookies();
 
 class GameController extends Component{
+
+    constructor(){
+        super();
+        window.addEventListener("beforeunload", (ev) => {
+            if(socket){
+                this.socket.close();
+            }
+        })
+    }
     socket = null;
     state = {
         game: {
