@@ -18,7 +18,7 @@ const patchRequestOptions = {
     mode: 'cors' }
 };
 
-const SERVER_URL = "https://plagueinc.coolroo.ca/backend";
+const SERVER_URL = "http://plagueinc.coolroo.ca/backend";
 
 const SOCKET_URL = SERVER_URL + '/plague-socket';
 
