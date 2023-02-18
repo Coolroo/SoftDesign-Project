@@ -1,3 +1,7 @@
-./frontend/runServer.sh
-nohup java -jar ./backend/build/libs/plagueinc-0.0.1-SNAPSHOT.jar > my.log 2>&1 &
-echo "$!" > save_pid.txt
+./frontend/runServer.sh &
+echo "Compiling & running frontend"
+wait
+./backend/runServer.sh &
+echo "Compiling & running backend"
+wait
+echo "Servers started"

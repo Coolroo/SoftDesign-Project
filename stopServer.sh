@@ -1,2 +1,4 @@
-./frontend/stopServer.sh
-kill -9 `cat ./save_pid.txt`
+./frontend/stopServer.sh &
+./backend/stopServer.sh &
+wait
+echo "Servers Stopped"
