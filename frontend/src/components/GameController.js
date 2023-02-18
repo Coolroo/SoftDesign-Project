@@ -217,7 +217,7 @@ class GameController extends Component{
     }
 
     initWebSocket(){
-        var sock = new SockJS(SOCKET_URL);
+        var sock = new SockJS(SOCKET_URL, 'echo-protocol');
         var stompClient = Stomp.over(sock);
         this.socket = stompClient;
         stompClient.connect({}, frame => {
