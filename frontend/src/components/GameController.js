@@ -8,12 +8,14 @@ import Cookies from 'universal-cookie';
 
 const postRequestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors'
 }; 
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json',
+    mode: 'cors' }
 };
 
 const SERVER_URL = "https://plagueinc.coolroo.ca/backend";
