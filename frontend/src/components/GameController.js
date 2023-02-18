@@ -18,9 +18,11 @@ const patchRequestOptions = {
     mode: 'cors' }
 };
 
-const SERVER_URL = "https://plagueinc.coolroo.ca/backend";
+const BASE_URL = 'plagueinc.coolroo.ca/backend'
 
-const SOCKET_URL = SERVER_URL + '/plague-socket';
+const SERVER_URL = "https://" + BASE_URL;
+
+const SOCKET_URL = 'https://' + SERVER_URL + '/plague-socket';
 
 const cookies = new Cookies();
 
