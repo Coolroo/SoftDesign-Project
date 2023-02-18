@@ -342,3 +342,25 @@ code {
   z-index: 15;
   border-radius: 5%;
 }
+
+.pulseAnim {
+  --r: 255;
+  --g: 0;
+  --b: 0;
+  box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 1);
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(var(--r), var(--g), var(--b), 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 0);
+	}
+}

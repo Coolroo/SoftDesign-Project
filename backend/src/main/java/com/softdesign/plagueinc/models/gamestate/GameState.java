@@ -105,7 +105,7 @@ public class GameState {
     @JsonIgnore
     private Optional<CompletableFuture<Country>> infectChoice;
 
-
+    @JsonSerialize(using = CountryNameSerializer.class)
     private List<Country> choppingBlock;
 
     //Event Futures

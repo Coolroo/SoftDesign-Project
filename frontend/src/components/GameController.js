@@ -42,8 +42,20 @@ class GameController extends Component{
                 BLUE: null,
                 YELLOW: null,
                 PURPLE: null
-            }
-
+            },
+            currTurn: null,
+            playState: null,
+            revealedCountries: [],
+            countryDiscard: [],
+            traitDiscard: [],
+            eventDiscard: [],
+            votesToStart: [],
+            readyToProceed: null,
+            suddenDeath: null,
+            turnOrder: [],
+            choppingBlock: [],
+            eventPlayer: null
+            
         },
         player: {
             hand: [],
@@ -156,7 +168,8 @@ class GameController extends Component{
                     suddenDeath: data.suddenDeath,
                     traitDiscard: data.traitDiscard,
                     turnOrder: data.turnOrder,
-                    votesToStart: data.votesToStart
+                    votesToStart: data.votesToStart,
+                    choppingBlock: data.choppingBlock
                 }
             };
         });
@@ -355,14 +368,14 @@ class GameController extends Component{
         }
 
         const lobbyPage = () => {
-            if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState !== undefined){
+            if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != null){
                 return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state}  />
             }
         }
         
         // eslint-disable-next-line
         const gamePage = () => {
-            if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState !== undefined){
+            if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState != null){
                 return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             
