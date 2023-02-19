@@ -117,7 +117,7 @@ public class Country {
 
     @Override
     public int hashCode() {
-        return Objects.hash(logger, countryName, continent, restriction, travelTypes, cities);
+        return Objects.hash(countryName, continent, restriction, travelTypes);
     }
 
 

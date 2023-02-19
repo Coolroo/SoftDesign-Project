@@ -317,6 +317,9 @@ public class GameState {
                 //Initialize the infect future, and then move onto the infect phase
                 this.countriesToInfect = this.currTurn.getTraitCount(TraitType.INFECTIVITY);
                 setPlayState(PlayState.INFECT);
+                if(unableToMove(this.currTurn)){
+                    setReadyToProceed(true);
+                }
                 break;
             case INFECT:
                 //Init the death phase, by creating a recursive future that will go through all the killable countries, and then move on to the death state
@@ -366,7 +369,7 @@ public class GameState {
     }
 
     private void respawnPlague(Plague plague){
-        Country respawnCountry = drawCountry();;
+        Country respawnCountry = drawCountry();
         if(this.board.get(respawnCountry.getContinent()).size() == MAX_COUNTRIES.get(respawnCountry.getContinent())){
             discardCountry(respawnCountry);
         }
@@ -482,7 +485,6 @@ public class GameState {
         this.board.get(country.getContinent()).add(country);
         logAction(new CountryAction(CountryChoice.PLAY, country));
         logger.info("[COUNTRYCHOICE] placed {} in {}", country.getCountryName(), country.getContinent());
-        setReadyToProceed(true);
     }
 
     public void discardCountryAction(Country country){
@@ -550,9 +552,10 @@ public class GameState {
         Country country = getCountry(countryName);
 
         logger.info("[INFECT] Received request to infect country {}", country.getCountryName());
-        this.countriesToInfect--;
         infectCountry(country);
-        setReadyToProceed(this.countriesToInfect == 0);
+        this.countriesToInfect--;
+        
+        setReadyToProceed(this.countriesToInfect == 0 || unableToMove(this.currTurn));
     }
 
     private void infectCountry(Country country){
@@ -854,7 +857,7 @@ public class GameState {
         .flatMap(country -> country.getCities().stream())
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .anyMatch(thisPlague -> thisPlague.equals(plague));
+        .noneMatch(thisPlague -> thisPlague.equals(plague));
     }
 
     private boolean unableToMove(Plague plague){
@@ -987,7 +990,7 @@ public class GameState {
     }
 
     public void makeCitySelection(UUID playerId, String countryName, int cityIndex){
-        validateState(PlayState.EVENT_CHOICE);
+        //TODO: Implement input selection checking
         
         if(!eventPlayer.get().getPlayerId().equals(playerId)){
             logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
@@ -1005,7 +1008,7 @@ public class GameState {
     }
 
     public void makeCountrySelection(UUID playerId, String countryName){
-        validateState(PlayState.EVENT_CHOICE);
+        validateInput(InputSelection.COUNTRY);
         
         if(!eventPlayer.get().getPlayerId().equals(playerId)){
             logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
@@ -1018,12 +1021,11 @@ public class GameState {
         }
         
         Country country = getCountry(countryName);
-
         this.countrySelectionFuture.get().complete(country);
     }
 
     public void makeTraitCardSelection(UUID playerId, int traitCardSlot){
-        validateState(PlayState.EVENT_CHOICE);
+        //TODO: Implement input selection checking
         
         if(!eventPlayer.get().getPlayerId().equals(playerId)){
             logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
@@ -1042,7 +1044,7 @@ public class GameState {
     }
 
     public void makeContinentSelection(UUID playerId, Continent continent){
-        validateState(PlayState.EVENT_CHOICE);
+        //TODO: Implement input selection checking
         
         if(!eventPlayer.get().getPlayerId().equals(playerId)){
             logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
@@ -1058,7 +1060,7 @@ public class GameState {
     }
 
     public void makeTraitSlotSelection(UUID playerId, int slotIndex){
-        validateState(PlayState.EVENT_CHOICE);
+        //TODO: Implement input selection checking
 
         if(!eventPlayer.get().getPlayerId().equals(playerId)){
             logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
@@ -1071,6 +1073,13 @@ public class GameState {
         }
 
         this.selectTraitSlot.get().complete(slotIndex);
+    }
+
+    private void validateInput(InputSelection inputSelection){
+        if(inputSelection != this.inputSelection){
+            logger.warn("Attempting to validate Input Selection, but {} != {}", inputSelection, this.inputSelection);
+            throw new IllegalStateException("invalid input selection");
+        }
     }
 
 }

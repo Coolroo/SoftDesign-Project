@@ -54,7 +54,8 @@ class GameController extends Component{
             suddenDeath: null,
             turnOrder: [],
             choppingBlock: [],
-            eventPlayer: null
+            eventPlayer: null,
+            inputSelection: null
             
         },
         player: {
@@ -169,7 +170,8 @@ class GameController extends Component{
                     traitDiscard: data.traitDiscard,
                     turnOrder: data.turnOrder,
                     votesToStart: data.votesToStart,
-                    choppingBlock: data.choppingBlock
+                    choppingBlock: data.choppingBlock,
+                    inputSelection: data.inputSelection
                 }
             };
         });
@@ -348,7 +350,7 @@ class GameController extends Component{
             return;
         }
         console.log("Infecting " + countryName);
-        this.patchRequest("/infect", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
+        this.patchRequest((this.state.game.inputSelection === "COUNTRY" ? "/chooseCountry" : "/infect"), this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
     }
 
     kill(countryName){
