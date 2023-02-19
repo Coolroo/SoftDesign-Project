@@ -992,11 +992,6 @@ public class GameState {
     public void makeCitySelection(UUID playerId, String countryName, int cityIndex){
         //TODO: Implement input selection checking
         
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
-        
         if(this.citySelectionFuture.isEmpty()){
             logger.warn("Player attempted to make a city selection, but there is no future to make a selection");
             throw new IllegalStateException();
@@ -1010,11 +1005,6 @@ public class GameState {
     public void makeCountrySelection(UUID playerId, String countryName){
         validateInput(InputSelection.COUNTRY);
         
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
-        
         if(this.countrySelectionFuture.isEmpty()){
             logger.warn("Player attempted to make a country selection, but there is no future to make a selection");
             throw new IllegalStateException();
@@ -1026,11 +1016,6 @@ public class GameState {
 
     public void makeTraitCardSelection(UUID playerId, int traitCardSlot){
         //TODO: Implement input selection checking
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
         
         if(this.selectTraitCard.isEmpty()){
             logger.warn("Player attempted to make a trait selection, but there is no future to make a selection");
@@ -1045,11 +1030,6 @@ public class GameState {
 
     public void makeContinentSelection(UUID playerId, Continent continent){
         //TODO: Implement input selection checking
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
 
         if(this.selectContinent.isEmpty()){
             logger.warn("Player attempted to make a continent selection, but there is no future to make a selection");
@@ -1061,11 +1041,6 @@ public class GameState {
 
     public void makeTraitSlotSelection(UUID playerId, int slotIndex){
         //TODO: Implement input selection checking
-
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
         
         if(this.selectTraitSlot.isEmpty()){
             logger.warn("Player attempted to make a trait slot selection, but there is no future to make a selection");
