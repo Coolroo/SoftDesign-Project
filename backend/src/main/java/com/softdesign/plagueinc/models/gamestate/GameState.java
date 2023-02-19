@@ -61,6 +61,8 @@ public class GameState {
     @JsonIgnore
     Logger logger = LoggerFactory.getLogger(GameState.class);
 
+    //Overall state
+
     @JsonSerialize(using = PlagueColorMapSerializer.class)
     private List<Plague> plagues;
     
@@ -102,8 +104,10 @@ public class GameState {
     @JsonSerialize(using = PlagueListToColorSerializer.class)
     private Queue<Plague> turnOrder;
 
+    //Infect
+
     @JsonIgnore
-    private Optional<CompletableFuture<Country>> infectChoice;
+    private int countriesToInfect;
 
     @JsonSerialize(using = CountryNameSerializer.class)
     private List<Country> choppingBlock;
@@ -154,7 +158,7 @@ public class GameState {
         this.readyToProceed = false;
         this.suddenDeath = false;
         
-        this.infectChoice = Optional.empty();
+        this.countriesToInfect = 0;
         this.choppingBlock = List.of();
         this.eventPlayer = Optional.empty();
 
@@ -307,7 +311,7 @@ public class GameState {
                 break;
             case EVOLVE:
                 //Initialize the infect future, and then move onto the infect phase
-                initInfectFuture(this.currTurn.getTraitCount(TraitType.INFECTIVITY));
+                this.countriesToInfect = this.currTurn.getTraitCount(TraitType.INFECTIVITY);
                 setPlayState(PlayState.INFECT);
                 break;
             case INFECT:
@@ -479,59 +483,25 @@ public class GameState {
 
     //INFECT PHASE
 
-    private void initInfectFuture(int citiesToInfect){
-        if(this.infectChoice.isPresent()){
-            this.infectChoice.get().cancel(true);
-        }
-        if(unableToMove(this.currTurn)){
-            logger.info("[INFECT] (Plague {}) cannot place any tokens, skipping infect phase", this.currTurn.getPlayerId());
-            setReadyToProceed(true);
-            return;
-        }
-
-        //This part can get complicated! Please reach out to Wyatt if you have any issues understanding
-        this.infectChoice = Optional.of(new CompletableFuture<>());
-        this.infectChoice.get().whenComplete((country, ex) -> {
-            if(ex != null){
-                logger.warn("[INFECT] Error with infection choice future EX: {}", ex.getMessage());
-                initInfectFuture(citiesToInfect);
-            }
-            else{
-                //Try and infect the chosen country, then if there are any more countries that the player can infect, create another future
-                try{
-                    infectCountry(country);
-                    if(citiesToInfect > 1 && this.currTurn.getPlagueTokens() > 0){
-                        initInfectFuture(citiesToInfect - 1);
-                    }
-                    else{
-                        setReadyToProceed(true);
-                        this.infectChoice = Optional.empty();
-                    }
-                }
-                catch(Exception e){
-                    initInfectFuture(citiesToInfect);
-                }
-                
-            }
-        });
-    }
-
     public void attemptInfect(String countryName){
         if(this.readyToProceed){
             logger.warn("[INFECT] Attempted to infect {}, but the game is ready to proceed", countryName);
             throw new IllegalStateException();
         }
-        if(this.infectChoice.isEmpty()){
-            logger.warn("[INFECT] Attempted to infect {}, but the future is not valid", countryName);
-            throw new IllegalStateException();
-        }
 
         validateState(PlayState.INFECT);
+
+        if(this.countriesToInfect <= 0){
+            logger.warn("[INFECT] Attempted to infect {}, but the player has 0 infections left", countryName);
+            throw new IllegalStateException();
+        }
 
         Country country = getCountry(countryName);
 
         logger.info("[INFECT] Received request to infect country {}", country.getCountryName());
-        this.infectChoice.get().complete(country);
+        this.countriesToInfect--;
+        infectCountry(country);
+        setReadyToProceed(this.countriesToInfect == 0);
     }
 
     private void infectCountry(Country country){
