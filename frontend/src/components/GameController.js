@@ -15,8 +15,8 @@ const postRequestOptions = {
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json',
-    mode: 'cors' }
+    headers: { 'Content-Type': 'application/json'},
+    mode: 'cors' 
 };
 
 const SERVER_URL = configdata.SERVER_URL;

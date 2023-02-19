@@ -106,13 +106,14 @@ public class GameState {
 
     //Infect
 
-    @JsonIgnore
     private int countriesToInfect;
 
     @JsonSerialize(using = CountryNameSerializer.class)
     private List<Country> choppingBlock;
 
     //Event Futures
+
+    private InputSelection inputSelection;
 
     @JsonIgnore
     private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
@@ -147,6 +148,8 @@ public class GameState {
 
     private static final int ULTIMATE_WIPEOUT_POINTS = 7;
 
+    private static final int RESPAWN_PENALTY = 7;
+
 
     public GameState(){
         this.plagues = new ArrayList<>();
@@ -157,6 +160,7 @@ public class GameState {
         this.actions = new Stack<>();
         this.readyToProceed = false;
         this.suddenDeath = false;
+        this.inputSelection = null;
         
         this.countriesToInfect = 0;
         this.choppingBlock = List.of();
@@ -341,12 +345,59 @@ public class GameState {
                 logger.info("Shifting player turns ({}) -> ({})", currColor, currTurn.getColor());
                 
                 setPlayState(PlayState.START_OF_TURN);
-                setReadyToProceed(true);
+                checkIfRespawnNeeded();
                 break;
             default:
                 logger.error("Weird... this should never happen");
                 break;
         }
+    }
+
+    //START_OF_TURN PHASE
+
+    private void checkIfRespawnNeeded(){
+        if(isPlagueEradicated(this.currTurn)){
+            logger.info("[DNA] Plague ({}) has been eradicated, respawning", currTurn.getColor());
+            respawnPlague(this.currTurn);
+        }
+        else{
+            setReadyToProceed(true);
+        }
+    }
+
+    private void respawnPlague(Plague plague){
+        Country respawnCountry = drawCountry();;
+        if(this.board.get(respawnCountry.getContinent()).size() == MAX_COUNTRIES.get(respawnCountry.getContinent())){
+            discardCountry(respawnCountry);
+        }
+        else{
+            placeCountry(respawnCountry);
+        }
+        this.inputSelection = InputSelection.COUNTRY;
+        plague.spendDnaPoints(RESPAWN_PENALTY);
+        initRespawnFuture(plague);
+
+    }
+
+    private void initRespawnFuture(Plague plague){
+        CompletableFuture<Country> selectCountry = new CompletableFuture<>();
+        selectCountry.whenComplete((country, ex) -> {
+            if(ex != null){
+                logger.error("Error selecting country", ex);
+                return;
+            }
+            if(country.isFull()){
+                logger.warn("[DNA] Plague ({}) attempted to respawn in a full country", currTurn.getColor());
+                initRespawnFuture(plague);
+                return;
+            }
+            logger.info("[DNA] Plague ({}) has respawned in {}", currTurn.getColor(), country.getCountryName());
+            country.infectCountry(plague);
+            this.inputSelection = null;
+            setReadyToProceed(true);
+            this.countrySelectionFuture = Optional.empty();
+        });
+        this.countrySelectionFuture = Optional.of(selectCountry);
     }
 
     //DNA PHASE
@@ -884,6 +935,10 @@ public class GameState {
         if(this.eventPlayer.isPresent()){
             logger.warn("Attempted to validate state, but there is an event player present ({})", this.eventPlayer.get().getColor());
             throw new IllegalStateException("Event Player Present");
+        }
+        if(this.inputSelection != null){
+            logger.warn("Attempted to validate state, but there is an input selection present ({})", this.inputSelection);
+            throw new IllegalStateException("Input Selection Present");
         }
     }
 
