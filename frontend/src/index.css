@@ -342,6 +342,16 @@ code {
   border-radius: 5%;
 }
 
+.eventDiscardPile{
+  position: absolute;
+  border: 2px solid;
+  border-color:rgb(31, 113, 87);
+  width: 20%;
+  height: 80%;
+  z-index: 15;
+  border-radius: 5%;
+}
+
 .pulseAnim {
   --r: 255;
   --g: 0;

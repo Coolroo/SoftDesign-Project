@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import DraftCountrySlot from "./DraftCountrySlot";
 import CountryDiscardPile from "./CountryDiscardPile";
+import EventDiscardPile from "../EventDiscardPile";
 
 class CountryDraftZone extends Component {
 
@@ -24,6 +25,7 @@ class CountryDraftZone extends Component {
                         <div style={{top:'4.0%',left:'6.7%'}} className="draftZoneCountrySlot"><DraftCountrySlot name={"countrycardback"}/></div>
                         <div>{revealedCountries}</div>
                         <CountryDiscardPile state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
+                        <EventDiscardPile state={this.props.state}/>
                     </div>   
                 }
             </React.Fragment>
