@@ -113,22 +113,7 @@ public class GameState {
 
     //Event Futures
 
-    private InputSelection inputSelection;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Country>> countrySelectionFuture;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<TraitCard>> selectTraitCard;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Continent>> selectContinent;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Integer>> selectTraitSlot;
+    private List<InputSelection> inputSelection;
 
     private Optional<Plague> eventPlayer;
 
@@ -160,7 +145,7 @@ public class GameState {
         this.actions = new Stack<>();
         this.readyToProceed = false;
         this.suddenDeath = false;
-        this.inputSelection = null;
+        this.inputSelection = List.of();
         
         this.countriesToInfect = 0;
         this.choppingBlock = List.of();
@@ -376,31 +361,10 @@ public class GameState {
         else{
             placeCountry(respawnCountry);
         }
-        this.inputSelection = InputSelection.COUNTRY;
+        this.inputSelection = List.of(InputSelection.COUNTRY);
         plague.spendDnaPoints(RESPAWN_PENALTY);
         initRespawnFuture(plague);
 
-    }
-
-    private void initRespawnFuture(Plague plague){
-        CompletableFuture<Country> selectCountry = new CompletableFuture<>();
-        selectCountry.whenComplete((country, ex) -> {
-            if(ex != null){
-                logger.error("Error selecting country", ex);
-                return;
-            }
-            if(country.isFull()){
-                logger.warn("[DNA] Plague ({}) attempted to respawn in a full country", currTurn.getColor());
-                initRespawnFuture(plague);
-                return;
-            }
-            logger.info("[DNA] Plague ({}) has respawned in {}", currTurn.getColor(), country.getCountryName());
-            country.infectCountry(plague);
-            this.inputSelection = null;
-            setReadyToProceed(true);
-            this.countrySelectionFuture = Optional.empty();
-        });
-        this.countrySelectionFuture = Optional.of(selectCountry);
     }
 
     //DNA PHASE
