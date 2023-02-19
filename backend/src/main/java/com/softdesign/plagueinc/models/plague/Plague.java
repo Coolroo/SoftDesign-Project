@@ -247,7 +247,7 @@ public class Plague {
 
     @Override
     public int hashCode() {
-        return Objects.hash(playerId, color, diseaseType, dnaPoints, plagueTokens, traitSlots, traits, hand, eventCards, killedCountries);
+        return Objects.hash(playerId, color, diseaseType, dnaPoints, plagueTokens, traits, hand, eventCards);
     }
 
 
