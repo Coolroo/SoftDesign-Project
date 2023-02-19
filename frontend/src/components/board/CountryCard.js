@@ -129,6 +129,9 @@ class CountryCard extends Component{
                         }
                     });
                     break;
+                default:
+                    this.props.infect(this.props.country.countryName);
+                    break;
             }
             
         }

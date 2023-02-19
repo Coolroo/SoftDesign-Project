@@ -106,13 +106,14 @@ public class GameState {
 
     //Infect
 
-    @JsonIgnore
     private int countriesToInfect;
 
     @JsonSerialize(using = CountryNameSerializer.class)
     private List<Country> choppingBlock;
 
     //Event Futures
+
+    private InputSelection inputSelection;
 
     @JsonIgnore
     private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
@@ -147,6 +148,8 @@ public class GameState {
 
     private static final int ULTIMATE_WIPEOUT_POINTS = 7;
 
+    private static final int RESPAWN_PENALTY = 7;
+
 
     public GameState(){
         this.plagues = new ArrayList<>();
@@ -157,6 +160,7 @@ public class GameState {
         this.actions = new Stack<>();
         this.readyToProceed = false;
         this.suddenDeath = false;
+        this.inputSelection = null;
         
         this.countriesToInfect = 0;
         this.choppingBlock = List.of();
@@ -313,6 +317,9 @@ public class GameState {
                 //Initialize the infect future, and then move onto the infect phase
                 this.countriesToInfect = this.currTurn.getTraitCount(TraitType.INFECTIVITY);
                 setPlayState(PlayState.INFECT);
+                if(unableToMove(this.currTurn)){
+                    setReadyToProceed(true);
+                }
                 break;
             case INFECT:
                 //Init the death phase, by creating a recursive future that will go through all the killable countries, and then move on to the death state
@@ -341,12 +348,59 @@ public class GameState {
                 logger.info("Shifting player turns ({}) -> ({})", currColor, currTurn.getColor());
                 
                 setPlayState(PlayState.START_OF_TURN);
-                setReadyToProceed(true);
+                checkIfRespawnNeeded();
                 break;
             default:
                 logger.error("Weird... this should never happen");
                 break;
         }
+    }
+
+    //START_OF_TURN PHASE
+
+    private void checkIfRespawnNeeded(){
+        if(isPlagueEradicated(this.currTurn)){
+            logger.info("[DNA] Plague ({}) has been eradicated, respawning", currTurn.getColor());
+            respawnPlague(this.currTurn);
+        }
+        else{
+            setReadyToProceed(true);
+        }
+    }
+
+    private void respawnPlague(Plague plague){
+        Country respawnCountry = drawCountry();
+        if(this.board.get(respawnCountry.getContinent()).size() == MAX_COUNTRIES.get(respawnCountry.getContinent())){
+            discardCountry(respawnCountry);
+        }
+        else{
+            placeCountry(respawnCountry);
+        }
+        this.inputSelection = InputSelection.COUNTRY;
+        plague.spendDnaPoints(RESPAWN_PENALTY);
+        initRespawnFuture(plague);
+
+    }
+
+    private void initRespawnFuture(Plague plague){
+        CompletableFuture<Country> selectCountry = new CompletableFuture<>();
+        selectCountry.whenComplete((country, ex) -> {
+            if(ex != null){
+                logger.error("Error selecting country", ex);
+                return;
+            }
+            if(country.isFull()){
+                logger.warn("[DNA] Plague ({}) attempted to respawn in a full country", currTurn.getColor());
+                initRespawnFuture(plague);
+                return;
+            }
+            logger.info("[DNA] Plague ({}) has respawned in {}", currTurn.getColor(), country.getCountryName());
+            country.infectCountry(plague);
+            this.inputSelection = null;
+            setReadyToProceed(true);
+            this.countrySelectionFuture = Optional.empty();
+        });
+        this.countrySelectionFuture = Optional.of(selectCountry);
     }
 
     //DNA PHASE
@@ -431,7 +485,6 @@ public class GameState {
         this.board.get(country.getContinent()).add(country);
         logAction(new CountryAction(CountryChoice.PLAY, country));
         logger.info("[COUNTRYCHOICE] placed {} in {}", country.getCountryName(), country.getContinent());
-        setReadyToProceed(true);
     }
 
     public void discardCountryAction(Country country){
@@ -499,9 +552,10 @@ public class GameState {
         Country country = getCountry(countryName);
 
         logger.info("[INFECT] Received request to infect country {}", country.getCountryName());
-        this.countriesToInfect--;
         infectCountry(country);
-        setReadyToProceed(this.countriesToInfect == 0);
+        this.countriesToInfect--;
+        
+        setReadyToProceed(this.countriesToInfect == 0 || unableToMove(this.currTurn));
     }
 
     private void infectCountry(Country country){
@@ -803,7 +857,7 @@ public class GameState {
         .flatMap(country -> country.getCities().stream())
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .anyMatch(thisPlague -> thisPlague.equals(plague));
+        .noneMatch(thisPlague -> thisPlague.equals(plague));
     }
 
     private boolean unableToMove(Plague plague){
@@ -885,6 +939,10 @@ public class GameState {
             logger.warn("Attempted to validate state, but there is an event player present ({})", this.eventPlayer.get().getColor());
             throw new IllegalStateException("Event Player Present");
         }
+        if(this.inputSelection != null){
+            logger.warn("Attempted to validate state, but there is an input selection present ({})", this.inputSelection);
+            throw new IllegalStateException("Input Selection Present");
+        }
     }
 
     @JsonIgnore
@@ -932,12 +990,7 @@ public class GameState {
     }
 
     public void makeCitySelection(UUID playerId, String countryName, int cityIndex){
-        validateState(PlayState.EVENT_CHOICE);
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
+        //TODO: Implement input selection checking
         
         if(this.citySelectionFuture.isEmpty()){
             logger.warn("Player attempted to make a city selection, but there is no future to make a selection");
@@ -950,12 +1003,7 @@ public class GameState {
     }
 
     public void makeCountrySelection(UUID playerId, String countryName){
-        validateState(PlayState.EVENT_CHOICE);
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
+        validateInput(InputSelection.COUNTRY);
         
         if(this.countrySelectionFuture.isEmpty()){
             logger.warn("Player attempted to make a country selection, but there is no future to make a selection");
@@ -963,17 +1011,11 @@ public class GameState {
         }
         
         Country country = getCountry(countryName);
-
         this.countrySelectionFuture.get().complete(country);
     }
 
     public void makeTraitCardSelection(UUID playerId, int traitCardSlot){
-        validateState(PlayState.EVENT_CHOICE);
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
+        //TODO: Implement input selection checking
         
         if(this.selectTraitCard.isEmpty()){
             logger.warn("Player attempted to make a trait selection, but there is no future to make a selection");
@@ -987,12 +1029,7 @@ public class GameState {
     }
 
     public void makeContinentSelection(UUID playerId, Continent continent){
-        validateState(PlayState.EVENT_CHOICE);
-        
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
+        //TODO: Implement input selection checking
 
         if(this.selectContinent.isEmpty()){
             logger.warn("Player attempted to make a continent selection, but there is no future to make a selection");
@@ -1003,12 +1040,7 @@ public class GameState {
     }
 
     public void makeTraitSlotSelection(UUID playerId, int slotIndex){
-        validateState(PlayState.EVENT_CHOICE);
-
-        if(!eventPlayer.get().getPlayerId().equals(playerId)){
-            logger.warn("(Player {}) attempted to make event choice, but it is not his turn");
-            throw new IllegalAccessError();
-        }
+        //TODO: Implement input selection checking
         
         if(this.selectTraitSlot.isEmpty()){
             logger.warn("Player attempted to make a trait slot selection, but there is no future to make a selection");
@@ -1016,6 +1048,13 @@ public class GameState {
         }
 
         this.selectTraitSlot.get().complete(slotIndex);
+    }
+
+    private void validateInput(InputSelection inputSelection){
+        if(inputSelection != this.inputSelection){
+            logger.warn("Attempting to validate Input Selection, but {} != {}", inputSelection, this.inputSelection);
+            throw new IllegalStateException("invalid input selection");
+        }
     }
 
 }
