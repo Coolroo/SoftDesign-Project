@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import Board from './board/Board';
 import TraitHand from './TraitHand';
+import EventHand from './EventHand';
 import PlagueCard from './PlagueCard';
 import CountryDraftZone from './countries/CountryDraftZone';
 
@@ -42,6 +43,7 @@ class GameView extends Component{
     }
 
     render() {
+
         let proceed = () => {
             this.props.proceed();
         }    
@@ -87,6 +89,7 @@ class GameView extends Component{
                     <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>
                         <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
+                            <EventHand style={{float:"left"}} eventCards={this.props.state.player.eventCards}/>
                         </div>
                         {skipEvolveButton()}
                         {proceedButton()}
