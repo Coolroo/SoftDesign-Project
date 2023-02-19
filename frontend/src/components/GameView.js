@@ -89,7 +89,7 @@ class GameView extends Component{
                     <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>
                         <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
-                            <EventHand eventCards={this.props.state.player.eventCards}/>
+                            <EventHand style={{float:"left"}} eventCards={this.props.state.player.eventCards}/>
                         </div>
                         {skipEvolveButton()}
                         {proceedButton()}

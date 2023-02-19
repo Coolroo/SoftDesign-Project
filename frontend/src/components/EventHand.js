@@ -9,7 +9,7 @@ class EventHand extends Component{
         });
         return(
             <React.Fragment>{
-                <div style={{display:"flex", justifyContent:"center", alignItems:"center"}}> 
+                <div className="traitCard" style={{display:"flex", justifyContent:"center", alignItems:"center"}}> 
                     {hand}
                 </div>
             }
