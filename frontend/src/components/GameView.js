@@ -5,42 +5,9 @@ import TraitHand from './TraitHand';
 import EventHand from './EventHand';
 import PlagueCard from './PlagueCard';
 import CountryDraftZone from './countries/CountryDraftZone';
+import PhaseIndicator from "./PhaseIndicator";
 
 class GameView extends Component{
-
-    namePhase()
-    {
-        var phase = this.props.state.game.playState
-        if (phase === "START_OF_TURN")
-        {
-            return "Start of Turn"
-        }
-        else if (phase === "DNA")
-        {
-            return "DNA Phase"
-        }
-        else if (phase === "COUNTRY")
-        {
-            return "Country Phase"
-        }
-        else if (phase === "EVOLVE")
-        {
-            return "Evolve Phase"
-        }
-        else if (phase === "INFECT")
-        {
-            return "Infect Phase"
-        }
-        else if (phase === "DEATH")
-        {
-            return "Death Phase"
-        }
-        else if (phase === "END_OF_TURN")
-        {
-            return "End of Turn"
-        }
-        return this.props.state.game.playState
-    }
 
     render() {
 
@@ -76,7 +43,7 @@ class GameView extends Component{
         return(
             <React.Fragment>{
                 <div style={{verticalAlign:"middle", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", marginTop: "0.5%"}}>
-                    <div className="joinGameButton" style={{marginBottom: "0.5%", position:"relative", width:"15%", "--color": this.props.state.game.currTurn.toLowerCase()}}>{this.namePhase()}</div>
+                    <PhaseIndicator state={this.props.state}/>
                     <div className="gameView"> 
                         <div style={{width: "40%", height: "50%", marginLeft:"auto"}}>
                             <Board kill={this.props.kill} infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry}/>
@@ -89,7 +56,7 @@ class GameView extends Component{
                     <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>
                         <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
-                            <EventHand style={{float:"left"}} eventCards={this.props.state.player.eventCards}/>
+                            <EventHand eventCards={this.props.state.player.eventCards}/>
                         </div>
                         {skipEvolveButton()}
                         {proceedButton()}
