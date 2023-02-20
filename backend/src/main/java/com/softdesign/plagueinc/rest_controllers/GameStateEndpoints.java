@@ -25,17 +25,13 @@ import com.softdesign.plagueinc.managers.GameStateManager;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChangePlagueDTO;
-import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCityDTO;
-import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseContinentDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCountryDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
-import com.softdesign.plagueinc.rest_controllers.DTOs.IndexDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerInfo;
-import com.softdesign.plagueinc.rest_controllers.DTOs.TakeCountryDTO;
 
 @RestController
 @CrossOrigin
@@ -306,67 +302,6 @@ public class GameStateEndpoints {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/chooseCity")
-    public ResponseEntity<Void> chooseCity(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseCityDTO chooseCityDTO){
-        try{
-            gameStateManager.makeCitySelection(gameStateId, chooseCityDTO.playerId(), chooseCityDTO.countryName(), chooseCityDTO.cityIndex());
-            broadcastGameState(gameStateId);
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PatchMapping("/chooseCountry")
-    public ResponseEntity<Void> chooseCountry(@RequestParam("gameStateId") String gameStateId, @RequestBody TakeCountryDTO takeCountryDTO){
-        try{
-            gameStateManager.makeCountrySelection(gameStateId, takeCountryDTO.playerId(), takeCountryDTO.countryName());
-            broadcastGameState(gameStateId);
-        }
-        catch(Exception e){
-            logger.error("Error with /chooseCountry endpoint, exception thrown: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PatchMapping("/chooseTraitCard")
-    public ResponseEntity<Void> chooseTraitCard(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
-        try{
-            gameStateManager.makeTraitCardSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PatchMapping("/chooseContinent")
-    public ResponseEntity<Void> chooseContinent(@RequestParam("gameStateId") String gameStateId, @RequestBody ChooseContinentDTO chooseContinentDTO){
-        try{
-            gameStateManager.makeContinentSelection(gameStateId, chooseContinentDTO.playerId(), chooseContinentDTO.continent());
-            broadcastGameState(gameStateId);
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PatchMapping("/chooseTraitSlot")
-    public ResponseEntity<Void> chooseTraitSlot(@RequestParam("gameStateId") String gameStateId, @RequestBody IndexDTO indexDTO){
-        try{
-            gameStateManager.makeTraitSlotSelection(gameStateId, indexDTO.playerId(), indexDTO.index());
-            
-        }
-        catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    //TODO: Implement endpoint to handle player changing disease type (ONLY IF GAMES PLAY STATE IS INITIALIZATION)
 
 
 /**
@@ -411,7 +346,7 @@ public class GameStateEndpoints {
             .map(card -> card.name())
             .toList();
 
-            List<String> eventCards = plague.getEventCards().stream().map(card -> card.name()).toList();
+            List<String> eventCards = plague.getEventCards().stream().map(card -> card.getName()).toList();
             return ResponseEntity.ok().body(new PlayerInfo(hand, eventCards, plague));
         }
         catch(Exception e){

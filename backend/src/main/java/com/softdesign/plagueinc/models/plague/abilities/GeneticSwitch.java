@@ -1,79 +1,62 @@
 package com.softdesign.plagueinc.models.plague.abilities;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
-import com.softdesign.plagueinc.models.gamestate.GameState;
+import java.util.List;
+import com.softdesign.plagueinc.models.gamestate.GameStateAction;
+import com.softdesign.plagueinc.models.gamestate.InputSelection;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitCardSelection;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitSlotSelection;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.TraitCard;
-
 public class GeneticSwitch extends Ability {
 
-    public GeneticSwitch() {
-        super("genetic_switch");
+    private GeneticSwitch(GameStateAction condition, GameStateAction action) {
+        super("genetic_switch", condition, action, List.of(InputSelection.TRAIT_CARD, InputSelection.TRAIT_SLOT));
     }
 
     @Override
-    public void resolveAbility(GameState gameState){
-        if(gameState.getPlayState() != PlayState.EVOLVE || gameState.isReadyToProceed()){
-            logger.warn("Player attempted to use Genetic Switch, but the game state is invalid (PlayState: {}, readyToProceed: {}", gameState.getPlayState(), gameState.isReadyToProceed());
-            return;
-        }
-        gameState.setPlayState(PlayState.ABILITY_ACTIVATION);
-        gameState.setSelectTraitCard(Optional.of(selectTraitCard(gameState)));
+    public Ability create(){
+        GameStateAction condition = (plague, gameState, list) -> {
+            if(gameState.getPlayState() != PlayState.EVOLVE){
+                logger.warn("Attempted to use ability {} in incorrect play state", this.name);
+                throw new IllegalAccessError();
+            }
+        };
 
-    }
+        GameStateAction action = (plague, gameState, list) -> {
+            //Convert Actions
+            int traitCardIndex = ((TraitCardSelection)(list.get(0))).getTraitCardSlot();
+            int traitSlotIndex = ((TraitSlotSelection)(list.get(1))).getTraitSlotIndex();
 
-    private CompletableFuture<TraitCard> selectTraitCard(GameState gameState){
-        CompletableFuture<TraitCard> cardFuture = new CompletableFuture<>();
-        cardFuture.whenComplete((result, ex) -> {
-            if(ex != null){
-                logger.error("Error with Genetic Switch Future EX: {}", ex.getMessage());
-                gameState.setSelectTraitCard(Optional.of(selectTraitCard(gameState)));
-            }
-            else{
-                if(!gameState.getCurrTurn().getHand().contains(result)){
-                    logger.warn("The selected card is not in the players hand");
-                    gameState.setSelectTraitCard(Optional.of(selectTraitCard(gameState)));
-                    return;
-                }
-                    gameState.setSelectTraitCard(Optional.empty());
-                    gameState.setSelectTraitSlot(Optional.of(selectTraitSlot(gameState, result)));
-            }
-        });
-        return cardFuture;
-    }
+            //Get Card/Slot
+            TraitCard traitCard = plague.getTraitCardFromHand(traitCardIndex);
+            TraitSlot traitSlot = plague.getTraitSlot(traitSlotIndex);
 
-    private CompletableFuture<Integer> selectTraitSlot(GameState gameState, TraitCard traitCard){
-        CompletableFuture<Integer> slotFuture = new CompletableFuture<>();
-        slotFuture.whenComplete((result, ex) -> {
-            if(ex != null){
-                logger.error("Error with Genetic Switch Trait Slot Future EX: {}", ex.getMessage());
-                gameState.setSelectTraitSlot(Optional.of(selectTraitSlot(gameState, traitCard)));
+            //If the slot doesn't have a card, throw exception
+            if(!traitSlot.hasCard()){
+                logger.warn("Attempted to use ability {} on empty trait slot", this.name);
+                throw new IllegalArgumentException();
             }
-            else{
-                TraitSlot slot = gameState.getCurrTurn().getTraitSlots().get(result);
-                int discount = 0;
-                if(slot.hasCard()){
-                    //TODO: Implement check to ensure player is not softlocked
-                    TraitCard card = slot.getCard();
-                    if(gameState.getCurrTurn().getDnaPoints() >= traitCard.cost() - card.cost()){
-                        slot.activate(gameState);
-                        discount = card.cost();
-                        gameState.getCurrTurn().drawTraitCard(card);
-                    }
-                    else{
-                        logger.error("Plague does not have enough DNA points to evolve this trait");
-                        gameState.setSelectTraitSlot(Optional.of(selectTraitSlot(gameState, traitCard)));
-                        return;
-                    }
-                }
-                gameState.getCurrTurn().evolveTrait(traitCard, result, discount);
-                gameState.setPlayState(PlayState.EVOLVE);
-                gameState.setReadyToProceed(true);
+            //Get the card in the slot
+            TraitCard slotCard = traitSlot.getCard();
+
+            //Calculate the discount
+            int discount = Math.max(0, traitCard.cost() - slotCard.cost()); 
+
+            //If the player doesn't have enough DNA, throw exception
+            if(plague.getDnaPoints() < (traitCard.cost() - discount)){
+                logger.warn("Attempted to use ability {} without enough DNA", this.name);
+                throw new IllegalArgumentException();
             }
-        });
-        return slotFuture;
+
+            //Remove the card from the slot
+            traitSlot.refundCard();
+
+            //Evolve the card into the slot and get the card back
+            plague.evolveTrait(traitCardIndex, traitSlotIndex, discount);
+            plague.drawTraitCard(slotCard);
+
+        };
+        return new GeneticSwitch(condition, action);
     }
 }

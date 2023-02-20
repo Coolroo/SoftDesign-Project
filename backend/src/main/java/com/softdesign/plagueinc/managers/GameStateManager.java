@@ -151,69 +151,6 @@ public class GameStateManager {
         games.get(gameStateId).playEventCard(eventCardIndex, plagueId);
     }
 
-    public void makeCitySelection(String gameStateId, UUID plagueId, String countryName, int cityIndex){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        if(countryName == null){
-            throw new IllegalArgumentException("Must provide country name");
-        }
-
-        games.get(gameStateId).makeCitySelection(plagueId, countryName, cityIndex);
-    }
-
-    public void makeCountrySelection(String gameStateId, UUID plagueId, String countryName){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        if(countryName == null){
-            throw new IllegalArgumentException("Must provide country name");
-        }
-
-        games.get(gameStateId).makeCountrySelection(plagueId, countryName);
-    }
-
-    public void makeTraitCardSelection(String gameStateId, UUID plagueId, int traitCardIndex){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-
-        games.get(gameStateId).makeTraitCardSelection(plagueId, traitCardIndex);
-    }
-
-    public void makeContinentSelection(String gameStateId, UUID plagueId, Continent continent){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        if(continent == null){
-            throw new IllegalArgumentException("Must provide continent");
-        }
-
-        games.get(gameStateId).makeContinentSelection(plagueId, continent);
-    }
-
-    public void makeTraitSlotSelection(String gameStateId, UUID plagueId, int slotIndex){
-        if(plagueId == null){
-            throw new IllegalArgumentException("must provide plague ID");
-        }
-        if(gameStateId == null){
-            throw new IllegalArgumentException("Must provide gameStateId");
-        }
-        games.get(gameStateId).makeTraitSlotSelection(plagueId, slotIndex);
-    }
-
     public GameState getGameState(String gameStateId){
         if(gameStateId == null){
             throw new IllegalArgumentException("Must provide gameStateId");

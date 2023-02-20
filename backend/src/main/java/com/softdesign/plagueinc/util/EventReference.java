@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import com.softdesign.plagueinc.models.events.EventCard;
-import com.softdesign.plagueinc.models.events.EventCard.GameStateAction;
+import com.softdesign.plagueinc.models.gamestate.GameStateAction;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 
 public class EventReference {

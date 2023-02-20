@@ -1,5 +1,10 @@
 package com.softdesign.plagueinc.models.gamestate.selection_objects;
 
-public record CountrySelection(String countryName) {
-    
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
+public class CountrySelection extends SelectionObject {
+    private String countryName;
 }
