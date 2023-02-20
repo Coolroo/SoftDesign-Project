@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
-import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.PlagueColor;

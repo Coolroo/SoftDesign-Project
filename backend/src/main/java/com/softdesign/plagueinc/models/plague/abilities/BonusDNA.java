@@ -11,11 +11,9 @@ public class BonusDNA extends Ability {
         super("bonus_dna", condition, action, List.of());
     }
 
-    @Override
-    public Ability create(){
+    public static BonusDNA create(){
         GameStateAction condition = (plague, gameState, inputs) -> {
             if(gameState.getPlayState() != PlayState.DNA){
-                logger.warn("Attempted to score bonus DNA in non-DNA phase");
                 throw new IllegalAccessError();
             }
         };

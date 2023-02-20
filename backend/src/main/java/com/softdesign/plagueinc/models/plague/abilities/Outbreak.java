@@ -13,10 +13,9 @@ public class Outbreak extends Ability {
         super("outbreak", condition, action, List.of(InputSelection.COUNTRY, InputSelection.COUNTRY));
     }
 
-    public Ability create(){
+    public static Ability create(){
         GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.INFECT){
-                logger.warn("Attempted to use ability {} in incorrect play state", this.name);
                 throw new IllegalAccessError();
             }
         };
@@ -29,7 +28,6 @@ public class Outbreak extends Ability {
             Country targetCountry = gameState.getCountry(targetSelection.getCountryName());
 
             if(targetCountry.isFull()){
-                logger.warn("Attempted to use ability {} on country that is full", this.name);
                 throw new IllegalArgumentException();
             }
 

@@ -1,6 +1,7 @@
 package com.softdesign.plagueinc.models.plague.abilities;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +43,20 @@ public abstract class Ability extends ConditionalAction {
 
     @Override
     public void resolveEffect(Plague plague, GameState gameState, List<SelectionObject> inputs){
+        if(this.activated){
+            logger.warn("Attempted to activate an already activated ability");
+            throw new IllegalAccessError();
+        }
         super.resolveEffect(plague, gameState, inputs);
         this.activated = true;
         
     }
 
-    public Ability create(){
-        return null;
+    public static Ability create(String type){
+        return Map.of("BonusDNA", BonusDNA.create(),
+         "GeneticSwitch", GeneticSwitch.create(),
+         "Outbreak", Outbreak.create(),
+         "RandomMutation", RandomMutation.create()).get(type);
     }
 
     public void resetAbility(){

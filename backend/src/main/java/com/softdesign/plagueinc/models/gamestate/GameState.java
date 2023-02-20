@@ -146,7 +146,8 @@ public class GameState {
         
         this.countriesToInfect = 0;
         this.choppingBlock = List.of();
-        this.eventPlayer = null;
+        this.eventPlayer = Optional.empty();
+        this.action = Optional.empty();
 
         initTraitDeck();
         initEventDeck();

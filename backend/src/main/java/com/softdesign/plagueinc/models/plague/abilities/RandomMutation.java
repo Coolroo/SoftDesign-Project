@@ -17,12 +17,10 @@ public class RandomMutation extends Ability {
         super("random_mutation", condition, action, List.of(InputSelection.TRAIT_SLOT));
     }
 
-    @Override
-    public Ability create(){
+    public static Ability create(){
 
         GameStateAction condition = (plague, gameState, list) -> {
             if(plague.getTraitSlots().stream().allMatch(TraitSlot::hasCard)){
-                logger.warn("Attempted to use ability {} when all trait slots are full", this.name);
                 throw new IllegalArgumentException();
             }
         };
@@ -31,7 +29,6 @@ public class RandomMutation extends Ability {
             int traitSlotIndex = ((TraitSlotSelection)list.get(0)).getTraitSlotIndex();
             TraitSlot slot = plague.getTraitSlot(traitSlotIndex);
             if(slot.hasCard()){
-                logger.warn("Attempted to use ability {} on a trait slot that already has a card", this.name);
                 throw new IllegalArgumentException();
             }
             TraitCard drawnCard = gameState.drawTraitCard();

@@ -14,11 +14,9 @@ public class GeneticSwitch extends Ability {
         super("genetic_switch", condition, action, List.of(InputSelection.TRAIT_CARD, InputSelection.TRAIT_SLOT));
     }
 
-    @Override
-    public Ability create(){
+    public static Ability create(){
         GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.EVOLVE){
-                logger.warn("Attempted to use ability {} in incorrect play state", this.name);
                 throw new IllegalAccessError();
             }
         };
@@ -34,7 +32,6 @@ public class GeneticSwitch extends Ability {
 
             //If the slot doesn't have a card, throw exception
             if(!traitSlot.hasCard()){
-                logger.warn("Attempted to use ability {} on empty trait slot", this.name);
                 throw new IllegalArgumentException();
             }
             //Get the card in the slot
@@ -45,7 +42,6 @@ public class GeneticSwitch extends Ability {
 
             //If the player doesn't have enough DNA, throw exception
             if(plague.getDnaPoints() < (traitCard.cost() - discount)){
-                logger.warn("Attempted to use ability {} without enough DNA", this.name);
                 throw new IllegalArgumentException();
             }
 
