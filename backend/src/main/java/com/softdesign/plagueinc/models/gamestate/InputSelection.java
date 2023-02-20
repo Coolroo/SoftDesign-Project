@@ -1,5 +1,9 @@
 package com.softdesign.plagueinc.models.gamestate;
 
 public enum InputSelection {
-    COUNTRY
+    CONTINENT,
+    COUNTRY,
+    CITY,
+    TRAIT_SLOT,
+    TRAIT_CARD
 }

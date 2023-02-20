@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CitySelection extends SelectionObject {
-    private int cityIndex;
-    private String countryName;
+public class TraitSlotSelection extends SelectionObject {
+    private int traitSlotIndex;
 }

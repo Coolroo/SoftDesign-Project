@@ -1,6 +1,7 @@
 package com.softdesign.plagueinc.models.plague.trait_slot;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -14,6 +15,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.softdesign.plagueinc.exceptions.TraitSlotFullException;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
+import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.abilities.Ability;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 
@@ -90,12 +93,12 @@ public class TraitSlot {
         return this.ability.get();
     }
 
-    public void activate(GameState gameState){
+    public void activate(GameState gameState, Plague plague, List<SelectionObject> inputs){
         if(this.card.isEmpty()){
             if(this.ability.isEmpty()){
                 throw new IllegalStateException("Cannot activate a slot that has nothing in it");
             }
-            this.ability.get().resolveAbility(gameState);
+            this.ability.get().resolveEffect(plague, gameState, inputs);
         }
         else{
             this.card = Optional.empty();
