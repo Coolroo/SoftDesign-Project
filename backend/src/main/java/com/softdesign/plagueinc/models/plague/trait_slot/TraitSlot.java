@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.softdesign.plagueinc.exceptions.TraitSlotFullException;
 import com.softdesign.plagueinc.models.gamestate.GameState;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.abilities.Ability;
 import com.softdesign.plagueinc.models.traits.TraitCard;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TraitSlot {

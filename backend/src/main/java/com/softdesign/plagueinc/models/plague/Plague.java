@@ -20,11 +20,11 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.GameState;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.util.PlagueReference;
 
 import lombok.Getter;

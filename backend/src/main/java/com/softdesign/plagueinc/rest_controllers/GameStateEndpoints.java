@@ -27,6 +27,7 @@ import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChangePlagueDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.ChooseCountryDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.CountryChoiceDTO;
+import com.softdesign.plagueinc.rest_controllers.DTOs.DoActionDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.EvolveDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
@@ -294,6 +295,18 @@ public class GameStateEndpoints {
     public ResponseEntity<Void> playEventCard(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayEventCardDTO playEventCardDTO){
         try{
             gameStateManager.playEventCard(gameStateId, playEventCardDTO.playerId(), playEventCardDTO.eventCardIndex());
+            broadcastGameState(gameStateId);
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/doAction")
+    public ResponseEntity<Void> doAction(@RequestParam("gameStateId") String gameStateId, @RequestBody DoActionDTO doActionDTO){
+        try{
+            gameStateManager.doAction(gameStateId, doActionDTO.playerId(), doActionDTO.inputs());
             broadcastGameState(gameStateId);
         }
         catch(Exception e){

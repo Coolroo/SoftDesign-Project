@@ -5,7 +5,7 @@ import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.GameStateAction;
 import com.softdesign.plagueinc.models.gamestate.InputSelection;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.CountrySelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.CountrySelection;
 
 public class Outbreak extends Ability {
 
