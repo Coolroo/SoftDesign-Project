@@ -16,7 +16,9 @@ class Lobby extends Component{
     }
 
     render(){
-
+        let exitLobby = () => {
+            console.log("EXIT CLICKED");
+        }
 
 
         return(<React.Fragment>{
@@ -32,6 +34,9 @@ class Lobby extends Component{
                 <div style={{verticalAlign: "middle", marginLeft:"45%", marginRight:"45%", position:"absolute", bottom:"0"}}>
                     <div className="lobbyIdTag">Lobby ID</div>
                     <div className="lobbyIdBox" >{this.state.state.lobbyId}</div>
+                </div>
+                <div style ={{verticalAlign: "left", marginLeft:"0%", position:"absolute", top:"0"}}>
+                    <div className="joinGameButton" onClick={exitLobby}>EXIT LOBBY</div>
                 </div>
             </div>
             }</React.Fragment>);
