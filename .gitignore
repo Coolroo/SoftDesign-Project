@@ -31,3 +31,5 @@ backend/nbdist/
 backend/.nb-gradle/
 backend/### VS Code ###
 backend/.vscode/
+backend/my.log
+backend/save_pid.txt

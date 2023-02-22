@@ -19,6 +19,8 @@ code {
 }
 
 .fullSize{
+  max-width: 100%;
+  max-height: 100%;
   width: 100%;
   height: 100%;
 }
@@ -43,8 +45,7 @@ code {
 .countryDraftZone{
   position: relative;
   border-radius: 1vw;
-  height: 30%;
-  width: 100%;
+  width: 60%;
 }
 
 .draftZoneCountrySlot{
@@ -92,9 +93,8 @@ code {
   float: left;
   position:absolute;
   bottom: 0;
-  width: 150%;
+  width: 80%;
   height: 60%;
-  margin-top: 20%;
 }
 
 .plagueCardTraitSlot{
@@ -340,4 +340,67 @@ code {
   height: 80%;
   z-index: 15;
   border-radius: 5%;
+}
+
+.eventDiscardPile{
+  position: absolute;
+  border: 2px solid;
+  border-color:rgb(31, 113, 87);
+  width: 20%;
+  height: 80%;
+  z-index: 15;
+  border-radius: 5%;
+}
+
+.tooltip {
+  position: absolute;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+  width: 100%;
+  height: 100%;
+  opacity: 100;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 400px;
+  background-color: rgb(225, 115, 115);
+  color: #211d1d;
+  text-align: center;
+  border-radius: 6px;
+  border-color: #000000;
+  border: 3px solid;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 100;
+  opacity: 100;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 100;
+  left: 0%;
+  top: 100%;
+}
+
+.pulseAnim {
+  --r: 255;
+  --g: 0;
+  --b: 0;
+  box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 1);
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(var(--r), var(--g), var(--b), 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(var(--r), var(--g), var(--b), 0);
+	}
 }

@@ -5,25 +5,28 @@ import * as SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import Lobby from "./lobby/Lobby";
 import Cookies from 'universal-cookie';
+import configdata from "../config.json";
 
 const postRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    mode: 'cors'
 }; 
 
 const patchRequestOptions = {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json'},
+    mode: 'cors' 
 };
 
-const SOCKET_URL = 'http://localhost:8080/plague-socket';
+const SERVER_URL = configdata.SERVER_URL;
 
-const SERVER_URL = "http://localhost:8080";
+const SOCKET_URL = SERVER_URL + '/plague-socket';
 
 const cookies = new Cookies();
 
 class GameController extends Component{
-    socket = null;
+
     state = {
         game: {
             board: {
@@ -39,8 +42,21 @@ class GameController extends Component{
                 BLUE: null,
                 YELLOW: null,
                 PURPLE: null
-            }
-
+            },
+            currTurn: null,
+            playState: null,
+            revealedCountries: [],
+            countryDiscard: [],
+            traitDiscard: [],
+            eventDiscard: [],
+            votesToStart: [],
+            readyToProceed: null,
+            suddenDeath: null,
+            turnOrder: [],
+            choppingBlock: [],
+            eventPlayer: null,
+            inputSelection: null
+            
         },
         player: {
             hand: [],
@@ -55,9 +71,19 @@ class GameController extends Component{
             }
         },
        playerId: null,
-       lobbyId: null
+       lobbyId: null,
+       socket: null
         
     };
+
+    constructor(){
+        super();
+        window.addEventListener("beforeunload", (ev) => {
+            if(this.state.socket){
+                this.state.socket.close();
+            }
+        })
+    }
     /**
      * This function is called when the component is first mounted.
      * It checks if the user has a cookie for a lobbyId and playerId.
@@ -143,7 +169,9 @@ class GameController extends Component{
                     suddenDeath: data.suddenDeath,
                     traitDiscard: data.traitDiscard,
                     turnOrder: data.turnOrder,
-                    votesToStart: data.votesToStart
+                    votesToStart: data.votesToStart,
+                    choppingBlock: data.choppingBlock,
+                    inputSelection: data.inputSelection
                 }
             };
         });
@@ -186,7 +214,7 @@ class GameController extends Component{
     }
 
     async loadLobby(id){
-        if(this.socket != null){
+        if(this.state.socket != null){
             console.log("Cannot join another lobby if you are already in one");
         }
         return this.getGameState(id)
@@ -198,7 +226,8 @@ class GameController extends Component{
                             ...prevState,
                             lobbyId: id
                         }
-                    }, () => {
+                    }, 
+                    () => {
                         cookies.set("lobbyId", id, { path: '/' });
                         this.updateGameState(JSON.parse(gameState)).then(() => {
                             console.log("Game loaded: " + JSON.stringify(gameState));
@@ -212,9 +241,13 @@ class GameController extends Component{
     }
 
     initWebSocket(){
-        var sock = new SockJS(SOCKET_URL);
+        var sock = new SockJS(SOCKET_URL, 'echo-protocol');
         var stompClient = Stomp.over(sock);
-        this.socket = stompClient;
+        this.setState((prevState) => {
+            return {...prevState,
+            socket: stompClient
+            }
+        });
         stompClient.connect({}, frame => {
                 
                     stompClient.subscribe("/games/gameState/"+this.state.lobbyId, (body) => {
@@ -317,7 +350,7 @@ class GameController extends Component{
             return;
         }
         console.log("Infecting " + countryName);
-        this.patchRequest("/infect", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
+        this.patchRequest((this.state.game.inputSelection === "COUNTRY" ? "/chooseCountry" : "/infect"), this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName}));
     }
 
     kill(countryName){
@@ -337,14 +370,14 @@ class GameController extends Component{
         }
 
         const lobbyPage = () => {
-            if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState !== undefined){
+            if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != null){
                 return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state}  />
             }
         }
         
         // eslint-disable-next-line
         const gamePage = () => {
-            if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState !== undefined){
+            if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState != null){
                 return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
             }
             

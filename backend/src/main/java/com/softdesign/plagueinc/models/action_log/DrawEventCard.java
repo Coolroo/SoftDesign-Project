@@ -14,7 +14,6 @@ public class DrawEventCard extends ActionLog {
 
     public DrawEventCard(PlayState state, Plague plague, EventCard card) {
         super(state);
-        //TODO Auto-generated constructor stub
         this.plague = plague;
         this.card = card;
     }

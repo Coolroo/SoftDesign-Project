@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +96,24 @@ public class Country {
         plague.placePlagueToken();
     }
 
+    public void removePlague(Plague plague){
+        if(!getInfectionByPlayer().containsKey(plague)){
+            throw new IllegalStateException("Plague " + plague.getPlayerId() + " is not present in this country!");
+        }
+        AtomicBoolean removed = new AtomicBoolean(false);
+        IntStream.range(0, getCities().size()).forEach(index -> {
+            if(getCities().get(index).isPresent() && getCities().get(index).get().equals(plague) && removed.compareAndSet(false, true)){
+                getCities().set(index, Optional.empty());
+            }
+        });
+        if(removed.get()){
+            plague.returnPlagueTokens(1);
+        }
+        else{
+            throw new IllegalStateException("Plague " + plague.getPlayerId() + " is not present in this country!");
+        }
+    }
+
     @JsonIgnore
     public List<Plague> getControllers(){
         if(isEmpty()){
@@ -117,7 +137,7 @@ public class Country {
 
     @Override
     public int hashCode() {
-        return Objects.hash(logger, countryName, continent, restriction, travelTypes, cities);
+        return Objects.hash(countryName, continent, restriction, travelTypes);
     }
 
 

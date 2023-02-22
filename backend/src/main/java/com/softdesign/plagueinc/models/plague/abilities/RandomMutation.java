@@ -1,55 +1,44 @@
 package com.softdesign.plagueinc.models.plague.abilities;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
-import com.softdesign.plagueinc.models.gamestate.GameState;
-import com.softdesign.plagueinc.models.gamestate.PlayState;
+import com.softdesign.plagueinc.models.gamestate.GameStateAction;
+import com.softdesign.plagueinc.models.gamestate.InputSelection;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitSlotSelection;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.TraitCard;
+
 
 public class RandomMutation extends Ability {
 
     private static final int DISCOUNT = 3;
 
-    public RandomMutation() {
-        super("random_mutation");
+    public RandomMutation(GameStateAction condition, GameStateAction action) {
+        super("random_mutation", condition, action, List.of(InputSelection.TRAIT_SLOT));
     }
 
-    @Override
-    public void resolveAbility(GameState gameState){
-        TraitCard card = gameState.drawTraitCard();
-        if(gameState.getCurrTurn().getDnaPoints() >= card.cost() - DISCOUNT){
-            gameState.setPlayState(PlayState.ABILITY_ACTIVATION);
-            gameState.setSelectTraitSlot(Optional.of(selectTraitSlotFuture(gameState, card)));
-        }
-        else{
-            gameState.getCurrTurn().drawTraitCard(card);
-            gameState.setReadyToProceed(true);
-        }
-    }
+    public static Ability create(){
 
-    public CompletableFuture<Integer> selectTraitSlotFuture(GameState gameState, TraitCard traitCard){
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        future.whenComplete((result, ex) -> {
-            if(ex != null){
-                logger.error("Error with Random Mutation Future EX: {}", ex.getMessage());
-                gameState.setSelectTraitSlot(Optional.of(selectTraitSlotFuture(gameState, traitCard)));
+        GameStateAction condition = (plague, gameState, list) -> {
+            if(plague.getTraitSlots().stream().allMatch(TraitSlot::hasCard)){
+                throw new IllegalArgumentException();
+            }
+        };
+
+        GameStateAction action = (plague, gameState, list) -> {
+            int traitSlotIndex = ((TraitSlotSelection)list.get(0)).getTraitSlotIndex();
+            TraitSlot slot = plague.getTraitSlot(traitSlotIndex);
+            if(slot.hasCard()){
+                throw new IllegalArgumentException();
+            }
+            TraitCard drawnCard = gameState.drawTraitCard();
+            if(plague.getDnaPoints() < drawnCard.cost() - DISCOUNT){
+                plague.drawTraitCard(drawnCard);
             }
             else{
-                TraitSlot slot = gameState.getCurrTurn().getTraitSlots().get(result);
-                if(slot.hasCard()){
-                    logger.warn("Plague attempted to use Random Evolve on a slot that already has {} in it", slot.getCard().name());
-                    gameState.setSelectTraitSlot(Optional.of(selectTraitSlotFuture(gameState, traitCard)));
-                    return;
-                }
-                else{
-                    gameState.getCurrTurn().evolveTrait(traitCard, result, DISCOUNT);
-                    gameState.setPlayState(PlayState.EVOLVE);
-                    gameState.setReadyToProceed(true);
-                }
+                plague.evolveTrait(drawnCard, traitSlotIndex, DISCOUNT);
             }
-        });
-        return future;
+        };
+        return new RandomMutation(condition, action);
     }
 }

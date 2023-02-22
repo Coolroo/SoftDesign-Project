@@ -1,22 +1,21 @@
 package com.softdesign.plagueinc.models.events;
 
-import com.softdesign.plagueinc.models.gamestate.GameState;
-import com.softdesign.plagueinc.models.plague.Plague;
+import java.util.List;
 
-public record EventCard(String name, GameStateAction condition, GameStateAction effect) {
+import com.softdesign.plagueinc.models.gamestate.ConditionalAction;
+import com.softdesign.plagueinc.models.gamestate.GameStateAction;
+import com.softdesign.plagueinc.models.gamestate.InputSelection;
 
-    public void condition(Plague plague, GameState gameState){
-        condition.op(plague, gameState);
-    }
+import lombok.Getter;
 
-    public void resolveEffect(Plague plague, GameState gameState){
-        effect.op(plague, gameState);
-    }
-    
-    public static interface GameStateAction {
+@Getter
+public class EventCard extends ConditionalAction {
 
-        public void op(Plague player, GameState gameState);
-    
+    private String name;
+
+    public EventCard(String name, GameStateAction condition, GameStateAction effect, List<InputSelection> requiredInputs){
+        super(effect, effect, requiredInputs);
+        this.name = name;
     }
 
     @Override

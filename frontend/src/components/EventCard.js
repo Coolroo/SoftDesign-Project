@@ -6,7 +6,7 @@ class EventCard extends Component{
         return(
             <React.Fragment>{
                     <div>
-                        <img src={`/events/${this.props.cardName}.png`} className="card" alt="img"/>
+                        <img src={`/events/${this.props.cardName}.png`} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}} alt="img"/>
                     </div>   
                 }
             </React.Fragment>
