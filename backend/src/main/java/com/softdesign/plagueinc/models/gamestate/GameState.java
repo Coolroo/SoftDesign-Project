@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,7 +34,6 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
@@ -113,24 +111,9 @@ public class GameState {
 
     //Event Futures
 
-    private InputSelection inputSelection;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<CitySelection>> citySelectionFuture;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Country>> countrySelectionFuture;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<TraitCard>> selectTraitCard;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Continent>> selectContinent;
-
-    @JsonIgnore
-    private Optional<CompletableFuture<Integer>> selectTraitSlot;
-
     private Optional<Plague> eventPlayer;
+
+    private Optional<ConditionalAction> action;
 
     private static final int MAX_PLAYERS = 4;
 
@@ -160,11 +143,11 @@ public class GameState {
         this.actions = new Stack<>();
         this.readyToProceed = false;
         this.suddenDeath = false;
-        this.inputSelection = null;
         
         this.countriesToInfect = 0;
         this.choppingBlock = List.of();
         this.eventPlayer = Optional.empty();
+        this.action = Optional.empty();
 
         initTraitDeck();
         initEventDeck();
@@ -376,31 +359,9 @@ public class GameState {
         else{
             placeCountry(respawnCountry);
         }
-        this.inputSelection = InputSelection.COUNTRY;
+        //TODO: Respawn ConditionalAction
         plague.spendDnaPoints(RESPAWN_PENALTY);
-        initRespawnFuture(plague);
 
-    }
-
-    private void initRespawnFuture(Plague plague){
-        CompletableFuture<Country> selectCountry = new CompletableFuture<>();
-        selectCountry.whenComplete((country, ex) -> {
-            if(ex != null){
-                logger.error("Error selecting country", ex);
-                return;
-            }
-            if(country.isFull()){
-                logger.warn("[DNA] Plague ({}) attempted to respawn in a full country", currTurn.getColor());
-                initRespawnFuture(plague);
-                return;
-            }
-            logger.info("[DNA] Plague ({}) has respawned in {}", currTurn.getColor(), country.getCountryName());
-            country.infectCountry(plague);
-            this.inputSelection = null;
-            setReadyToProceed(true);
-            this.countrySelectionFuture = Optional.empty();
-        });
-        this.countrySelectionFuture = Optional.of(selectCountry);
     }
 
     //DNA PHASE
@@ -850,7 +811,7 @@ public class GameState {
     //Util
 
     @JsonIgnore
-    private boolean isPlagueEradicated(Plague plague){
+    public boolean isPlagueEradicated(Plague plague){
         return this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
@@ -860,7 +821,7 @@ public class GameState {
         .noneMatch(thisPlague -> thisPlague.equals(plague));
     }
 
-    private boolean unableToMove(Plague plague){
+    public boolean unableToMove(Plague plague){
         return this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
@@ -876,7 +837,7 @@ public class GameState {
      *
      * @docauthor Trelent
      */
-    private boolean canInfectCountry(Country country, Plague plague){
+    public boolean canInfectCountry(Country country, Plague plague){
 
         //If the country is already full
         if(country.isFull()){
@@ -939,10 +900,6 @@ public class GameState {
             logger.warn("Attempted to validate state, but there is an event player present ({})", this.eventPlayer.get().getColor());
             throw new IllegalStateException("Event Player Present");
         }
-        if(this.inputSelection != null){
-            logger.warn("Attempted to validate state, but there is an input selection present ({})", this.inputSelection);
-            throw new IllegalStateException("Input Selection Present");
-        }
     }
 
     @JsonIgnore
@@ -982,79 +939,10 @@ public class GameState {
         Plague plague = getPlague(playerId);
         EventCard eventCard = plague.getEventCards().get(eventCardIndex);
         if(drawnThisTurn.stream().anyMatch(action -> action.getCard().equals(eventCard))){
-            logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.name());
+            logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.getName());
             throw new IllegalAccessError();
         }
-        eventCard.condition(plague, this);
-        eventCard.resolveEffect(plague, this);
-    }
-
-    public void makeCitySelection(UUID playerId, String countryName, int cityIndex){
-        //TODO: Implement input selection checking
-        
-        if(this.citySelectionFuture.isEmpty()){
-            logger.warn("Player attempted to make a city selection, but there is no future to make a selection");
-            throw new IllegalStateException();
-        }
-
-        Country country = getCountry(countryName);
-
-        this.citySelectionFuture.get().complete(new CitySelection(country, cityIndex));
-    }
-
-    public void makeCountrySelection(UUID playerId, String countryName){
-        validateInput(InputSelection.COUNTRY);
-        
-        if(this.countrySelectionFuture.isEmpty()){
-            logger.warn("Player attempted to make a country selection, but there is no future to make a selection");
-            throw new IllegalStateException();
-        }
-        
-        Country country = getCountry(countryName);
-        this.countrySelectionFuture.get().complete(country);
-    }
-
-    public void makeTraitCardSelection(UUID playerId, int traitCardSlot){
-        //TODO: Implement input selection checking
-        
-        if(this.selectTraitCard.isEmpty()){
-            logger.warn("Player attempted to make a trait selection, but there is no future to make a selection");
-            throw new IllegalStateException();
-        }
-
-        TraitCard card = eventPlayer.get().getHand().get(traitCardSlot);
-        
-
-        this.selectTraitCard.get().complete(card);
-    }
-
-    public void makeContinentSelection(UUID playerId, Continent continent){
-        //TODO: Implement input selection checking
-
-        if(this.selectContinent.isEmpty()){
-            logger.warn("Player attempted to make a continent selection, but there is no future to make a selection");
-            throw new IllegalStateException();
-        }
-
-        this.selectContinent.get().complete(continent);
-    }
-
-    public void makeTraitSlotSelection(UUID playerId, int slotIndex){
-        //TODO: Implement input selection checking
-        
-        if(this.selectTraitSlot.isEmpty()){
-            logger.warn("Player attempted to make a trait slot selection, but there is no future to make a selection");
-            throw new IllegalStateException();
-        }
-
-        this.selectTraitSlot.get().complete(slotIndex);
-    }
-
-    private void validateInput(InputSelection inputSelection){
-        if(inputSelection != this.inputSelection){
-            logger.warn("Attempting to validate Input Selection, but {} != {}", inputSelection, this.inputSelection);
-            throw new IllegalStateException("invalid input selection");
-        }
+        //TODO: Implement event logic
     }
 
 }

@@ -1,25 +1,26 @@
 package com.softdesign.plagueinc.models.plague.abilities;
 
-import com.softdesign.plagueinc.models.gamestate.GameState;
+import java.util.List;
+
+import com.softdesign.plagueinc.models.gamestate.GameStateAction;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 
 public class BonusDNA extends Ability {
 
-    public BonusDNA() {
-        super("bonus_dna");
+    private BonusDNA(GameStateAction condition, GameStateAction action) {
+        super("bonus_dna", condition, action, List.of());
     }
 
-    @Override
-    public void resolveAbility(GameState gameState){
-        if(gameState.getPlayState() != PlayState.DNA){
-            logger.warn("Attempted to score bonus DNA in non-DNA phase");
-            throw new IllegalAccessError();
-        }
-        if(activated){
-            logger.warn("Attempted to score bonus DNA more than once per turn");
-            throw new IllegalAccessError();
-        }
-        gameState.getCurrTurn().addDnaPoints(1);
-        activated = true;
+    public static BonusDNA create(){
+        GameStateAction condition = (plague, gameState, inputs) -> {
+            if(gameState.getPlayState() != PlayState.DNA){
+                throw new IllegalAccessError();
+            }
+        };
+
+        GameStateAction action = (plague, gameState, inputs) -> {
+            gameState.getCurrTurn().addDnaPoints(1);
+        };
+        return new BonusDNA(condition, action);
     }
 }

@@ -20,6 +20,7 @@ import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.Trait;
 import com.softdesign.plagueinc.models.traits.TraitCard;
@@ -150,11 +151,8 @@ public class Plague {
         hand.forEach(card -> drawTraitCard(card));
     }
 
-    public void activateTraitSlot(int slot, GameState gameState){
-        if(slot >= getTraitSlots().size()){
-            throw new IndexOutOfBoundsException("Index is greater than the number of slots that exist");
-        }
-        TraitSlot traitSlot = getTraitSlots().get(slot);
+    public void activateTraitSlot(int slot, GameState gameState, List<SelectionObject> selectionObjects){
+        TraitSlot traitSlot = getTraitSlot(slot);
         try{
             TraitCard card = traitSlot.getCard();
             List<Trait> traits = card.traits();
@@ -172,7 +170,7 @@ public class Plague {
             }
         }
         finally{
-            traitSlot.activate(gameState);
+            traitSlot.activate(gameState, this, selectionObjects);
         }
         
     }
@@ -182,22 +180,16 @@ public class Plague {
     }
 
     public TraitCard evolveTrait(int cardIndex, int traitSlotIndex, int dnaDiscount){
-        if(cardIndex >= getHand().size() || cardIndex < 0){
-            throw new IllegalArgumentException("Cannot evolve a card that is out of bounds (provided index=" + cardIndex + ", size of hand=" + getHand().size() + ")");
-        }
-        return evolveTrait(getHand().get(cardIndex), traitSlotIndex, dnaDiscount);
+        return evolveTrait(getTraitCardFromHand(cardIndex), traitSlotIndex, dnaDiscount);
     }
 
     public TraitCard evolveTrait(TraitCard card, int traitSlotIndex, int dnaDiscount){
-        if(traitSlotIndex >= getTraitSlots().size()){
-            throw new IllegalArgumentException("Cannot evolve a card into a slot with invalid index (provided index=" + traitSlotIndex + ", size of hand=" + getTraitSlots().size() + ")");
-        }
         
         if(getDnaPoints() < card.cost() - dnaDiscount){
             throw new IllegalStateException("Plague " + getPlayerId() + " does not have enough DNA to evolve " + card.name() + " (DNA=" + getDnaPoints() + ", required DNA =" + (card.cost() - dnaDiscount));
         }
 
-        TraitSlot traitSlot = getTraitSlots().get(traitSlotIndex);
+        TraitSlot traitSlot = getTraitSlot(traitSlotIndex);
 
         if(traitSlot.hasCard()){
             throw new IllegalStateException("Cannot evolve a card into a slot that already has a card");
@@ -211,20 +203,24 @@ public class Plague {
     }
 
     public void useEventCard(int eventCardIndex, GameState gameState){
-        if(eventCardIndex < 0 || eventCardIndex >= getEventCards().size()){
-            throw new IllegalArgumentException("Cannot play event card which has an index which is out of bounds (eventCardIndex=" + eventCardIndex + ", eventCard Size=" + getEventCards().size() + ")");
-        }
-        EventCard event = getEventCards().get(eventCardIndex);
+        //TODO: Implement this method
         
-        try{
-            event.resolveEffect(this, gameState);
-            getEventCards().remove(eventCardIndex);
-        }
-        //TODO: Implement error checking
-        catch(Exception e){
+    }
 
+    //UTIL
+
+    public TraitCard getTraitCardFromHand(int traitCardIndex){
+        if(traitCardIndex >= getHand().size() || traitCardIndex < 0){
+            throw new IllegalArgumentException("Cannot get a card from the hand that is out of bounds (provided index=" + traitCardIndex + ", size of hand=" + getHand().size() + ")");
         }
-        
+        return getHand().get(traitCardIndex);
+    }
+
+    public TraitSlot getTraitSlot(int traitSlotIndex){
+        if(traitSlotIndex >= getTraitSlots().size() || traitSlotIndex < 0){
+            throw new IllegalArgumentException("Cannot get a trait slot that is out of bounds (provided index=" + traitSlotIndex + ", size of hand=" + getTraitSlots().size() + ")");
+        }
+        return getTraitSlots().get(traitSlotIndex);
     }
 
 
