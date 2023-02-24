@@ -200,6 +200,10 @@ class GameController extends Component{
         });  
     }
 
+    async exitLobby(){
+
+    }
+    
     async patchRequest(endpoint, lobbyId, body){
         var patchBody = {
             ...patchRequestOptions,

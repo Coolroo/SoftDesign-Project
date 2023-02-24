@@ -18,6 +18,7 @@ class Lobby extends Component{
     render(){
         let exitLobby = () => {
             console.log("EXIT CLICKED");
+            this.props.exitGame();
         }
 
 
