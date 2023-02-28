@@ -68,11 +68,17 @@ class Board extends Component{
         })
 
         const handleDrop = (data) => {
-            this.props.placeCountry(data.country);
+            if(data.country != ''){
+                this.props.placeCountry(data.country);
+            }
+            else{
+                this.props.playEvent(data.event)
+            }
+
         };
 
         return(
-            <Droppable types={['country']} onDrop={handleDrop}>
+            <Droppable types={['country', 'event']} onDrop={handleDrop}>
                 <div className="board">
                     
                     <img src={`/Board.JPG`} alt="boardimg" className="curvedBorder fullSize"/>

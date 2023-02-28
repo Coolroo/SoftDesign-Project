@@ -326,6 +326,12 @@ class GameController extends Component{
         this.patchRequest("/countryChoice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName, choice: "PLAY"}));
     }
 
+    playEvent(eventName){
+        console.log("Playing event: " + eventName);
+        // do not have correct eventCardIndex from card name
+        //this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: 0}));
+    }
+
     skipEvolve(){
         if(this.state.lobbyId === null){
             console.log("No lobby ID");
@@ -378,7 +384,7 @@ class GameController extends Component{
         // eslint-disable-next-line
         const gamePage = () => {
             if(this.state.lobbyId != null && this.state.game.playState !== "INITIALIZATION" && this.state.game.playState != null){
-                return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)}/>
+                return <GameView kill={(countryName) => this.kill(countryName)} infect={(countryName) => this.infect(countryName)} evolve={(traitCard, traitSlot) => this.evolve(traitCard, traitSlot)} skipEvolve={() => this.skipEvolve()} proceed={() => this.proceed()} state={this.state} discard={(countryName) => this.discard(countryName)} placeCountry={(countryName) => this.placeCountry(countryName)} playEvent={(eventName) => this.playEvent(eventName)}/>
             }
             
         }
