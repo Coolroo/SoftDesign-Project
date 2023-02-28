@@ -15,7 +15,7 @@ class DraftDiscardPile extends Component{
     render() {
         let pile = [];
         if(this.props.state.game.countryDiscard.length > 0) {
-            pile.push (<img alt="" width='100%' src={"/countries/{countrycardback}.png"}/>)
+            pile.push (<img alt="" width='100%' src={"/countries/countrycardback.png"}/>)
         }
 
         let discardList = [];
