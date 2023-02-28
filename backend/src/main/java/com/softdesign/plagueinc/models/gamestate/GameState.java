@@ -950,6 +950,8 @@ public class GameState {
 
         Plague plague = getPlague(playerId);
 
+        //TODO: try and catch here, if successful clear avction and eventPlayer
+
         if(action.isPresent() && eventPlayer.get().equals(plague)){
             action.get().resolveEffect(plague, gameState, selectionObjects);
         }
