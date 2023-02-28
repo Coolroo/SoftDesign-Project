@@ -1,6 +1,7 @@
 package com.softdesign.plagueinc.managers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.gamestate.GameState;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
 
@@ -148,6 +150,19 @@ public class GameStateManager {
             throw new IllegalArgumentException("Must provide gameStateId");
         }
         games.get(gameStateId).playEventCard(eventCardIndex, plagueId);
+    }
+
+    public void resolveAction(String gameStateId, UUID plagueId, List<SelectionObject> inputSelections){
+        if(plagueId == null){
+            throw new IllegalArgumentException("must provide plague ID");
+        }
+        if(gameStateId == null){
+            throw new IllegalArgumentException("Must provide gameStateId");
+        }
+        if(inputSelections == null){
+            throw new IllegalArgumentException("Must provide List of SelectionObjects");
+        }
+        games.get(gameStateId).resolveAction(getGameState(gameStateId), plagueId, inputSelections);
     }
 
     public GameState getGameState(String gameStateId){

@@ -34,6 +34,7 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
@@ -945,5 +946,17 @@ public class GameState {
         //TODO: Implement event logic
     }
 
+    public void resolveAction(GameState gameState, UUID playerId, List<SelectionObject> selectionObjects){
+
+        Plague plague = getPlague(playerId);
+
+        if(action.isPresent() && eventPlayer.get().equals(plague)){
+            action.get().resolveEffect(plague, gameState, selectionObjects);
+        }
+        else{
+            logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
+            throw new IllegalAccessError();
+        }
+    }
 }
     

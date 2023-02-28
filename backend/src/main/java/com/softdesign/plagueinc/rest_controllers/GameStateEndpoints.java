@@ -32,6 +32,7 @@ import com.softdesign.plagueinc.rest_controllers.DTOs.JoinGameDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayEventCardDTO;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerId;
 import com.softdesign.plagueinc.rest_controllers.DTOs.PlayerInfo;
+import com.softdesign.plagueinc.rest_controllers.DTOs.ResolveActionDTO;
 
 @RestController
 @CrossOrigin
@@ -354,6 +355,29 @@ public class GameStateEndpoints {
         }
         
         
+        
+    }
+
+/**
+ * The Patch Mapping for /resolveEffect
+ *
+ * @param gameStateId String
+ * @param playerId PlayerID
+ *
+ * @return Integer
+ *
+ * @docauthor Nick Lee
+ */
+    @PatchMapping("/resolveEffect")
+    public ResponseEntity<Integer> resolveEffect(@RequestParam("gameStateId") String gameStateId, @RequestBody ResolveActionDTO resolveActionDTO){
+        try{
+            gameStateManager.resolveAction(gameStateId, resolveActionDTO.playerId(), resolveActionDTO.inputSelections());
+            broadcastGameState(gameStateId);
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
         
     }
 
