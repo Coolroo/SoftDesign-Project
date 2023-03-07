@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.concurrent.CompletableFuture;
 
+import com.softdesign.plagueinc.models.action_log.KillCountryAction;
+import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
 import com.softdesign.plagueinc.models.gamestate.GameStateAction;
+import com.softdesign.plagueinc.models.gamestate.InputSelection;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
+import com.softdesign.plagueinc.models.plague.Plague;
 
 public class EventReference {
 
@@ -26,16 +30,35 @@ public class EventReference {
     //If another player fails to kill a Country you infect, replace 1 of their Tokens in that Country with your own
     // ignoring climate
     public static EventCard absorb(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState, list) -> {};
+
+        //Check whether a kill action was succesful , if unsuccessful proceed
+        GameStateAction condition = (plague, gameState, list) -> {
+            if(!(gameState.getActions().peek() instanceof KillCountryAction)){
+                throw new IllegalStateException("Can't play this card at the moment");
+            } 
+            KillCountryAction action = (KillCountryAction) gameState.getActions().peek();
+            Country attacked = action.getCountry();
+            if(action.isSuccess()){
+                throw new IllegalStateException("Can't play this card at the moment");
+            }
+        };
         
-        GameStateAction event = (plague, gameState, list) -> {};
-        return new EventCard("absorb", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {
+            KillCountryAction action = (KillCountryAction) gameState.getActions().peek();
+            Country attacked = action.getCountry();
+            Plague currPlayer = gameState.getCurrTurn();
+                    attacked.removePlague(currPlayer);//remove the players token from the country
+                    attacked.infectCountry(plague);// add the card players token to the city
+        };
+        return new EventCard("absorb", condition, event, List.of());
     }// end of absorb
 
+    
     public static EventCard birdMigration(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
+        GameStateAction condition = (plague, gameState) -> {
+            
+        };
         GameStateAction event = (plague, gameState) -> {};
         return new EventCard("bird_migration", condition, event);
     }//end of birdMigration
