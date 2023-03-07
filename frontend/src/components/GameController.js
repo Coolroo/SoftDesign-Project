@@ -157,6 +157,7 @@ class GameController extends Component{
             return {
                 ...prevState,
                 game: {
+                    action: data,
                     board: data.board,
                     countryDiscard: data.countryDiscard,
                     currTurn: data.currTurn,
@@ -329,6 +330,7 @@ class GameController extends Component{
     playEvent(eventIndex){
         console.log("Playing event: " + eventIndex);
         this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: eventIndex}));
+        console.log(this.props.state.game)
     }
 
     skipEvolve(){
