@@ -73,6 +73,10 @@ code {
   border-radius: 10px;
 }
 
+.traitCard:hover{
+  width: 10%;
+}
+
 .boardDNASlot{
   position: absolute;
   width: 2%;
