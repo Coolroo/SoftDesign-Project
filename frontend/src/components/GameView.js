@@ -10,7 +10,6 @@ import PhaseIndicator from "./PhaseIndicator";
 class GameView extends Component{
 
     render() {
-
         let proceed = () => {
             this.props.proceed();
         }    
@@ -46,7 +45,7 @@ class GameView extends Component{
                     <PhaseIndicator state={this.props.state}/>
                     <div className="gameView"> 
                         <div style={{width: "40%", height: "50%", marginLeft:"auto"}}>
-                            <Board kill={this.props.kill} infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry}/>
+                            <Board kill={this.props.kill} infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry} playEvent={this.props.playEvent}/>
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "auto", marginLeft:"2%", position:"relative", width:"40%"}}>
                             <CountryDraftZone state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
