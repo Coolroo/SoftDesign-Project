@@ -10,6 +10,8 @@ import PhaseIndicator from "./PhaseIndicator";
 class GameView extends Component{
 
     render() {
+        console.log(this.props.state.player);
+
         let proceed = () => {
             this.props.proceed();
         }    

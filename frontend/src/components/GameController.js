@@ -326,10 +326,9 @@ class GameController extends Component{
         this.patchRequest("/countryChoice", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, countryName: countryName, choice: "PLAY"}));
     }
 
-    playEvent(eventName){
-        console.log("Playing event: " + eventName);
-        // do not have correct eventCardIndex from card name
-        //this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: 0}));
+    playEvent(eventIndex){
+        console.log("Playing event: " + eventIndex);
+        this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: eventIndex}));
     }
 
     skipEvolve(){
