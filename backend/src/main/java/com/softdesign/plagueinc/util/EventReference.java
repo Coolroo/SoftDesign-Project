@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.concurrent.CompletableFuture;
 
+import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
+import com.softdesign.plagueinc.models.action_log.CountryAction;
 import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
@@ -53,14 +55,36 @@ public class EventReference {
         return new EventCard("absorb", condition, event, List.of());
     }// end of absorb
 
-    
+    //When another player places a country card, place one of your tokens in that country
     public static EventCard birdMigration(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        
+        GameStateAction condition = (plague, gameState, list) -> {
+
+            // Check if the card is a CountryAction
+            if(!(gameState.getActions().peek() instanceof CountryAction)){
+                throw new IllegalStateException("Can't play this card");     
+            }
             
+            CountryAction playerAction = (CountryAction) gameState.getActions().peek();
+
+            //Check if the player played the card
+            if(playerAction.getCountryChoice() == CountryChoice.DISCARD){
+                throw new IllegalStateException("Can't play this card");
+            }
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("bird_migration", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {
+
+            try{
+                CountryAction cardPlaced = (CountryAction) gameState.getActions().peek();
+                cardPlaced.getCountry().infectCountry(plague);
+            } catch(Exception ex){
+                // problem if they don't have enough tokens
+            }
+
+            
+
+        };
+        return new EventCard("bird_migration", condition, event, List.of());
     }//end of birdMigration
 
     public static EventCard bombedInfectedCities(){
