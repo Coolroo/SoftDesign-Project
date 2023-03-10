@@ -117,9 +117,9 @@ public class EventReference {
 
     public static EventCard divineIntervention(){
         //TODO: Implement condition & event, & List.of()
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("divine_intervention", condition, event);
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("divine_intervention", condition, event, List.of());
     }//end of divineIntervention
 
     public static EventCard dnaFlow(){
@@ -362,7 +362,7 @@ public class EventReference {
     public static EventCard rioting(){
         //TODO: Implement condition & event
         GameStateAction condition = (plague, gameState, list) -> {
-            if(!gameState.getPlayState.equals(PlayState.END_OF_TURN)){
+            if(!gameState.getPlayState().equals(PlayState.END_OF_TURN)){
                 throw new IllegalStateException("Game is not at end of turn");
             }
             if(!gameState.getCurrTurn().equals(plague)){
