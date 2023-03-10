@@ -7,7 +7,7 @@ class EventHand extends Component{
     render() {
         var hand = [];
         this.props.eventCards.forEach((card, index) => {
-            hand.push(<Draggable type='event' data={card} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}}>
+            hand.push(<Draggable type='event' data={index} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}}>
                         <EventCard cardName={card} index={index}/>
                      </Draggable>)
         });

@@ -33,7 +33,7 @@ class DraftDiscardPile extends Component{
             <React.Fragment>
                 <Droppable types={['country']} onDrop={discard}>
                     <div onClick={this.openDiscardBrowser} style={{top:'9.0%',left:'102.0%'}} className="countryDiscardPile">{pile}</div>
-                    <div class="discardBrowser" id="countryDiscardBrowser">{discardList}</div>
+                    <div style={{"display" : "none"}} class="discardBrowser countryDiscardBrowser" id="countryDiscardBrowser">Country Discard<div>{discardList}</div></div>
                 </Droppable>
             </React.Fragment>
         )

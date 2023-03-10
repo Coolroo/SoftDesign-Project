@@ -73,6 +73,10 @@ code {
   border-radius: 10px;
 }
 
+.traitCard:hover{
+  width: 10%;
+}
+
 .boardDNASlot{
   position: absolute;
   width: 2%;
@@ -111,13 +115,25 @@ code {
 }
 
 .discardBrowser {
-  background-color: red;
   position: absolute;
   z-index: 9999;
   border: 4px solid;
   border-radius: 2%;
   border-color: rgb(255, 145, 0);
   padding: 3px;
+  min-width: 60%;
+  min-height: 60%;
+  color: antiquewhite;
+  font-weight: bolder;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+}
+
+.countryDiscardBrowser {
+  background-color: rgb(169, 14, 14);
+}
+
+.eventDiscardBrowser {
+  background-color: rgb(30, 128, 92);
 }
 
 
