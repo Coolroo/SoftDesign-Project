@@ -88,8 +88,8 @@ public class EventReference {
     }//end of birdMigration
 
     public static EventCard bombedInfectedCities(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        //TODO: Implement condition & event, & List.of()
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState()!= PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TERM");
             }
@@ -97,33 +97,33 @@ public class EventReference {
                 throw new IllegalStateException("It is not this players turn");
             }
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("bombed_infected_cities", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("bombed_infected_cities", condition, event, List.of());
     }//end of bombedInfectedCities
 
     public static EventCard cdcAlert(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("cdc_alert", condition, event);
+        //TODO: Implement condition & event, & List.of()
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("cdc_alert", condition, event, List.of());
     }//end of cdcAlert
 
     public static EventCard corspeTransmission(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("corpse_transmission", condition, event);
+        //TODO: Implement condition & event, & List.of()
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("corpse_transmission", condition, event, List.of());
     }//end of corpseTransmission
 
     public static EventCard divineIntervention(){
-        //TODO: Implement condition & event
+        //TODO: Implement condition & event, & List.of()
         GameStateAction condition = (plague, gameState) -> {};
         GameStateAction event = (plague, gameState) -> {};
         return new EventCard("divine_intervention", condition, event);
     }//end of divineIntervention
 
     public static EventCard dnaFlow(){
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -132,22 +132,22 @@ public class EventReference {
             }
         };
 
-        GameStateAction event = (plague, gameState) -> {
+        GameStateAction event = (plague, gameState, list) -> {
             plague.addDnaPoints(4);
         };
-        return new EventCard("dna_flow", condition, event);
+        return new EventCard("dna_flow", condition, event, List.of());
     }//end of dnaFlow
 
     public static EventCard emergencyCare(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("emergency_care", condition, event);
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("emergency_care", condition, event, List.of());
     }//end of emergency_care
 
     public static EventCard executeInfected(){
-        //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        //TODO: Implement condition & event, & List.of()
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -157,13 +157,13 @@ public class EventReference {
 
             //TODO: Add logic for other conditions on card (if killed a country)
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("execute_infected", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("execute_infected", condition, event, List.of());
     }//end of executeInfected
 
     public static EventCard geneticSurge(){
 
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -172,15 +172,15 @@ public class EventReference {
             }
         };
 
-        GameStateAction event = (plague, gameState) -> {
+        GameStateAction event = (plague, gameState, list) -> {
             gameState.drawTraitCards(4).forEach(card -> plague.drawTraitCard(card));
         };
-        return new EventCard("genetic_surge", condition, event);
+        return new EventCard("genetic_surge", condition, event, List.of());
     }// end of geneticSurge
 
     public static EventCard governmentCollapse(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -190,13 +190,13 @@ public class EventReference {
 
             //TODO: add additional conditions for card
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("government_collapse", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("government_collapse", condition, event, List.of());
     }//end of governmentCollapse
 
     public static EventCard hereOnBusiness(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -206,13 +206,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("here_on_business", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("here_on_business", condition, event, List.of());
     }//end of hereOnBusiness
 
     public static EventCard immuneReaction(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -222,13 +222,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("immune_reaction", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("immune_reaction", condition, event, List.of());
     }//end of immuneReaction
 
     public static EventCard infectedRefugees(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -238,34 +238,34 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("infected_refugees", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("infected_refugees", condition, event, List.of());
     }//end of infectedRefugees
 
     public static EventCard lethalBoost(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("lethal_boost", condition, event);
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("lethal_boost", condition, event, List.of());
     }//end of divineIntervention
 
     public static EventCard lethalRelapse(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("divine_intervention", condition, event);
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("divine_intervention", condition, event, List.of());
     }//end of lethalRelapse
 
     public static EventCard neutralise(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {};
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("neutralise", condition, event);
+        GameStateAction condition = (plague, gameState, list) -> {};
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("neutralise", condition, event, List.of());
     }//end of neutralise
 
     public static EventCard newTradeRoute(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -275,13 +275,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("new_trade_route", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("new_trade_route", condition, event, List.of());
     }//end of newTradeRoute
 
     public static EventCard nuclearStrike(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -291,13 +291,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("nuclear_strike", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("nuclear_strike", condition, event, List.of());
     }//end of nuclearStrike
 
     public static EventCard olympics(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -307,13 +307,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("olympics", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("olympics", condition, event, List.of());
     }//end of olympics
 
     public static EventCard opportunisticBreakdown(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -323,13 +323,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("opportunitstic_breakdown", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("opportunitstic_breakdown", condition, event, List.of());
     }//end of opportunisticBreakDown
 
     public static EventCard pandemicAlert(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.END_OF_TURN){
                 throw new IllegalStateException("PlayState is not END_OF_TURN");
             }
@@ -339,13 +339,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("pandemic_alert", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("pandemic_alert", condition, event, List.of());
     }//end of pandemicAlert
 
     public static EventCard pilgrimage(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -355,13 +355,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("pilgrimage", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("pilgrimage", condition, event, List.of());
     }//end of pilgrimage
 
     public static EventCard rioting(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(!gameState.getPlayState.equals(PlayState.END_OF_TURN)){
                 throw new IllegalStateException("Game is not at end of turn");
             }
@@ -370,33 +370,18 @@ public class EventReference {
             }
             
         };
-        FutureInterface<CompletableFuture<Country>> createFuture = (plague) -> {
-            return new CompletableFuture<>().whenComplete((country, ex) -> {
-                if(ex != null){
-                    //TODO implement error checking
-                }
-                else{
-                    if(country.getInfectionByPlayer().keySet().contains(plague)){
-                        country.infectCountry(plague);
-                        country.infectCountry(plague);
-                    }
-                    else{
-                        //TODO implement error checking
-                    }
-                }
-            });
-        };
-        GameStateAction event = (plague, gameState) -> {
-            gameState.setCountrySelectionFuture(createFuture.op(plague));
+      
+        GameStateAction event = (plague, gameState, list) -> {
+            
         };
         
 
-        return new EventCard("rioting", condition, event);
+        return new EventCard("rioting", condition, event, List.of());
     }//end of rioting
 
     public static EventCard soapShortage(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -406,13 +391,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("soap_shortage", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("soap_shortage", condition, event, List.of());
     }//end of soap_shortage
 
     public static EventCard summerVacation(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -422,13 +407,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("summerVacation", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("summerVacation", condition, event, List.of());
     }//end of summerVacation
 
     public static EventCard temporaryMutation(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -438,13 +423,13 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("temporary_mutation", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("temporary_mutation", condition, event, List.of());
     }//end of temporaryMutation
 
     public static EventCard winterVacation(){
         //TODO: Implement condition & event
-        GameStateAction condition = (plague, gameState) -> {
+        GameStateAction condition = (plague, gameState, list) -> {
             if(gameState.getPlayState() != PlayState.START_OF_TURN){
                 throw new IllegalStateException("PlayState is not START_OF_TURN");
             }
@@ -454,15 +439,15 @@ public class EventReference {
 
             //TODO: add aditional conditions
         };
-        GameStateAction event = (plague, gameState) -> {};
-        return new EventCard("winter_vacation", condition, event);
+        GameStateAction event = (plague, gameState, list) -> {};
+        return new EventCard("winter_vacation", condition, event, List.of());
     }//end of winterVacation
 
 
 
-    private static interface FutureInterface<T>{
-        public CompletableFuture<T> op();
-    }
+    // private static interface FutureInterface<T>{
+    //     public CompletableFuture<T> op();
+    // }
 
 
     
