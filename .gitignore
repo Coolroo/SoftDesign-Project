@@ -33,3 +33,11 @@ backend/### VS Code ###
 backend/.vscode/
 backend/my.log
 backend/save_pid.txt
+frontend/public/countries
+frontend/public/deathdice
+frontend/public/dice
+frontend/public/dnaTokens
+frontend/public/events
+frontend/public/plague_tokens
+frontend/public/plaguecards
+frontend/public/traitcards

@@ -4,6 +4,9 @@ import com.softdesign.plagueinc.managers.futures.input_types.CountryChoice;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
 
+import lombok.Getter;
+
+@Getter
 public class CountryAction extends ActionLog {
 
     private CountryChoice countryChoice;
@@ -14,14 +17,6 @@ public class CountryAction extends ActionLog {
         super(PlayState.COUNTRY);
         this.countryChoice = countryChoice;
         this.country = country;
-    }
-
-    public CountryChoice getCountryChoice(){
-        return countryChoice;
-    }
-
-    public Country getCountry(){
-        return country;
     }
     
 }
