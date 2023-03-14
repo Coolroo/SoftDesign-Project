@@ -55,6 +55,15 @@ code {
   z-index: 9;
 }
 
+.draftZoneCountrySlot:hover{
+  width:30%;
+  height:120%;
+  z-index: 100;
+  border: 2px solid;
+  border-color:gold;
+}
+
+
 .board{
   position: relative;
   height: 10%;
@@ -75,6 +84,8 @@ code {
 
 .traitCard:hover{
   width: 10%;
+  border: 2px solid;
+  border-color:gold;
 }
 
 .boardDNASlot{
