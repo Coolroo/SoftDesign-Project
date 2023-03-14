@@ -16,8 +16,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
 
 @JsonSerialize(using = LambdaJsonSerializer.class)
 @JsonDeserialize(using = LambdaJsonDeserializer.class)

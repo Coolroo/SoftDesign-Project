@@ -45,6 +45,8 @@ import com.softdesign.plagueinc.models.traits.TraitCard;
 import com.softdesign.plagueinc.models.traits.TraitType;
 import com.softdesign.plagueinc.models.traits.travel.AirborneTrait;
 import com.softdesign.plagueinc.models.traits.travel.WaterborneTrait;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.CountrySelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.util.CountryReference;
 import com.softdesign.plagueinc.util.EventReference;
 import com.softdesign.plagueinc.util.TraitReference;
@@ -359,9 +361,33 @@ public class GameState {
         else{
             placeCountry(respawnCountry);
         }
-        //TODO: Respawn ConditionalAction
         plague.spendDnaPoints(RESPAWN_PENALTY);
+        respawnConditionalAction(plague);
 
+    }
+
+    private void respawnConditionalAction(Plague plague){
+        GameStateAction condition = (val, gameState, list) -> {};
+        GameStateAction action = (val, gameState, list) -> {
+            CountrySelection countrySelection = ((CountrySelection)list.get(0));
+            Country country = getCountry(countrySelection.getCountryName());
+
+            if(country.isFull()){
+                logger.warn("[DNA] Plague ({}) attempted to respawn in a full country", plague.getColor());
+                throw new IllegalStateException();
+            }
+
+            country.infectCountry(plague);
+        };
+
+        GameStateAction handleFail = (val, gameState, list) -> {
+            logger.info("[DNA] Plague ({}) failed to respawn", plague.getColor());
+            respawnConditionalAction(plague);
+            
+        };
+
+        this.action = Optional.of(new ConditionalAction(condition, action, List.of(InputSelection.COUNTRY), handleFail));
+        this.eventPlayer = Optional.of(this.currTurn);
     }
 
     //DNA PHASE
@@ -735,6 +761,25 @@ public class GameState {
         Plague oldTurn = this.turnOrder.poll();
         this.turnOrder.add(oldTurn);
         return this.turnOrder.peek();
+    }
+
+    //Event & Actions
+
+    public void doAction(UUID playerId, List<SelectionObject> inputs){
+        
+        if(this.eventPlayer.isEmpty()){
+            logger.warn("Player ({}) attempted to do an action when there was no event player", playerId);
+            throw new IllegalStateException();
+        }
+        Plague plague = getPlague(playerId);
+        if(!plague.equals(this.eventPlayer.get())){
+            logger.warn("Player ({}) attempted to do an action when they are not the event player", plague.getColor());
+            throw new IllegalStateException();
+        }
+
+        action.get().resolveEffect(plague, this, inputs);
+        this.eventPlayer = Optional.empty();
+        this.action = Optional.empty();
     }
 
     //End of game 

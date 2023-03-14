@@ -1,4 +1,4 @@
-package com.softdesign.plagueinc.models.gamestate.selection_objects;
+package com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects;
 
 import com.softdesign.plagueinc.models.countries.Continent;
 

@@ -11,8 +11,8 @@ import com.softdesign.plagueinc.models.gamestate.ConditionalAction;
 import com.softdesign.plagueinc.models.gamestate.GameState;
 import com.softdesign.plagueinc.models.gamestate.GameStateAction;
 import com.softdesign.plagueinc.models.gamestate.InputSelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
 
 import lombok.Getter;
 
@@ -27,7 +27,7 @@ public abstract class Ability extends ConditionalAction {
     protected String name;
 
     protected Ability(String name, GameStateAction condition, GameStateAction action, List<InputSelection> requiredInputs){
-        super(condition, action, requiredInputs);
+        super(condition, action, requiredInputs, (plague, gameState, inputs) -> {});
         this.activated = false;
         this.name = name;
     }

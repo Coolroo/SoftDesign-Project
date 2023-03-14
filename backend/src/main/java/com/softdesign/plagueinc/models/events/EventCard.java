@@ -14,7 +14,12 @@ public class EventCard extends ConditionalAction {
     private String name;
 
     public EventCard(String name, GameStateAction condition, GameStateAction effect, List<InputSelection> requiredInputs){
-        super(effect, effect, requiredInputs);
+        super(effect, effect, requiredInputs, (dummy, dum, dumo) -> {});
+        this.name = name;
+    }
+
+    public EventCard(String name, GameStateAction condition, GameStateAction effect, List<InputSelection> requiredInputs, GameStateAction handleFail){
+        super(effect, effect, requiredInputs, handleFail);
         this.name = name;
     }
 

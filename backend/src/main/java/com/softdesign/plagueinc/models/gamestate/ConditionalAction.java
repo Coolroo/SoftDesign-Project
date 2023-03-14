@@ -6,13 +6,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.softdesign.plagueinc.models.gamestate.selection_objects.CitySelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.ContinentSelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.CountrySelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitCardSelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitSlotSelection;
 import com.softdesign.plagueinc.models.plague.Plague;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.CitySelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.ContinentSelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.CountrySelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.SelectionObject;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.TraitCardSelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.TraitSlotSelection;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -30,6 +30,8 @@ public class ConditionalAction {
     private GameStateAction action;
     @NonNull
     private List<InputSelection> requiredInputs;
+    @NonNull
+    private GameStateAction handleFail;
 
 
     public void condition(Plague plague, GameState gameState){
@@ -37,8 +39,15 @@ public class ConditionalAction {
     }
 
     public void resolveEffect(Plague plague, GameState gameState, List<SelectionObject> inputs){
-        validateInput(inputs);
-        action.op(plague, gameState, inputs);
+        try{
+            validateInput(inputs);
+            action.op(plague, gameState, inputs);
+        }
+        catch(Exception e){
+            handleFail.op(plague, gameState, List.of());
+            throw e;
+        }
+        
     }
 
     protected void validateInput(List<SelectionObject> inputSelection){

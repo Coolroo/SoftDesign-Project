@@ -4,10 +4,10 @@ import java.util.List;
 import com.softdesign.plagueinc.models.gamestate.GameStateAction;
 import com.softdesign.plagueinc.models.gamestate.InputSelection;
 import com.softdesign.plagueinc.models.gamestate.PlayState;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitCardSelection;
-import com.softdesign.plagueinc.models.gamestate.selection_objects.TraitSlotSelection;
 import com.softdesign.plagueinc.models.plague.trait_slot.TraitSlot;
 import com.softdesign.plagueinc.models.traits.TraitCard;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.TraitCardSelection;
+import com.softdesign.plagueinc.rest_controllers.DTOs.selection_objects.TraitSlotSelection;
 public class GeneticSwitch extends Ability {
 
     private GeneticSwitch(GameStateAction condition, GameStateAction action) {
