@@ -46,7 +46,20 @@ public class GameStateManager {
     }
 
     public void exitGame(String gameStateId, UUID playerId){
-        return null;
+        if(playerId == null){
+            throw new IllegalArgumentException("Provided playerID does not exist");
+        }
+        if(!games.containsKey(gameStateId)){
+            throw new IllegalArgumentException("Provided game state does not exist");
+        }
+        
+        //Only player in this lobby
+        if(games.get(gameStateId).getPlagues().size() == 1){
+
+        }
+        else{
+            games.get(gameStateId).
+        }
     }
 
     public void voteToStart(String gameStateId, UUID plagueId){

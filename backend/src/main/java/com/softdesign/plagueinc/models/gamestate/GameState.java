@@ -266,6 +266,11 @@ public class GameState {
         return plague.getPlayerId();
     }
 
+    //Leave Game
+    public void leaveGame(UUID playerId){
+        
+    }
+
     // Change plague type in lobby
     public void changePlagueType(UUID playerId, DiseaseType diseaseType){
         validateState(PlayState.INITIALIZATION);
