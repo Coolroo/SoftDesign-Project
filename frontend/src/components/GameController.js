@@ -157,7 +157,7 @@ class GameController extends Component{
             return {
                 ...prevState,
                 game: {
-                    action: data,
+                    action: data.action,
                     board: data.board,
                     countryDiscard: data.countryDiscard,
                     currTurn: data.currTurn,

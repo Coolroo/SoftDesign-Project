@@ -22,7 +22,8 @@ public class EventReference {
         List<EventCard> list = new ArrayList<>();
         IntStream.range(0,10).forEach(val -> {
             list.add(absorb());
-            list.add(birdMigration());
+            //list.add(birdMigration());
+            /*
             list.add(bombedInfectedCities());
             list.add(cdcAlert());
             list.add(corspeTransmission());
@@ -49,6 +50,7 @@ public class EventReference {
             list.add(summerVacation());
             list.add(temporaryMutation());
             list.add(winterVacation());
+            */
         });
         return list;
     }
