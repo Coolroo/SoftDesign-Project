@@ -16,7 +16,7 @@ class JoinGamePage extends Component {
             <React.Fragment>{
                 <div className="joinGameLobby" height={window.innerHeight} width={window.innerWidth} style={{verticalAlign:"middle"}}>
                     <div style={{marginLeft: "auto", marginRight: "auto"}}>
-                        <div className="plagueIncTitle">Plague Inc.</div>
+                        <div style={{"margin-top":"6%"}} className="plagueIncTitle"><u>Pla</u>g<u>ue Inc.</u></div>
                         <div className="plagueIncSubTitle">The Board Game</div>
                     </div>
                     <div style={{display:"flex", justifyContent:"center", marginRight:"auto", marginLeft:"auto", marginTop:"10%"}}>
