@@ -194,6 +194,10 @@ code {
 
 }
 
+.lobbyButton:hover{
+  border: 2px solid;
+}
+
 .lobbyInput{
   box-sizing: border-box;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
@@ -342,6 +346,10 @@ code {
 
 }
 
+.joinGameButton:hover{
+  border: 3px solid;
+}
+
 .curvedBorder{
   --borderRadius: 1vw;
   border-radius: var(--borderRadius);
@@ -377,14 +385,22 @@ code {
   border-radius: 5%;
 }
 
+.countryDiscardPile:hover{
+  border-color:rgb(205, 69, 69);
+}
+
 .eventDiscardPile{
   position: absolute;
   border: 2px solid;
-  border-color:rgb(31, 113, 87);
+  border-color:rgb(41, 123, 97);
   width: 20%;
   height: 80%;
   z-index: 15;
   border-radius: 5%;
+}
+
+.eventDiscardPile:hover{
+  border-color:rgb(81, 163, 137);
 }
 
 .tooltip {
