@@ -47,6 +47,7 @@ class GameView extends Component{
                     <PhaseIndicator state={this.props.state}/>
                     <div className="gameView"> 
                         <div style={{width: "40%", height: "50%", marginLeft:"auto"}}>
+                            <div style={{fontWeight:"bold", color:"white"}}>DNA Score: {this.props.state.player.plague.dnaPoints}</div>
                             <Board kill={this.props.kill} infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry} playEvent={this.props.playEvent}/>
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "auto", marginLeft:"2%", position:"relative", width:"40%"}}>
