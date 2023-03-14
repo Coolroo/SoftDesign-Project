@@ -56,7 +56,7 @@ class PlayerBox extends Component{
 
         const getReadyColor = () => {
             if(plagues[this.props.color] != null){
-                return this.state.state.game.votesToStart[this.props.color] ? "green" : "red";
+                return this.state.state.game.votesToStart[this.props.color] ? "0.5vw solid #61D033" : "0.2vw solid red";
             }
             return "red";
         }
@@ -65,7 +65,7 @@ class PlayerBox extends Component{
             <React.Fragment>
                 <div style={{verticalAlign: "middle", paddingLeft:"8vw", paddingRight:"8vw"}}>
                     <div className="playerBox" style={{ position: "relative",
-                                           border: "0.2vw solid " + getReadyColor(), 
+                                           border: getReadyColor(), 
                                            backgroundImage: backgrounds[this.props.color] + getPlayerIcon(),
                                            
                                            }} onClick={whenClicked}/>
