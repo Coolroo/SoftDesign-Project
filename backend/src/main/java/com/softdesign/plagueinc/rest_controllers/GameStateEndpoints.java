@@ -95,6 +95,29 @@ public class GameStateEndpoints {
     }
 
 /**
+ * The Patch Mapping for /joinGame used to
+ * join a game using a given game ID
+ *
+ * @param gameStateId String
+ * @param joinGameDTO JoinGameDTO
+ *
+ * @return UUID
+ *
+ * @docauthor Nick Lee
+ */
+    @PatchMapping("/exitGame")
+    public ResponseEntity<Void> exitGame(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayerId playerId){
+        try{
+            gameStateManager.exitGame(gameStateId, playerId.playerId());
+            broadcastGameState(gameStateId);
+        }
+        catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+/**
  * The Patch Mapping for /voteToStart used to
  * allow users to submit their vote to start the game
  *

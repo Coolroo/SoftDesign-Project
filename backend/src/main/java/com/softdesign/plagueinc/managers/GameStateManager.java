@@ -45,6 +45,10 @@ public class GameStateManager {
         return games.get(gameStateId).joinGame(plagueColor);
     }
 
+    public void exitGame(String gameStateId, UUID playerId){
+        return null;
+    }
+
     public void voteToStart(String gameStateId, UUID plagueId){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
