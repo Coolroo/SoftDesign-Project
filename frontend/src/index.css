@@ -194,6 +194,10 @@ code {
 
 }
 
+.lobbyButton:hover{
+  border: 2px solid;
+}
+
 .lobbyInput{
   box-sizing: border-box;
   background: linear-gradient(180deg, rgba(219, 54, 54, 0.6) 0%, rgba(219, 163, 54, 0) 100%);
@@ -340,6 +344,10 @@ code {
 
   color: #FFFFFF;
 
+}
+
+.joinGameButton:hover{
+  border: 2px solid;
 }
 
 .curvedBorder{
