@@ -267,6 +267,16 @@ public class GameState {
         return plague.getPlayerId();
     }
 
+    //Leave Game
+    public void leaveGame(UUID playerId){
+        if(plagues.contains(getPlague(playerId))){
+            plagues.remove(getPlague(playerId));
+        }
+        else{
+            logger.warn("[INITIALIZATION]  Player attempted to leave game but is not in Gamestate");
+        }
+    }
+
     // Change plague type in lobby
     public void changePlagueType(UUID playerId, DiseaseType diseaseType){
         validateState(PlayState.INITIALIZATION);

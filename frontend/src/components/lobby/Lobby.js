@@ -16,13 +16,16 @@ class Lobby extends Component{
     }
 
     render(){
-
+        let exitLobby = () => {
+            console.log("EXIT CLICKED");
+            this.props.exitGame();
+        }
 
 
         return(<React.Fragment>{
             <div height={h} width={w} style={{marginLeft: "auto", marginRight: "auto"}}>
             {/*Player Boxes*/}
-                <div style={{display: "flex", justifyContent: "center", marginTop:"15vh"}}>
+                <div style={{display: "flex", justifyContent: "center", marginTop:"17vh"}}>
                     <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="RED" />
                     <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="BLUE" />
                     <PlayerBox changeType={this.props.changeType} joinGame={this.props.joinGame} voteToStart={this.props.voteToStart} state={this.state.state} color="YELLOW" />
@@ -31,7 +34,10 @@ class Lobby extends Component{
                 {/*Lobby ID*/}
                 <div style={{verticalAlign: "middle", marginLeft:"45%", marginRight:"45%", position:"absolute", bottom:"0"}}>
                     <div className="lobbyIdTag">Lobby ID</div>
-                    <div className="lobbyIdBox" >{this.state.state.lobbyId}</div>
+                    <div style={{"margin-bottom":"100%"}} className="lobbyIdBox" >{this.state.state.lobbyId}</div>
+                </div>
+                <div style ={{verticalAlign: "left", marginLeft:"0%", position:"absolute", top:"0"}}>
+                    <div className="joinGameButton" onClick={exitLobby}>EXIT LOBBY</div>
                 </div>
             </div>
             }</React.Fragment>);
