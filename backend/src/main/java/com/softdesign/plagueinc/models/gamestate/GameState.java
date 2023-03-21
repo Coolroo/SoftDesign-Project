@@ -957,6 +957,7 @@ public class GameState {
             logger.warn("(Plague {}) attempted to play the event card ({}), but there is already an gamestateaction", plague.getColor(), eventCard.getName());
             throw new IllegalAccessError();
         }
+        eventCard.getCondition().op(plague, this, List.of());
         this.action = Optional.of(eventCard);
     }
 
@@ -964,15 +965,21 @@ public class GameState {
 
         Plague plague = getPlague(playerId);
 
-        //TODO: try and catch here, if successful clear avction and eventPlayer
+        try{
+            if(action.isPresent() && eventPlayer.isPresent() && eventPlayer.get().equals(plague)){
+                action.get().resolveEffect(plague, gameState, selectionObjects);
+                action = Optional.empty();
+            }
+            else{
+                logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
+                throw new IllegalAccessError();
+            }
+        }
+        catch(Exception e){
+            logger.warn("(Plague {}) attempted to resolve an action, but there was an issue: {}", plague.getColor(), e.getStackTrace());
+            throw e;
+        }
 
-        if(action.isPresent() && eventPlayer.get().equals(plague)){
-            action.get().resolveEffect(plague, gameState, selectionObjects);
-        }
-        else{
-            logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
-            throw new IllegalAccessError();
-        }
     }
 }
     
