@@ -59,7 +59,7 @@ public class Plague {
 
     private Set<Country> killedCountries;
 
-    private static final int INITIAL_PLAGUE_TOKENS = 100;
+    private static final int INITIAL_PLAGUE_TOKENS = 500;
 
     private static final List<TraitType> DEFAULT_TRAITS = List.of(TraitType.INFECTIVITY, TraitType.INFECTIVITY, TraitType.LETHALITY);
 
