@@ -942,7 +942,11 @@ public class GameState {
             logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.getName());
             throw new IllegalAccessError();
         }
-        //TODO: Implement event logic
+        if(this.action.isPresent()){
+            logger.warn("(Plague {}) attempted to play the event card ({}), but there is already an gamestateaction", plague.getColor(), eventCard.getName());
+            throw new IllegalAccessError();
+        }
+        this.action = Optional.of(eventCard);
     }
 
 }
