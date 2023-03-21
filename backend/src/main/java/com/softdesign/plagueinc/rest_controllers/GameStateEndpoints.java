@@ -75,10 +75,10 @@ public class GameStateEndpoints {
  * The Patch Mapping for /joinGame used to
  * join a game using a given game ID
  *
- * @param gameStateId String
- * @param joinGameDTO JoinGameDTO
+ * @param gameStateId gamestate ID of game attmpting to join
+ * @param joinGameDTO JoinGameDTO: provides the color chosen by user
  *
- * @return UUID
+ * @return UUID of newly joined player
  *
  * @docauthor Nick Lee
  */
@@ -96,13 +96,13 @@ public class GameStateEndpoints {
     }
 
 /**
- * The Patch Mapping for /joinGame used to
+ * The Patch Mapping for /exitGame used to
  * join a game using a given game ID
  *
- * @param gameStateId String
- * @param joinGameDTO JoinGameDTO
+ * @param gameStateId current gameStateId of lobby
+ * @param playerId player who sent the request
  *
- * @return UUID
+ * @return void
  *
  * @docauthor Nick Lee
  */
@@ -122,8 +122,8 @@ public class GameStateEndpoints {
  * The Patch Mapping for /voteToStart used to
  * allow users to submit their vote to start the game
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId GameState ID of players lobby
+ * @param playerId Player ID of user voting to start
  *
  * @return void
  *
@@ -145,6 +145,17 @@ public class GameStateEndpoints {
         
     }
 
+/**
+ * The Patch Mapping for /changePlagueType used to
+ * allow users to change their plague type in the lobby
+ *
+ * @param gameStateId GameState ID of players lobby
+ * @param changePlagueDTO Player ID and Disease type the user changed to
+ *
+ * @return void
+ *
+ * @docauthor Nick Lee
+ */    
     @PatchMapping("/changePlagueType")
     public ResponseEntity<Void> changePlagueType(@RequestParam("gameStateId") String gameStateId, @RequestBody ChangePlagueDTO changePlagueDTO){
         try{
@@ -161,8 +172,8 @@ public class GameStateEndpoints {
  * The Patch Mapping for /proceedState used to
  * proceed the game state
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId GameState ID of players lobby
+ * @param playerId Id of player proceeding state
  *
  * @return void
  *
@@ -182,15 +193,15 @@ public class GameStateEndpoints {
     }
 
 /**
- * The Patch Mapping for /playCountry used to
- * play the given country card
+ * The Patch Mapping for /countryChoice used to
+ * make a country choice
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId String representing current gameState ID
+ * @param chooseCountryDTO PlayerID, The Country, and the choice to Discard or Play
  *
  * @return void
  *
- * @docauthor Trelent
+ * @docauthor Nick Lee
  */
     @PatchMapping("/countryChoice")
     public ResponseEntity<Void> countryChoice(@RequestParam("gameStateId") String gameStateId, @RequestBody CountryChoiceDTO chooseCountryDTO){
@@ -209,9 +220,8 @@ public class GameStateEndpoints {
  * The Patch Mapping for /evolve used when a
  * player decides to evolve a trait in their hand
  *
- * @param gameStateId String
- * @param playerId PlayerID
- * @param evolveDTO EvolveDTO
+ * @param gameStateId String representing current gameState ID
+ * @param evolveDTO EvolveDTO: playerId, trait index and slot to evolve
  *
  * @return void
  *
@@ -233,8 +243,8 @@ public class GameStateEndpoints {
  * The Patch Mapping for /skipEvolution used to
  * skip the evolution phase of a players turn
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId String representing current gameState ID
+ * @param playerId Id of Player choosing to skip evo phase
  *
  * @return void
  *
@@ -256,8 +266,8 @@ public class GameStateEndpoints {
  * The Patch Mapping for /infect used to
  * infect a country on the board
  *
- * @param gameStateId String
- * @param chooseCountryDTO InfectDTO
+ * @param gameStateId String representing current gameState ID
+ * @param chooseCountryDTO PlayerID and country name to infect
  *
  * @return void
  *
@@ -279,10 +289,10 @@ public class GameStateEndpoints {
  * The Patch Mapping for /rollDeathDice used to
  * roll the dice at the end of a turn i necessary
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId String representing current gameState ID
+ * @param chooseCountryDTO PlayerID and the country that is rolling the death dice on
  *
- * @return Integer
+ * @return Integer representing the dice roll outcome
  *
  * @docauthor Nick Lee
  */
@@ -314,6 +324,17 @@ public class GameStateEndpoints {
         
     }
 
+/**
+ * The Patch Mapping for /playEventCard used to
+ * play a given event card
+ *
+ * @param gameStateId String representing current gameState ID
+ * @param playEventCardDTO PlayerID and Event Cards index
+ *
+ * @return void
+ *
+ * @docauthor Nick Lee
+ */
     @PatchMapping("/playEventCard")
     public ResponseEntity<Void> playEventCard(@RequestParam("gameStateId") String gameStateId, @RequestBody PlayEventCardDTO playEventCardDTO){
         try{
@@ -332,9 +353,9 @@ public class GameStateEndpoints {
  * The Get Mapping for /gameState used to
  * retrieve the current game State as JSON
  *
- * @param gameStateId String
+ * @param gameStateId String representing current gameState ID
  *
- * @return GameState
+ * @return GameState requested
  *
  * @docauthor Nick Lee
  */
@@ -353,8 +374,8 @@ public class GameStateEndpoints {
  * The Get Mapping for /getPlayerInfo used to
  * retrieve the non-abstracted player info
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId String representing current gameState ID
+ * @param playerId PlayerID that info is needed
  *
  * @return Info about the specified player
  *
@@ -384,10 +405,10 @@ public class GameStateEndpoints {
 /**
  * The Patch Mapping for /resolveEffect
  *
- * @param gameStateId String
- * @param playerId PlayerID
+ * @param gameStateId String representing current gameState ID
+ * @param ResolveActionDTO PlayerID and the users input selections(List) required
  *
- * @return Integer
+ * @return void
  *
  * @docauthor Nick Lee
  */
@@ -404,6 +425,7 @@ public class GameStateEndpoints {
         
     }
 
+    //Sends the updated gamestate to front end
     private void broadcastGameState(String gameStateId){
         logger.info("Websocket sending gamestate to lobby ({})", gameStateId);
         this.template.convertAndSend("/games/gameState/" + gameStateId, gameStateManager.getGameState(gameStateId));
