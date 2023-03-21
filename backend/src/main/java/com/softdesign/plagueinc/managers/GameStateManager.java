@@ -35,6 +35,10 @@ public class GameStateManager {
         return randomId;
     }
 
+    public void deleteGame(String Id){
+        games.remove(Id);
+    }
+
     public UUID joinGame(String gameStateId, PlagueColor plagueColor){
         if(plagueColor == null){
             throw new IllegalArgumentException("Provided plague must have a color");
@@ -52,13 +56,11 @@ public class GameStateManager {
         if(!games.containsKey(gameStateId)){
             throw new IllegalArgumentException("Provided game state does not exist");
         }
-        
-        //Only player in this lobby
-        if(games.get(gameStateId).getPlagues().size() == 1){
+        games.get(gameStateId).leaveGame(playerId);
 
-        }
-        else{
-            games.get(gameStateId).
+        //If no players left, delete game instance (Empty lobby)
+        if(games.get(gameStateId).getPlagues().isEmpty()){
+            games.remove(gameStateId);
         }
     }
 

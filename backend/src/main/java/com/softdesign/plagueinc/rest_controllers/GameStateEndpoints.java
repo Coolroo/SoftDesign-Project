@@ -112,7 +112,7 @@ public class GameStateEndpoints {
             broadcastGameState(gameStateId);
         }
         catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -205,13 +205,23 @@ class GameController extends Component{
         console.log("REACHED CONTROLLER");
         //TODO: Remove player from game, Cases: Player has not joined game but in lobby, player has joined games, 
         // player is only player in lobby, player is not alone in lobby
-
-        if(this.state.plagues == null){
-            console.log("NOT JOINED!")
+        if(this.state.playerId == null){
+            console.log("NOT JOINED")
+            //delete cookie
+            cookies.remove("lobbyId");
+            //TODO: Refresh?
         }
         else{
-            console.log("JOINED!")
+            this.patchRequest("/exitGame", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}));
         }
+
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                lobbyId: null,
+                playerId: null
+            }
+        })
     }
     
     async patchRequest(endpoint, lobbyId, body){
