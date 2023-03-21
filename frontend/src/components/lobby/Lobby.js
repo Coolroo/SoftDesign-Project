@@ -36,7 +36,7 @@ class Lobby extends Component{
                     <div className="lobbyIdTag">Lobby ID</div>
                     <div style={{"margin-bottom":"100%"}} className="lobbyIdBox" >{this.state.state.lobbyId}</div>
                 </div>
-                <div style ={{verticalAlign: "left", marginLeft:"0%", position:"absolute", top:"0"}}>
+                <div style ={{verticalAlign: "left", marginLeft:"0%", position:"absolute", top:"85%", left: "44.4%"}}>
                     <div className="joinGameButton" onClick={exitLobby}>EXIT LOBBY</div>
                 </div>
             </div>
