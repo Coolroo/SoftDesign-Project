@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import TraitCard from "./TraitCard";
+
 class TraitHand extends Component{
     
     render() {

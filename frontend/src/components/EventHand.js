@@ -1,23 +1,18 @@
 import React, { Component } from "react";
 import EventCard from "./EventCard";
-import { Draggable } from 'react-drag-and-drop';
 
 class EventHand extends Component{
     
     render() {
         var hand = [];
         this.props.eventCards.forEach((card, index) => {
-            hand.push(<Draggable type='event' data={index} className="fullSize curvedBorder" style={{"--borderRadius": "10px"}}>
-                        <EventCard cardName={card} index={index}/>
-                     </Draggable>)
+            hand.push(<EventCard cardName={card} index={index}/>)
         });
         return(
             <React.Fragment>{
-                
-                    <div className="traitCard" style={{display:"flex", justifyContent:"center", alignItems:"center"}}> 
-                        {hand}
-                    </div>
-                
+                <div style={{display:"flex", justifyContent:"center", alignItems:"center"}}> 
+                    {hand}
+                </div>
             }
             </React.Fragment>
         )
