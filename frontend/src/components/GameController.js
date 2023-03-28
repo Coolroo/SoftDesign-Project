@@ -157,7 +157,7 @@ class GameController extends Component{
             return {
                 ...prevState,
                 game: {
-                    action: data,
+                    action: data.action,
                     board: data.board,
                     countryDiscard: data.countryDiscard,
                     currTurn: data.currTurn,
@@ -201,6 +201,29 @@ class GameController extends Component{
         });  
     }
 
+    exitGame(){
+        console.log("REACHED CONTROLLER");
+        //TODO: Remove player from game, Cases: Player has not joined game but in lobby, player has joined games, 
+        // player is only player in lobby, player is not alone in lobby
+        if(this.state.playerId == null){
+            console.log("NOT JOINED")
+            //delete cookie
+            cookies.remove("lobbyId");
+            //TODO: Refresh?
+        }
+        else{
+            this.patchRequest("/exitGame", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId}));
+        }
+
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                lobbyId: null,
+                playerId: null
+            }
+        })
+    }
+    
     async patchRequest(endpoint, lobbyId, body){
         var patchBody = {
             ...patchRequestOptions,
@@ -330,7 +353,6 @@ class GameController extends Component{
     playEvent(eventIndex){
         console.log("Playing event: " + eventIndex);
         this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: eventIndex}));
-        console.log(this.props.state.game)
     }
 
     skipEvolve(){
@@ -378,7 +400,7 @@ class GameController extends Component{
 
         const lobbyPage = () => {
             if(this.state.lobbyId !== null && this.state.game.playState === "INITIALIZATION" && this.state.game.playState != null){
-                return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state}  />
+                return <Lobby joinGame={(color) => this.joinGame(color)} voteToStart={() => this.voteToStart()} changeType={() => this.changePlagueType()}  state={this.state} exitGame={() => this.exitGame()}  />
             }
         }
         

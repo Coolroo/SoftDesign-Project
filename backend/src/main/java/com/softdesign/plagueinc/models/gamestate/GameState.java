@@ -34,6 +34,7 @@ import com.softdesign.plagueinc.models.action_log.KillCountryAction;
 import com.softdesign.plagueinc.models.countries.Continent;
 import com.softdesign.plagueinc.models.countries.Country;
 import com.softdesign.plagueinc.models.events.EventCard;
+import com.softdesign.plagueinc.models.gamestate.selection_objects.SelectionObject;
 import com.softdesign.plagueinc.models.plague.DiseaseType;
 import com.softdesign.plagueinc.models.plague.Plague;
 import com.softdesign.plagueinc.models.plague.PlagueColor;
@@ -264,6 +265,16 @@ public class GameState {
         this.votesToStart.put(plague.getColor(), false);
         logger.info("[INITIALIZATION] Plague with id ({}) created, and assigned color {}", plague.getPlayerId(), plague.getColor());
         return plague.getPlayerId();
+    }
+
+    //Leave Game
+    public void leaveGame(UUID playerId){
+        if(plagues.contains(getPlague(playerId))){
+            plagues.remove(getPlague(playerId));
+        }
+        else{
+            logger.warn("[INITIALIZATION]  Player attempted to leave game but is not in Gamestate");
+        }
     }
 
     // Change plague type in lobby
@@ -942,8 +953,33 @@ public class GameState {
             logger.warn("(Plague {}) attempted to play the event card ({}), but they drew it this turn", plague.getColor(), eventCard.getName());
             throw new IllegalAccessError();
         }
-        //TODO: Implement event logic
+        if(this.action.isPresent()){
+            logger.warn("(Plague {}) attempted to play the event card ({}), but there is already an gamestateaction", plague.getColor(), eventCard.getName());
+            throw new IllegalAccessError();
+        }
+        eventCard.getCondition().op(plague, this, List.of());
+        this.action = Optional.of(eventCard);
     }
 
+    public void resolveAction(GameState gameState, UUID playerId, List<SelectionObject> selectionObjects){
+
+        Plague plague = getPlague(playerId);
+
+        try{
+            if(action.isPresent() && eventPlayer.isPresent() && eventPlayer.get().equals(plague)){
+                action.get().resolveEffect(plague, gameState, selectionObjects);
+                action = Optional.empty();
+            }
+            else{
+                logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
+                throw new IllegalAccessError();
+            }
+        }
+        catch(Exception e){
+            logger.warn("(Plague {}) attempted to resolve an action, but there was an issue: {}", plague.getColor(), e.getStackTrace());
+            throw e;
+        }
+
+    }
 }
     
