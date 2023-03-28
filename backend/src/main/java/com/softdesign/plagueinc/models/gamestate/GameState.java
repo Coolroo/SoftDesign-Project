@@ -958,7 +958,9 @@ public class GameState {
             throw new IllegalAccessError();
         }
         eventCard.getCondition().op(plague, this, List.of());
+        logger.info("(Plague {}) played event {}", plague.getColor(), eventCard.getName());
         this.action = Optional.of(eventCard);
+        logger.info("here");
     }
 
     public void resolveAction(GameState gameState, UUID playerId, List<SelectionObject> selectionObjects){
@@ -976,7 +978,7 @@ public class GameState {
             }
         }
         catch(Exception e){
-            logger.warn("(Plague {}) attempted to resolve an action, but there was an issue: {}", plague.getColor(), e.getStackTrace());
+            logger.warn("(Plague {}) attempted to resolve an action, but there was an issue", plague.getColor());
             throw e;
         }
 

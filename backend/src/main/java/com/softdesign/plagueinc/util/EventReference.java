@@ -21,8 +21,8 @@ public class EventReference {
         //TODO: Implement default event deck
         List<EventCard> list = new ArrayList<>();
         IntStream.range(0,10).forEach(val -> {
-            list.add(absorb());
-            //list.add(birdMigration());
+            //list.add(absorb());
+            list.add(birdMigration());
             /*
             list.add(bombedInfectedCities());
             list.add(cdcAlert());
