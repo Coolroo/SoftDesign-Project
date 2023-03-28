@@ -77,6 +77,7 @@ code {
 .traitCard{
   margin-right: 0.5%;
   margin-left: 0.5%;
+  margin-bottom: 0.5%;
   width: 8%;
   display: inline-block;
   border-radius: 10px;
@@ -87,6 +88,22 @@ code {
   border: 2px solid;
   border-color:gold;
 }
+
+.eventCard{
+  margin-right: 0.5%;
+  margin-left: 0.5%;
+  width: 8%;
+  display: inline-block;
+  border-radius: 10px;
+}
+
+.eventCard:hover{
+  width: 10%;
+  border: 2px solid;
+  border-color:gold;
+}
+
+
 
 .boardDNASlot{
   position: absolute;
