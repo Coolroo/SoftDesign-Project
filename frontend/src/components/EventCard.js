@@ -6,7 +6,7 @@ class EventCard extends Component{
     render() {
         return(
             <React.Fragment>{
-                <Draggable className="eventCard" type={'trait'} data={this.props.index}>
+                <Draggable className="eventCard" type={'event'} data={this.props.index}>
                     <div>
                         <img src={`/events/${this.props.cardName}.png`} className="fullSize curvedBorder" style={{width:"100%","--borderRadius": "10px"}} alt="img"/>
                     </div>
