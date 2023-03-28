@@ -55,7 +55,7 @@ class GameView extends Component{
                             <PlagueCard state={this.props.state} evolve={this.props.evolve} cardName={board}/>
                         </div>
                     </div> 
-                    <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "1%"}}>
+                    <div style={{verticalAlign:"middle", display:"flex", justifyContent:"center", alignItems:"center", marginTop: "0.5%"}}>
                         <div style={{width:"70%", height:"10%"}}>
                             <TraitHand hand={this.props.state.player.hand}/>
                             <EventHand eventCards={this.props.state.player.eventCards}/>
