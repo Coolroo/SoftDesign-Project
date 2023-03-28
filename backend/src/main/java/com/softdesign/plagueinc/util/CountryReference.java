@@ -222,7 +222,7 @@ public class CountryReference {
         Continent.OCEANIA,
         Optional.empty(),
         List.of(new WaterborneTrait()),
-        citiesToMap(3));
+        citiesToMap(5));
     }
 
     public static Country libya(){
