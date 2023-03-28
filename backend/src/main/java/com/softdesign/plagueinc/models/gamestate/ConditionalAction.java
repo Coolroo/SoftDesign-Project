@@ -3,6 +3,7 @@ package com.softdesign.plagueinc.models.gamestate;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +22,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class ConditionalAction {
-    
+
+    @JsonIgnore
     private Logger logger = LoggerFactory.getLogger(ConditionalAction.class);
 
+    @JsonIgnore
     @NonNull
     private GameStateAction condition;
+    @JsonIgnore
     @NonNull
     private GameStateAction action;
     @NonNull
