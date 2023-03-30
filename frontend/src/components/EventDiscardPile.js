@@ -24,7 +24,7 @@ class EventDiscardPile extends Component{
     
         return(
             <React.Fragment>
-                <div onClick={this.openDiscardBrowser} style={{top:'9.0%',left:'124.0%'}} className="eventDiscardPile">{pile}</div>
+                <div onClick={this.openDiscardBrowser} style={{top:'6.0%',left:'130.0%'}} className="eventDiscardPile">{pile}</div>
                 <div style={{"display" : "none"}} class="discardBrowser eventDiscardBrowser" id="eventDiscardBrowser">Event Discard<div>{discardList}</div></div>
             </React.Fragment>
         )

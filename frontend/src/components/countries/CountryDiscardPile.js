@@ -15,7 +15,7 @@ class DraftDiscardPile extends Component{
     render() {
         let pile = [];
         if(this.props.state.game.countryDiscard.length > 0) {
-            pile.push (<img alt="" width='100%' src={"/countries/countrycardback.png"}/>)
+            pile.push (<img style={{display: "block", "margin-left": "auto", "margin-right": "auto", width: "90%"}} alt="" width='90%' src={"/countries/countrycardback.png"}/>)
         }
 
         let discardList = [];
@@ -32,7 +32,7 @@ class DraftDiscardPile extends Component{
         return(
             <React.Fragment>
                 <Droppable types={['country']} onDrop={discard}>
-                    <div onClick={this.openDiscardBrowser} style={{top:'9.0%',left:'102.0%'}} className="countryDiscardPile">{pile}</div>
+                    <div onClick={this.openDiscardBrowser} style={{top:'6.0%',left:'102.0%'}} className="countryDiscardPile">{pile}</div>
                     <div style={{"display" : "none"}} class="discardBrowser countryDiscardBrowser" id="countryDiscardBrowser">Country Discard<div>{discardList}</div></div>
                 </Droppable>
             </React.Fragment>
