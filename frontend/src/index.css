@@ -395,29 +395,33 @@ code {
 .countryDiscardPile{
   position: absolute;
   border: 2px solid;
-  border-color:rgb(145, 9, 9);
-  width: 20%;
-  height: 80%;
+  border-color:rgb(175, 39, 39);
+  background-color:rgb(95, 0, 0);
+  width: 25%;
+  height: 88%;
   z-index: 15;
+  padding-top: 1.5%;
   border-radius: 5%;
 }
 
 .countryDiscardPile:hover{
-  border-color:rgb(205, 69, 69);
+  border-color:rgb(235, 99, 99);
 }
 
 .eventDiscardPile{
   position: absolute;
   border: 2px solid;
-  border-color:rgb(41, 123, 97);
-  width: 20%;
-  height: 80%;
+  border-color:rgb(51, 133, 107);
+  background-color: rgb(1, 63, 37);
+  width: 25%;
+  height: 88%;
   z-index: 15;
+  padding-top: 1.5%;
   border-radius: 5%;
 }
 
 .eventDiscardPile:hover{
-  border-color:rgb(81, 163, 137);
+  border-color:rgb(91, 173, 147);
 }
 
 .tooltip {
