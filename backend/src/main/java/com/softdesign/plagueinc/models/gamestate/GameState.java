@@ -832,7 +832,11 @@ public class GameState {
         .noneMatch(thisPlague -> thisPlague.equals(plague));
     }
 
+    //Check if player in unable to move in infect phase
     public boolean unableToMove(Plague plague){
+        if(plague.getPlagueTokens() == 0){
+            return true;
+        }
         return this.board.values()
         .stream()
         .flatMap(continent -> continent.stream())
