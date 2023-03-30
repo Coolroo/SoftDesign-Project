@@ -51,6 +51,7 @@ class GameView extends Component{
                             <Board kill={this.props.kill} infect={this.props.infect} state={this.props.state} placeCountry={this.props.placeCountry} playEvent={this.props.playEvent}/>
                         </div>
                         <div style={{verticalAlign:"middle", marginRight: "auto", marginLeft:"2%", position:"relative", width:"40%"}}>
+                            <div style={{fontWeight:"bold", color:"white", "padding-left":"71.5%"}}>DISCARD</div>
                             <CountryDraftZone state={this.props.state} discard={(countryName) => this.props.discard(countryName)}/>
                             <PlagueCard state={this.props.state} evolve={this.props.evolve} cardName={board}/>
                         </div>
