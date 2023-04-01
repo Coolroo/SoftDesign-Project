@@ -976,6 +976,7 @@ public class GameState {
             if(action.isPresent() && eventPlayer.isPresent() && eventPlayer.get().equals(plague)){
                 action.get().resolveEffect(plague, gameState, selectionObjects);
                 action = Optional.empty();
+                eventPlayer = Optional.empty();
             }
             else{
                 logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
