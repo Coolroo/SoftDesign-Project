@@ -964,6 +964,7 @@ public class GameState {
         eventCard.getCondition().op(plague, this, List.of());
         logger.info("(Plague {}) played event {}", plague.getColor(), eventCard.getName());
         this.action = Optional.of(eventCard);
+        this.eventPlayer = Optional.of(plague);
         logger.info("here");
     }
 
