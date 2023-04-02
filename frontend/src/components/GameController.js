@@ -355,6 +355,11 @@ class GameController extends Component{
         this.patchRequest("/playEventCard", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, eventCardIndex: eventIndex}));
     }
 
+    autoResolve(){
+        console.log("Resolving: ")
+        this.patchRequest("/resolveEffect", this.state.lobbyId, JSON.stringify({playerId: this.state.playerId, inputSelections: []}));
+    }
+
     skipEvolve(){
         if(this.state.lobbyId === null){
             console.log("No lobby ID");
@@ -392,6 +397,12 @@ class GameController extends Component{
     }
        
     render() {
+
+        if (this.state.game.action != null && this.state.game.action.requiredInputs.length == 0)
+        {
+            this.autoResolve()
+        }
+
         const joinGamePage = () => {
             if(this.state.lobbyId == null){
                 return <JoinGamePage joinGame={(id) => this.loadLobby(id)} createGame={() => this.createGame()}/>
