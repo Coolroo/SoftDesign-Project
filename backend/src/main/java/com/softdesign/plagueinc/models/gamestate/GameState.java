@@ -964,6 +964,7 @@ public class GameState {
         eventCard.getCondition().op(plague, this, List.of());
         logger.info("(Plague {}) played event {}", plague.getColor(), eventCard.getName());
         this.action = Optional.of(eventCard);
+        this.eventPlayer = Optional.of(plague);
         logger.info("here");
     }
 
@@ -975,6 +976,7 @@ public class GameState {
             if(action.isPresent() && eventPlayer.isPresent() && eventPlayer.get().equals(plague)){
                 action.get().resolveEffect(plague, gameState, selectionObjects);
                 action = Optional.empty();
+                eventPlayer = Optional.empty();
             }
             else{
                 logger.warn("(Plague {}) attempted to resolve an action but conditional action is not present or player is not event player", plague.getColor());
