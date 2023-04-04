@@ -14,7 +14,7 @@ class EventDiscardPile extends Component{
     render() {
         let pile = [];
         if(this.props.state.game.eventDiscard.length > 0) {
-            pile.push (<img alt="" width='10%' src={"/events/eventcardback.png"}/>)
+            pile.push (<img alt="" style={{display: "block", "margin-left": "auto", "margin-right": "auto", width: "90%"}} width='90%' src={"/events/eventcardback.png"}/>)
         }
 
         let discardList = [];
