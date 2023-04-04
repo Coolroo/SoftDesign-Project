@@ -19,7 +19,7 @@ class EventDiscardPile extends Component{
 
         let discardList = [];
         for(let i = 0; i < this.props.state.game.eventDiscard.length; i++) {
-            discardList.push (<img alt="" style={{"margin-left" : "1px", "margin-right" : "1px"}} width='20%' src={"/events/" + this.props.state.game.eventDiscard[i] + ".png"}/>)
+            discardList.push (<img alt="" style={{"margin-left" : "1px", "margin-right" : "1px"}} width='20%' src={"/events/" + this.props.state.game.eventDiscard[i].name + ".png"}/>)
         }
     
         return(
