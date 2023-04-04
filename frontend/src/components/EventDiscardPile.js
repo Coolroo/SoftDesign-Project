@@ -14,12 +14,12 @@ class EventDiscardPile extends Component{
     render() {
         let pile = [];
         if(this.props.state.game.eventDiscard.length > 0) {
-            pile.push (<img alt="" width='10%' src={"/events/eventcardback.png"}/>)
+            pile.push (<img alt="" style={{display: "block", "margin-left": "auto", "margin-right": "auto", width: "90%"}} width='90%' src={"/events/eventcardback.png"}/>)
         }
 
         let discardList = [];
         for(let i = 0; i < this.props.state.game.eventDiscard.length; i++) {
-            discardList.push (<img alt="" style={{"margin-left" : "1px", "margin-right" : "1px"}} width='20%' src={"/events/" + this.props.state.game.eventDiscard[i] + ".png"}/>)
+            discardList.push (<img alt="" style={{"margin-left" : "1px", "margin-right" : "1px"}} width='20%' src={"/events/" + this.props.state.game.eventDiscard[i].name + ".png"}/>)
         }
     
         return(
