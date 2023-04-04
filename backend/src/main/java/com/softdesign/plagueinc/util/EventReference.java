@@ -25,17 +25,18 @@ public class EventReference {
         //TODO: Implement default event deck
         List<EventCard> list = new ArrayList<>();
         IntStream.range(0,10).forEach(val -> {
-            //list.add(absorb());
+            list.add(absorb());
             list.add(birdMigration());
+            list.add(dnaFlow());
+            list.add(geneticSurge());
+
             /*
             list.add(bombedInfectedCities());
             list.add(cdcAlert());
             list.add(corspeTransmission());
             list.add(divineIntervention());
-            list.add(dnaFlow());
             list.add(emergencyCare());
             list.add(executeInfected());
-            list.add(geneticSurge());
             list.add(governmentCollapse());
             list.add(hereOnBusiness());
             list.add(immuneReaction());
