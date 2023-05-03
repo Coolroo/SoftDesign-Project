@@ -29,6 +29,7 @@ public class GameStateManager {
         this.games = new HashMap<>();
     }
 
+    //Createa new gameState and store in hashmap of games
     public String createGame(){
         String randomId;
         while(games.containsKey(randomId = generateRandomId())){}
@@ -37,10 +38,12 @@ public class GameStateManager {
         return randomId;
     }
 
+    //Deletes a gamestate from the hashmap
     public void deleteGame(String Id){
         games.remove(Id);
     }
 
+    //Allows player to join a game given a exisiting GameState ID and a choice of color
     public UUID joinGame(String gameStateId, PlagueColor plagueColor){
         if(plagueColor == null){
             throw new IllegalArgumentException("Provided plague must have a color");
@@ -51,6 +54,7 @@ public class GameStateManager {
         return games.get(gameStateId).joinGame(plagueColor);
     }
 
+    //Exits a given player from a gamestate
     public void exitGame(String gameStateId, UUID playerId){
         if(playerId == null){
             throw new IllegalArgumentException("Provided playerID does not exist");
@@ -66,6 +70,7 @@ public class GameStateManager {
         }
     }
 
+    //Allows a joined player to vote to start the game
     public void voteToStart(String gameStateId, UUID plagueId){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
@@ -76,6 +81,7 @@ public class GameStateManager {
         games.get(gameStateId).startGame(plagueId);
     }
 
+    // Players in lobby can change their plague type before the game starts
     public void changePlagueType(String gameStateId, UUID plagueId, DiseaseType diseaseType){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
@@ -86,6 +92,7 @@ public class GameStateManager {
         games.get(gameStateId).changePlagueType(plagueId, diseaseType);
     }
 
+    // Player can proceed state in their turn if proper conditions are met
     public void proceedState(String gameStateId, UUID plagueId){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
@@ -97,6 +104,7 @@ public class GameStateManager {
         games.get(gameStateId).proceedState();
     }
 
+    // Players make country choice during country phase, either to play a country or discard it
     public void makeCountryChoice(String gameStateId, UUID playerId, String countryName, CountryChoice choice){
         if(playerId == null){
             throw new IllegalArgumentException("must provide plague ID");
@@ -114,6 +122,7 @@ public class GameStateManager {
         games.get(gameStateId).makeCountryChoice(countryName, choice);
     }
 
+    // Evolves a given trait if proper conditions met
     public void evolveTrait(String gameStateId, UUID plagueId, int traitSlot, int traitIndex){
         if(plagueId == null){
             throw new IllegalArgumentException("must provide plague ID");
